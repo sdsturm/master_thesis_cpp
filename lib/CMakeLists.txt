@@ -11,7 +11,10 @@ add_library(${PROJECT_NAME}
     ./src/spectral_gf.cpp
     ./src/partition_extrapolation.cpp
     ./src/sommerfeld_integrals.cpp
+    ./src/scalar_gf.cpp
+    ./src/dyadic_gf.cpp
     ./src/gpof.cpp
+    ./src/dcim.cpp
     )
 target_link_libraries(${PROJECT_NAME}
     armadillo
