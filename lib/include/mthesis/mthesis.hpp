@@ -2,6 +2,7 @@
 #define MTHESIS_MTHESIS_HPP
 
 #include <mthesis/detail/definitions.hpp>
+
 #include <mthesis/detail/solution_domain.hpp>
 #include <mthesis/detail/tlgf.hpp>
 
@@ -10,5 +11,6 @@
 #include <mthesis/detail/sommerfeld_integrals.hpp>
 
 #include <mthesis/detail/gpof.hpp>
+#include <mthesis/detail/dcim.hpp>
 
 #endif
