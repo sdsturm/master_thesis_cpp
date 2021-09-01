@@ -27,7 +27,7 @@ namespace mthesis::si
         return sip_locations;
     }
 
-    SpectralGF::SpectralGF(const std::function<cmplx(cmplx)> f,
+    SpectralGF::SpectralGF(std::function<cmplx(cmplx)> f,
                            real z,
                            real z_,
                            const LayeredMedium &lm,
@@ -45,7 +45,7 @@ namespace mthesis::si
     {
     }
 
-    SpectralGF::SpectralGF(const std::function<cmplx(cmplx)> f,
+    SpectralGF::SpectralGF(std::function<cmplx(cmplx)> f,
                            real z,
                            real z_,
                            const LayeredMedium &lm,

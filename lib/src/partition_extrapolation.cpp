@@ -114,8 +114,8 @@ namespace mthesis::si::pe
                         double a,
                         double a_pe_start)
     {
-        using boost::math::quadrature::gauss_kronrod;
-        return gauss_kronrod<real, 15>::integrate(f, a, a_pe_start, 5);
+        constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
+        return quad.integrate(f, a, a_pe_start);
     }
 
     std::vector<double> get_xi(double a, double rho, unsigned max_intervals)
@@ -166,23 +166,23 @@ namespace mthesis::si::pe
                           double a,
                           Params params)
     {
+        constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
+
         auto xi = get_xi(a, rho, params.max_intervals);
         std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
 
         cmplx s = 0.0;
         std::vector<cmplx> old(2);
 
-        using boost::math::quadrature::gauss_kronrod;
         int k_max = xi.size() - 2;
         for (int k = 0; k <= k_max; k++)
         {
-            cmplx u = gauss_kronrod<double, 15>::integrate(f, xi[k], xi[k + 1]);
+            cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
             s += u;
             if (std::abs(u) < 1e-100 && std::abs(s) < 1e-20)
             {
                 // Double check if function is identical to zero.
-                cmplx u_tot = gauss_kronrod<double, 15>::integrate(
-                    f, xi.front(), xi.back(), 5);
+                cmplx u_tot = quad.integrate(f, xi.front(), xi.back());
                 assert(std::abs(u_tot) < 1e-16);
                 return 0.0;
             }
@@ -239,6 +239,8 @@ namespace mthesis::si::pe
                                double zeta,
                                Params params)
     {
+        constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
+
         auto xi = get_xi(a, rho, params.max_intervals);
         std::vector<cmplx> R(xi.size() - 1);
 
@@ -263,7 +265,7 @@ namespace mthesis::si::pe
         int k_max = xi.size() - 2;
         for (int k = 0; k <= k_max; k++)
         {
-            cmplx u = gauss_kronrod<double, 15>::integrate(f, xi[k], xi[k + 1]);
+            cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
             s += u;
             cmplx val = mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
             if (k > 1 && check_converged(val, old, params.tol))

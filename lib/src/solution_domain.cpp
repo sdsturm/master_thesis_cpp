@@ -89,6 +89,15 @@ namespace mthesis
         throw std::runtime_error("LayeredMedium::identify_layer failed.");
     }
 
+    FreeSpace::FreeSpace(const FrequencyDomain &fd)
+        : LayeredMedium(fd,
+                        std::vector<real>{-INFINITY, INFINITY},
+                        std::vector<Medium>{Vacuum(fd)},
+                        BC::open,
+                        BC::open)
+    {
+    }
+
     HalfSpace::HalfSpace(const FrequencyDomain &fd, const Medium &ground)
         : LayeredMedium(fd,
                         std::vector<real>{-INFINITY, 0, INFINITY},

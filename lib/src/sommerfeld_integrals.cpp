@@ -44,8 +44,8 @@ namespace mthesis::si
             return f(gamma) * gamma_;
         };
 
-        using boost::math::quadrature::gauss_kronrod;
-        auto val = gauss_kronrod<real, 15>::integrate(f_e, 0, 1, 5);
+        constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
+        auto val = quad.integrate(f_e, 0.0, 1.0);
 
         return val;
     }
@@ -75,8 +75,8 @@ namespace mthesis::si
         }
         else if (rho == 0 && std::abs(gf.z - gf.z_) > 0.0)
         {
-            val = boost::math::quadrature::gauss_kronrod<real, 15>::integrate(
-                f, a, std::numeric_limits<real>::infinity(), 5);
+            constexpr boost::math::quadrature::gauss_kronrod<real, 15> quad;
+            val = quad.integrate(f, a, std::numeric_limits<real>::infinity());
         }
         else
         {

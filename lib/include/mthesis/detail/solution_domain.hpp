@@ -65,6 +65,11 @@ namespace mthesis
         int identify_layer(real z) const;
     };
 
+    struct FreeSpace : public LayeredMedium
+    {
+        FreeSpace(const FrequencyDomain &fd);
+    };
+
     struct HalfSpace : public LayeredMedium
     {
         HalfSpace(const FrequencyDomain &fd, const Medium &ground);
