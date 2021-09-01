@@ -285,6 +285,7 @@ namespace mthesis
         // Argument: the function is undefined only for z == z′, i.e., only at
         //           one point => one point contributes nothing to an integral.
         real dist = z - z_;
+
         real sign;
         if (dist > 0.0)
             sign = 1.0;
