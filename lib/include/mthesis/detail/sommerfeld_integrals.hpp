@@ -10,7 +10,9 @@
 
 namespace mthesis::si
 {
-    cmplx eval_head_rooftop(const SpectralGF &gf, real nu, real rho, real a);
+    real calc_indention(const SpectralGF &gf, real rho, real a);
+
+    cmplx eval_head_elliplis(const SpectralGF &gf, real nu, real rho, real a);
 
     cmplx eval_tail(const SpectralGF &gf,
                     real nu,

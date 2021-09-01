@@ -23,7 +23,7 @@ namespace mthesis::si
         const std::vector<cmplx> bp;  // Branch points.
         const std::vector<cmplx> swp; // Surface wave poles.
 
-        SpectralGF(std::function<cmplx(cmplx)> f,
+        SpectralGF(const std::function<cmplx(cmplx)> f,
                    real z,
                    real z_,
                    const LayeredMedium &lm,
@@ -31,7 +31,7 @@ namespace mthesis::si
                    real zeta,  // NaN if not given.
                    bool identify_poles = false);
 
-        SpectralGF(std::function<cmplx(cmplx)> f,
+        SpectralGF(const std::function<cmplx(cmplx)> f,
                    real z,
                    real z_,
                    const LayeredMedium &lm,
@@ -41,8 +41,6 @@ namespace mthesis::si
     cmplx integrand_sip(const SpectralGF &gf, real nu, real rho, real k_rho);
 
     cmplx integrand_sip(const SpectralGF &gf, double nu, real rho, cmplx k_rho);
-
-    cmplx integrand_eip(const SpectralGF &gf, double nu, real rho, cmplx k_rho);
 
 } // namespace mthesis::si
 

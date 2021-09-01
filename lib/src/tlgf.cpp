@@ -281,7 +281,7 @@ namespace mthesis::tlgf
                   const Internals &d)
     {
         bool direct_term = true;
-        cmplx val = V_i_src_generic(lm, z, z_, n, d, direct_term);
+        auto val = V_i_src_generic(lm, z, z_, n, d, direct_term);
         return d.Z[n] / 2.0 * val;
     }
 
@@ -417,10 +417,11 @@ namespace mthesis::tlgf
                factor_eq_117(lm, z, m, pm_operator, d);
     }
 
-    cmplx V_i_base(const LayeredMedium &lm,
-                   real z,
-                   real z_,
-                   const Internals &d)
+    cmplx V_i_base_generic(const LayeredMedium &lm,
+                           real z,
+                           real z_,
+                           const Internals &d,
+                           bool direct_term)
     {
         auto m = lm.identify_layer(z);
         auto n = lm.identify_layer(z_);
@@ -431,20 +432,34 @@ namespace mthesis::tlgf
         cmplx val;
         if (m == n)
         {
-            val = V_i_src(lm, z, z_, n, d);
+            val = V_i_src_generic(lm, z, z_, n, d, direct_term);
         }
         else if (m < n)
         {
-            val = V_i_src(lm, lm.z[n], z_, n, d) *
+            val = V_i_src_generic(lm, lm.z[n], z_, n, d, direct_term) *
                   T_d(lm, z, m, n, pm_operator, d);
         }
         else if (m > n)
         {
-            val = V_i_src(lm, lm.z[n + 1], z_, n, d) *
+            val = V_i_src_generic(lm, lm.z[n + 1], z_, n, d, direct_term) *
                   T_u(lm, z, m, n, pm_operator, d);
         }
 
         return val;
+    }
+
+    cmplx V_i_base(const LayeredMedium &lm,
+                   real z,
+                   real z_,
+                   const Internals &d)
+    {
+        auto n = lm.identify_layer(z_);
+
+        bool direct_term = true;
+
+        auto val = V_i_base_generic(lm, z, z_, d, direct_term);
+
+        return val * d.Z[n] / 2.0;
     }
 
     cmplx I_i_base(const LayeredMedium &lm,

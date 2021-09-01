@@ -27,7 +27,7 @@ namespace mthesis::si
         return sip_locations;
     }
 
-    SpectralGF::SpectralGF(std::function<cmplx(cmplx)> f,
+    SpectralGF::SpectralGF(const std::function<cmplx(cmplx)> f,
                            real z,
                            real z_,
                            const LayeredMedium &lm,
@@ -45,7 +45,7 @@ namespace mthesis::si
     {
     }
 
-    SpectralGF::SpectralGF(std::function<cmplx(cmplx)> f,
+    SpectralGF::SpectralGF(const std::function<cmplx(cmplx)> f,
                            real z,
                            real z_,
                            const LayeredMedium &lm,
@@ -68,11 +68,6 @@ namespace mthesis::si
     cmplx integrand_sip(const SpectralGF &gf, double nu, real rho, cmplx k_rho)
     {
         return sp_bessel::besselJ(nu, rho * k_rho) * k_rho * gf.f(k_rho);
-    }
-
-    cmplx integrand_eip(const SpectralGF &gf, double nu, real rho, cmplx k_rho)
-    {
-        return sp_bessel::hankelH2(nu, rho * k_rho) * k_rho * gf.f(k_rho);
     }
 
 } // namespace mthesis::si

@@ -8,33 +8,46 @@
 
 namespace mthesis::si
 {
-    cmplx eval_head_rooftop(const SpectralGF &gf, real nu, real rho, real a)
+    real calc_indention(const SpectralGF &gf, real rho, real a)
     {
-        real w = 1.0 / rho;  // Detour width.
-        cmplx z(a / 2.0, w); // Waypoint of roof-like detour.
-        assert(std::isfinite(std::abs(gf.f(z))));
+        real w;
+        if (rho > 0.0)
+            w = 1.0 / rho;
+        else
+            w = a / 2.0;
+
+        auto test_val = gf.f(cmplx(a / 2.0, w));
+        assert(std::isfinite(std::abs(test_val)));
+
+        return w;
+    }
+
+    cmplx eval_head_elliplis(const SpectralGF &gf, real nu, real rho, real a)
+    {
+        using std::complex_literals::operator""i;
 
         auto f = [&](cmplx k_rho)
         {
             return integrand_sip(gf, nu, rho, k_rho);
         };
 
+        real r = a / 2.0;
+        real w = calc_indention(gf, rho, a);
+
+        auto f_e = [&](real t)
+        {
+            real arg = M_PI * (1.0 - t);
+            auto sin_val = std::sin(arg);
+            auto cos_val = std::cos(arg);
+            cmplx gamma = r * (1.0 + cos_val) + 1.0i * w * sin_val;
+            cmplx gamma_ = r * M_PI * sin_val - 1.0i * w * M_PI * cos_val;
+            return f(gamma) * gamma_;
+        };
+
         using boost::math::quadrature::gauss_kronrod;
-        unsigned max_depth = 15;
+        auto val = gauss_kronrod<real, 15>::integrate(f_e, 0, 1, 5);
 
-        auto f_1 = [&](real t)
-        {
-            return f(z * t);
-        };
-        auto val_1 = gauss_kronrod<real, 15>::integrate(f_1, 0, 1, max_depth);
-
-        auto f_2 = [&](real t)
-        {
-            return f(z * (1 - t));
-        };
-        auto val_2 = gauss_kronrod<real, 15>::integrate(f_2, 0, 1, max_depth);
-
-        return val_1 + val_2;
+        return val;
     }
 
     cmplx eval_tail(const SpectralGF &gf,
@@ -98,7 +111,7 @@ namespace mthesis::si
 
         auto a = get_a(gf.lm);
 
-        auto head = eval_head_rooftop(gf, nu, rho, a);
+        auto head = eval_head_elliplis(gf, nu, rho, a);
         auto tail = eval_tail(gf, nu, rho, a, pe_params);
 
         return (head + tail) / (2.0 * M_PI);

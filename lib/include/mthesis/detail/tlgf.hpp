@@ -125,6 +125,12 @@ namespace mthesis::tlgf
               std::function<cmplx(cmplx, cmplx)> pm_operator,
               const Internals &d);
 
+    cmplx V_i_base_generic(const LayeredMedium &lm,
+                           real z,
+                           real z_,
+                           const Internals &d,
+                           bool direct_term);
+
     cmplx V_i_base(const LayeredMedium &lm,
                    real z,
                    real z_,

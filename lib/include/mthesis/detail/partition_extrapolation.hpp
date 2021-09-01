@@ -2,7 +2,6 @@
 #define MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
 
 #include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/spectral_gf.hpp>
 #include <mthesis/detail/pe_params.hpp>
 
 namespace mthesis::si::pe

@@ -18,11 +18,11 @@ namespace mthesis::sgf
                               EmMode mode,
                               bool direct_term);
 
-    si::SpectralGF lm_get_generic_spectral_gf(const LayeredMedium &lm,
-                                              const VectorR3 &r,
-                                              const VectorR3 &r_,
-                                              EmMode mode,
-                                              bool direct_term);
+    const si::SpectralGF lm_get_generic_spectral_gf(const LayeredMedium &lm,
+                                                    const VectorR3 &r,
+                                                    const VectorR3 &r_,
+                                                    EmMode mode,
+                                                    bool direct_term);
 
     cmplx lm_generic_spatial(const LayeredMedium &lm,
                              const VectorR3 &r,
