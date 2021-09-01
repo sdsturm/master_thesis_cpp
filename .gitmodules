@@ -1,0 +1,6 @@
+[submodule "submodules/complex_bessel"]
+	path = submodules/complex_bessel
+	url = https://github.com/joeydumont/complex_bessel.git
+[submodule "submodules/gnuplot-iostream"]
+	path = submodules/gnuplot-iostream
+	url = https://github.com/dstahlke/gnuplot-iostream.git
