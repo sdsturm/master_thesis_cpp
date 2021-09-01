@@ -10,6 +10,8 @@ find_package(GSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS iostreams system filesystem)
 find_package(Armadillo REQUIRED)
 
+set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
+
 include_directories(./lib/include)
 
 add_subdirectory(./submodules)

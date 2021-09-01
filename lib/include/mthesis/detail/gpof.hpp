@@ -33,7 +33,7 @@ namespace mthesis
 
     std::vector<ComplexExponential> gpof(const std::vector<cmplx> &y,
                                          real d_t,
-                                         GPOFParams params = GPOFParams());
+                                         const GPOFParams params = GPOFParams());
 
     std::vector<cmplx> reconstruct_signal(std::vector<ComplexExponential> &ce,
                                           double d_t,

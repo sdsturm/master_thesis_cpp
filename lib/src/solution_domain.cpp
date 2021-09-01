@@ -12,6 +12,7 @@ namespace mthesis
           k_0(omega / GSL_CONST_MKSA_SPEED_OF_LIGHT),
           lambda_0(2.0 * M_PI / k_0)
     {
+        assert(f > 0);
     }
 
     Medium::Medium(const FrequencyDomain &fd, cmplx eps_r, cmplx mu_r)
@@ -23,6 +24,12 @@ namespace mthesis
           k(fd.omega * std::sqrt(eps * mu)),
           eta(sqrt(mu / eps))
     {
+        assert(std::isfinite(std::abs(eps_r)));
+        assert(std::isfinite(std::abs(mu_r)));
+        assert(eps_r.real() > 0.0);
+        assert(mu_r.imag() <= 0.0);
+        assert(mu_r.real() > 0.0);
+        assert(mu_r.imag() <= 0.0);
     }
 
     cmplx cmplx_permittivity(const FrequencyDomain &fd, real eps_r, real sigma)
@@ -34,6 +41,7 @@ namespace mthesis
     Vacuum::Vacuum(const FrequencyDomain &fd) : Medium(fd, 1.0, 1.0)
     {
     }
+
     std::vector<real> layer_thicknesses(const std::vector<real> &in)
     {
         std::vector<real> ans(in.size() - 1);
@@ -42,7 +50,6 @@ namespace mthesis
             assert(in[i] > in[i - 1]);
             ans[i - 1] = in[i] - in[i - 1];
         }
-
         return ans;
     }
 
@@ -57,6 +64,14 @@ namespace mthesis
           bottom_bc(bottom_bc),
           top_bc(top_bc)
     {
+        if (top_bc == BC::open)
+            assert(std::isinf(z.back()));
+
+        if (bottom_bc == BC::open)
+            assert(std::isinf(z.front()));
+
+        for (size_t n = 1; n < d.size() - 1; n++)
+            assert(std::isfinite(d[n]));
     }
 
     int LayeredMedium::identify_layer(real z) const

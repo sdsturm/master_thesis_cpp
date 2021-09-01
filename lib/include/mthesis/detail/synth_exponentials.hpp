@@ -7,25 +7,25 @@
 
 namespace mthesis
 {
-    class SynthExponentials
+    struct SynthExponentials
     {
-    private:
         unsigned N;
         double d_t;
         std::vector<double> t;
         std::vector<cmplx> y;
         std::vector<ComplexExponential> ce;
 
-    public:
         SynthExponentials(unsigned M, unsigned N, double oversampling)
             : N(N), t(N), y(N)
         {
             constexpr double f_max = 30;
             double f_s = f_max * oversampling;
-            double d_t = 1.0 / f_s;
+            d_t = 1.0 / f_s;
 
             for (unsigned n = 0; n < N; n++)
-                this->y[n] = n * d_t;
+            {
+                t[n] = n * d_t;
+            }
 
             std::random_device dev;
             std::mt19937 gen(dev());
@@ -40,7 +40,7 @@ namespace mthesis
                 A[m] = dist_A(gen);
                 alpha[m] = dist_alpha(gen);
                 f[m] = dist_f(gen);
-                theta[m] =dist_theta(gen);
+                theta[m] = dist_theta(gen);
             }
             f.front() = 0.0;
 
@@ -49,17 +49,11 @@ namespace mthesis
             {
                 cmplx amplitude = A[m] * std::exp(1.0i * theta[m]);
                 cmplx exponent = alpha[m] + 2.0i * M_PI * f[m];
-                this->ce.emplace_back(amplitude, exponent);
+                ce.emplace_back(amplitude, exponent);
             }
 
-            this->y = reconstruct_signal(this->ce, this->d_t, this->N);
+            y = reconstruct_signal(this->ce, this->d_t, this->N);
         }
-
-        unsigned get_N() const { return N; }
-        unsigned get_M() const { return ce.size(); }
-        double get_d_t() const { return d_t; }
-        std::vector<double> get_t() const { return t; }
-        std::vector<cmplx> get_y() const { return y; }
     };
 
 } // namespace mthesis

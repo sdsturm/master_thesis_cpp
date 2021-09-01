@@ -27,7 +27,7 @@ namespace mthesis
     template <typename T1, typename T2>
     real calc_rel_err_db(T1 num, T2 ref)
     {
-        return 10.0 * std::log10(calc_rel_err(num, ref));
+        return 20.0 * std::log10(calc_rel_err(num, ref));
     }
 }
 

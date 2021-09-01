@@ -8,7 +8,7 @@ namespace mthesis
 {
     std::vector<ComplexExponential> gpof(const std::vector<cmplx> &y,
                                          real d_t,
-                                         GPOFParams params)
+                                         const GPOFParams params)
     {
         assert(d_t > 0.0);
         int N = y.size();
