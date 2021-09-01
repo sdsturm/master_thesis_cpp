@@ -6,6 +6,8 @@
 
 #include <functional>
 
+// Reference: Michalski2005, Section 7.
+
 namespace mthesis
 {
     enum class RiemannSheet
