@@ -6,9 +6,9 @@
 #include <cmath>
 #include <cassert>
 
-namespace mthesis
+namespace mthesis::si
 {
-    cmplx si_head(const SpectralGF &gf, real nu, real rho, real a)
+    cmplx eval_head_rooftop(const SpectralGF &gf, real nu, real rho, real a)
     {
         real w = 1.0 / rho;  // Detour width.
         cmplx z(a / 2.0, w); // Waypoint of roof-like detour.
@@ -37,37 +37,37 @@ namespace mthesis
         return val_1 + val_2;
     }
 
-    cmplx si_tail(const SpectralGF &gf,
-                  real nu,
-                  real rho,
-                  real a,
-                  PEParams params)
+    cmplx eval_tail(const SpectralGF &gf,
+                    real nu,
+                    real rho,
+                    real a,
+                    pe::Params params)
     {
         if (std::isfinite(gf.alpha) && std::isfinite(gf.zeta))
         {
-            return pe_mosig_michalski(gf, nu, rho, a, params);
+            return pe::mosig_michalski(gf, nu, rho, a, params);
         }
         else
         {
-            return pe_levin_sidi(gf, nu, rho, a, params);
+            return pe::levin_sidi(gf, nu, rho, a, params);
         }
     }
 
-    cmplx si_sip(const SpectralGF &gf,
-                 real nu,
-                 real rho,
-                 real a,
-                 PEParams pe_params)
+    cmplx eval_along_sip(const SpectralGF &gf,
+                         real nu,
+                         real rho,
+                         real a,
+                         pe::Params params)
     {
         if (rho == 0.0 && nu != 0.0)
         {
             return 0.0;
         }
 
-        auto head = si_head(gf, nu, rho, a);
-        auto tail = si_tail(gf, nu, rho, a, pe_params);
+        auto head = eval_head_rooftop(gf, nu, rho, a);
+        auto tail = eval_tail(gf, nu, rho, a, params);
 
-        return head + tail;
+        return (head + tail) / (2.0 * M_PI);
     }
 
-} // namespace mthesis
+} // namespace mthesis::si

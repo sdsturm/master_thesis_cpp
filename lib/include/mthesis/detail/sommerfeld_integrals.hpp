@@ -1,5 +1,5 @@
-#ifndef MTHESSI_SOMMERFELD_INTEGRALS_HPP
-#define MTHESSI_SOMMERFELD_INTEGRALS_HPP
+#ifndef MTHESSI_SI_SOMMERFELD_INTEGRALS_HPP
+#define MTHESSI_SI_SOMMERFELD_INTEGRALS_HPP
 
 #include <mthesis/detail/definitions.hpp>
 #include <mthesis/detail/solution_domain.hpp>
@@ -8,22 +8,22 @@
 
 #include <functional>
 
-namespace mthesis
+namespace mthesis::si
 {
-    cmplx si_head(const SpectralGF &gf, real nu, real rho, real a);
+    cmplx eval_head_rooftop(const SpectralGF &gf, real nu, real rho, real a);
 
-    cmplx si_tail(const SpectralGF &gf,
-                  real nu,
-                  real rho,
-                  real a,
-                  PEParams params);
+    cmplx eval_tail(const SpectralGF &gf,
+                    real nu,
+                    real rho,
+                    real a,
+                    pe::Params params);
 
-    cmplx si_sip(const SpectralGF &gf,
-                 real nu,
-                 real rho,
-                 real a,
-                 PEParams pe_params);
+    cmplx eval_along_sip(const SpectralGF &gf,
+                         real nu,
+                         real rho,
+                         real a,
+                         pe::Params params);
 
-} // namespace mthesis
+} // namespace mthesis::si
 
 #endif

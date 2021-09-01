@@ -4,6 +4,7 @@
 #include <armadillo>
 
 #include <complex>
+#include <array>
 
 namespace mthesis
 {
@@ -11,6 +12,8 @@ namespace mthesis
     using cmplx = std::complex<real>;
     using VectorR3 = arma::vec3;
     using VectorC3 = arma::cx_vec3;
+
+    using CmplxExp = std::array<cmplx, 2>;
 
     enum class EmMode
     {

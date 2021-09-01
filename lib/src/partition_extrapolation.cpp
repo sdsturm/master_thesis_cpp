@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-namespace mthesis
+namespace mthesis::si::pe
 {
     double mc_mahon(double nu, unsigned m)
     {
@@ -164,7 +164,7 @@ namespace mthesis
     cmplx levin_sidi_core(std::function<cmplx(real)> f,
                           double rho,
                           double a,
-                          PEParams params)
+                          Params params)
     {
         auto xi = get_xi(a, rho, params.max_intervals);
         std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
@@ -200,11 +200,11 @@ namespace mthesis
         return std::numeric_limits<real>::quiet_NaN();
     }
 
-    cmplx pe_levin_sidi(const SpectralGF &gf,
-                        real nu,
-                        real rho,
-                        real a,
-                        PEParams params)
+    cmplx levin_sidi(const SpectralGF &gf,
+                     real nu,
+                     real rho,
+                     real a,
+                     Params params)
     {
         double a_pe_start = get_first_zero(nu, a, rho);
 
@@ -242,7 +242,7 @@ namespace mthesis
                                double a,
                                double alpha,
                                double zeta,
-                               PEParams params)
+                               Params params)
     {
         auto xi = get_xi(a, rho, params.max_intervals);
         std::vector<cmplx> R(xi.size() - 1);
@@ -283,11 +283,11 @@ namespace mthesis
         return std::numeric_limits<real>::quiet_NaN();
     }
 
-    cmplx pe_mosig_michalski(const SpectralGF &gf,
-                             real nu,
-                             real rho,
-                             real a,
-                             PEParams params)
+    cmplx mosig_michalski(const SpectralGF &gf,
+                          real nu,
+                          real rho,
+                          real a,
+                          Params params)
     {
         double a_pe_start = get_first_zero(nu, a, rho);
 
@@ -303,4 +303,4 @@ namespace mthesis
         return gap + tail;
     }
 
-} // namespace mthesis
+} // namespace mthesis::si::pe

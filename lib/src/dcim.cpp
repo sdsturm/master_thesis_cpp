@@ -1,6 +1,6 @@
 #include <mthesis/detail/dcim.hpp>
 
-namespace mthesis
+namespace mthesis::dcim
 {
     
-} // namespace mthesis
+} // namespace mthesis::dcim

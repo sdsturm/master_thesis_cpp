@@ -1,12 +1,12 @@
-#ifndef MTHESIS_SPECTRAL_GF_HPP
-#define MTHESIS_SPECTRAL_GF_HPP
+#ifndef MTHESIS_SI_SPECTRAL_GF_HPP
+#define MTHESIS_SI_SPECTRAL_GF_HPP
 
 #include <mthesis/detail/definitions.hpp>
 #include <mthesis/detail/solution_domain.hpp>
 
 #include <functional>
 
-namespace mthesis
+namespace mthesis::si
 {
     struct SpectralGF
     {
@@ -33,6 +33,6 @@ namespace mthesis
 
     cmplx integrand_eip(const SpectralGF &gf, double nu, real rho, cmplx k_rho);
 
-} // namespace mthesis
+} // namespace mthesis::si
 
 #endif

@@ -5,7 +5,7 @@
 
 #include <random>
 
-namespace mthesis
+namespace mthesis::gpof
 {
     struct SynthExponentials
     {
@@ -13,7 +13,7 @@ namespace mthesis
         double d_t;
         std::vector<double> t;
         std::vector<cmplx> y;
-        std::vector<ComplexExponential> ce;
+        std::vector<CmplxExp> ce;
 
         SynthExponentials(unsigned M, unsigned N, double oversampling)
             : N(N), t(N), y(N)
@@ -47,15 +47,15 @@ namespace mthesis
             using std::complex_literals::operator""i;
             for (size_t m = 0; m < M; m++)
             {
-                cmplx amplitude = A[m] * std::exp(1.0i * theta[m]);
-                cmplx exponent = alpha[m] + 2.0i * M_PI * f[m];
-                ce.emplace_back(amplitude, exponent);
+                cmplx b = A[m] * std::exp(1.0i * theta[m]);
+                cmplx beta = alpha[m] + 2.0i * M_PI * f[m];
+                ce.push_back(CmplxExp{b, beta});
             }
 
-            y = reconstruct_signal(this->ce, this->d_t, this->N);
+            y = reconstruct_signal(ce, d_t, N);
         }
     };
 
-} // namespace mthesis
+} // namespace mthesis::gpof
 
 #endif

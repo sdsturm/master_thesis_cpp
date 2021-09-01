@@ -1,9 +1,9 @@
-#ifndef MTHESIS_DCIM_HPP
-#define MTHESIS_DCIM_HPP
+#ifndef MTHESIS_DCIM_DCIM_HPP
+#define MTHESIS_DCIM_DCIM_HPP
 
-namespace mthesis
+namespace mthesis::dcim
 {
     
-} // namespace mthesis
+} // namespace mthesis::dcim
 
 #endif

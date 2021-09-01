@@ -3,7 +3,7 @@
 #include <boost/math/special_functions/bessel.hpp>
 #include <complex_bessel.h>
 
-namespace mthesis
+namespace mthesis::si
 {
     std::vector<cmplx> get_branch_points(const LayeredMedium &lm)
     {
@@ -46,5 +46,5 @@ namespace mthesis
           swp(identify_poles ? identify_swp(f) : std::vector<cmplx>(0))
     {
     }
-    
-} // namespace mthesis
+
+} // namespace mthesis::si

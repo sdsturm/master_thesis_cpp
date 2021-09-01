@@ -1,11 +1,11 @@
-#ifndef MTHESIS_PARTITION_EXTRAPOLATION_HPP
-#define MTHESIS_PARTITION_EXTRAPOLATION_HPP
+#ifndef MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
+#define MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
 
 #include <mthesis/detail/definitions.hpp>
 #include <mthesis/detail/spectral_gf.hpp>
 #include <mthesis/detail/pe_params.hpp>
 
-namespace mthesis
+namespace mthesis::si::pe
 {
     double mc_mahon(double nu, unsigned m);
 
@@ -29,13 +29,13 @@ namespace mthesis
     cmplx levin_sidi_core(std::function<cmplx(real)> f,
                           double rho,
                           double a,
-                          PEParams params);
+                          Params params);
 
-    cmplx pe_levin_sidi(const SpectralGF &gf,
-                        real nu,
-                        real rho,
-                        real a,
-                        PEParams params);
+    cmplx levin_sidi(const SpectralGF &gf,
+                     real nu,
+                     real rho,
+                     real a,
+                     Params params);
 
     cmplx mosig_michalski_extrap(double mu,
                                  int k,
@@ -49,14 +49,14 @@ namespace mthesis
                                double a,
                                double alpha,
                                double zeta,
-                               PEParams params);
+                               Params params);
 
-    cmplx pe_mosig_michalski(const SpectralGF &gf,
-                             real nu,
-                             real rho,
-                             real a,
-                             PEParams params);
+    cmplx mosig_michalski(const SpectralGF &gf,
+                          real nu,
+                          real rho,
+                          real a,
+                          Params params);
 
-} // namespace mthesis
+} // namespace mthesis::si::pe
 
 #endif

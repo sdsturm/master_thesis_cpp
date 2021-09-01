@@ -4,11 +4,37 @@
 
 #include <cassert>
 
-namespace mthesis
+namespace mthesis::gpof
 {
-    std::vector<ComplexExponential> gpof(const std::vector<cmplx> &y,
-                                         real d_t,
-                                         const GPOFParams params)
+    Params::Params() : tol(1e-6), M(-1), M_max(10), L(-1) {}
+
+    void Params::set_tol(double tol)
+    {
+        assert(tol > 0.0);
+        this->tol = tol;
+    }
+
+    void Params::set_M(int M)
+    {
+        assert(M > 0);
+        this->M = M;
+    }
+
+    void Params::set_M_max(int M_max)
+    {
+        assert(M_max > 0);
+        this->M_max = M_max;
+    }
+
+    void Params::set_L(int L)
+    {
+        assert(L > 0);
+        this->L = L;
+    }
+
+    std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
+                               real d_t,
+                               const Params params)
     {
         assert(d_t > 0.0);
         int N = y.size();
@@ -84,14 +110,14 @@ namespace mthesis
         // Postprocessing.
         assert(b.n_elem == z.n_elem);
 
-        std::vector<ComplexExponential> ans;
+        std::vector<CmplxExp> ce;
         for (arma::uword i = 0; i < z.n_elem; i++)
-            ans.emplace_back(b(i), std::log(z(i)) / d_t);
+            ce.push_back(CmplxExp{b(i), std::log(z(i)) / d_t});
 
-        return ans;
+        return ce;
     }
 
-    std::vector<cmplx> reconstruct_signal(std::vector<ComplexExponential> &ce,
+    std::vector<cmplx> reconstruct_signal(std::vector<CmplxExp> &ce,
                                           double d_t,
                                           unsigned N)
     {
@@ -102,10 +128,10 @@ namespace mthesis
             for (const auto &elem : ce)
             {
                 double t = n * d_t;
-                y[n] += elem.amplitude * std::exp(elem.exponent * t);
+                y[n] += elem[0] * std::exp(elem[1] * t);
             }
         }
         return y;
     }
 
-} // namespace mthesis
+} // namespace mthesis::gpof

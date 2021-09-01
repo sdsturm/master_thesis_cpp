@@ -17,12 +17,13 @@ int main()
     unsigned N = 500;
     double oversampling = 30;
 
-    auto sig = SynthExponentials(M, N, oversampling);
+    auto sig = gpof::SynthExponentials(M, N, oversampling);
 
-    auto parms = GPOFParams(1e-6, M);
-    auto ce = gpof(sig.y, sig.d_t, parms);
+    auto params = gpof::Params();
+    params.set_M(M);
+    auto ce = gpof::gpof(sig.y, sig.d_t, params);
 
-    auto y_rec = reconstruct_signal(ce, sig.d_t, sig.N);
+    auto y_rec = gpof::reconstruct_signal(ce, sig.d_t, sig.N);
 
     std::vector<double> rel_err_db(sig.N);
     std::vector<real> y_true_re(sig.N), y_true_im(sig.N), y_gpof_re(sig.N), y_gpof_im(sig.N);
@@ -36,7 +37,6 @@ int main()
     }
 
     printf("Maximum error: %.2f dB\n", *std::max_element(rel_err_db.begin(), rel_err_db.end()));
-
 
     Gnuplot gp;
     gp << "set multiplot layout 3,1\n";
