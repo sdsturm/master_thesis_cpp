@@ -296,9 +296,10 @@ namespace mthesis
         cmplx t1 = sign * std::exp(-1.0i * d.k_z[n] * std::abs(dist));
 
         cmplx t2 = 0.0;
-        for (int s = 0; s < 4; s++)
+        for (int a = 0; a < 4; a++)
         {
-            t2 += std::pow(-1, s) * R[s] * std::exp(-1.0i * d.k_z[n] * zeta[s]);
+            int s = a + 1;
+            t2 += std::pow(-1, s) * R[a] * std::exp(-1.0i * d.k_z[n] * zeta[a]);
         }
         t2 /= D;
 

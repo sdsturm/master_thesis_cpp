@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 find_package(GSL REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS iostreams system filesystem)
 find_package(Armadillo REQUIRED)
 
 include_directories(./lib/include)

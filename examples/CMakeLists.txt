@@ -8,4 +8,4 @@ add_executable(gpof_synth_signal gpof_synth_signal.cpp)
 target_link_libraries(gpof_synth_signal mthesis-lib)
 
 add_executable(tlgf_hs tlgf_hs.cpp)
-target_link_libraries(tlgf_hs mthesis-lib)
+target_link_libraries(tlgf_hs mthesis-lib Boost::iostreams Boost::system Boost::filesystem)
