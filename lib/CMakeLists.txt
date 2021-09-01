@@ -11,8 +11,8 @@ add_library(${PROJECT_NAME}
     ./src/spectral_gf.cpp
     ./src/partition_extrapolation.cpp
     ./src/sommerfeld_integrals.cpp
-    ./src/scalar_gf.cpp
-    ./src/dyadic_gf.cpp
+    ./src/sgf.cpp
+    ./src/dgf.cpp
     ./src/gpof.cpp
     ./src/dcim.cpp
     )

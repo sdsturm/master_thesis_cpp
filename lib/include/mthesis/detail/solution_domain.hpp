@@ -80,6 +80,16 @@ namespace mthesis
         HalfSpacePMC(const FrequencyDomain &fd);
     };
 
+    struct LayeredMediumCoords
+    {
+        real rho;
+        real phi;
+        real z;
+        real z_;
+
+        LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_);
+    };
+
 } // namespace mthesis
 
 #endif

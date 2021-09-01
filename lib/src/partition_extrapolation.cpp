@@ -200,18 +200,13 @@ namespace mthesis::si::pe
         return std::numeric_limits<real>::quiet_NaN();
     }
 
-    cmplx levin_sidi(const SpectralGF &gf,
+    cmplx levin_sidi(std::function<cmplx(real)> f,
                      real nu,
                      real rho,
                      real a,
                      Params params)
     {
         double a_pe_start = get_first_zero(nu, a, rho);
-
-        auto f = [&](real k_rho)
-        {
-            return integrand_sip(gf, nu, rho, k_rho);
-        };
 
         cmplx gap = integrate_gap(f, a, a_pe_start);
 
@@ -283,7 +278,9 @@ namespace mthesis::si::pe
         return std::numeric_limits<real>::quiet_NaN();
     }
 
-    cmplx mosig_michalski(const SpectralGF &gf,
+    cmplx mosig_michalski(std::function<cmplx(real)> f,
+                          real alpha,
+                          real zeta,
                           real nu,
                           real rho,
                           real a,
@@ -291,14 +288,9 @@ namespace mthesis::si::pe
     {
         double a_pe_start = get_first_zero(nu, a, rho);
 
-        auto f = [&](real k_rho)
-        {
-            return integrand_sip(gf, nu, rho, k_rho);
-        };
-
         cmplx gap = integrate_gap(f, a, a_pe_start);
 
-        cmplx tail = mosig_michalski_core(f, rho, a, gf.alpha, gf.zeta, params);
+        cmplx tail = mosig_michalski_core(f, rho, a, alpha, zeta, params);
 
         return gap + tail;
     }

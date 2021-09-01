@@ -10,6 +10,9 @@
 #include <mthesis/detail/spectral_gf.hpp>
 #include <mthesis/detail/sommerfeld_integrals.hpp>
 
+#include <mthesis/detail/sgf.hpp>
+#include <mthesis/detail/dgf.hpp>
+
 #include <mthesis/detail/gpof.hpp>
 #include <mthesis/detail/dcim.hpp>
 

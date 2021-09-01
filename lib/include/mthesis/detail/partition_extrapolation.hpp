@@ -31,7 +31,7 @@ namespace mthesis::si::pe
                           double a,
                           Params params);
 
-    cmplx levin_sidi(const SpectralGF &gf,
+    cmplx levin_sidi(std::function<cmplx(real)> f,
                      real nu,
                      real rho,
                      real a,
@@ -51,7 +51,9 @@ namespace mthesis::si::pe
                                double zeta,
                                Params params);
 
-    cmplx mosig_michalski(const SpectralGF &gf,
+    cmplx mosig_michalski(std::function<cmplx(real)> f,
+                          real alpha,
+                          real zeta,
                           real nu,
                           real rho,
                           real a,

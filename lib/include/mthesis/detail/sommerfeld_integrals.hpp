@@ -18,11 +18,12 @@ namespace mthesis::si
                     real a,
                     pe::Params params);
 
+    real get_a(const LayeredMedium &lm);
+
     cmplx eval_along_sip(const SpectralGF &gf,
                          real nu,
                          real rho,
-                         real a,
-                         pe::Params params);
+                         pe::Params pe_params = pe::Params());
 
 } // namespace mthesis::si
 

@@ -72,17 +72,24 @@ namespace mthesis::tlgf
                  int n,
                  const Internals &d);
 
-    cmplx V_i_src_layer(const LayeredMedium &lm,
-                        real z,
-                        real z_,
-                        int n,
-                        const Internals &d);
+    cmplx V_i_src_generic(const LayeredMedium &lm,
+                          real z,
+                          real z_,
+                          int n,
+                          const Internals &d,
+                          bool direct_term);
 
-    cmplx I_i_src_layer(const LayeredMedium &lm,
-                        real z,
-                        real z_,
-                        int n,
-                        const Internals &d);
+    cmplx V_i_src(const LayeredMedium &lm,
+                  real z,
+                  real z_,
+                  int n,
+                  const Internals &d);
+
+    cmplx I_i_src(const LayeredMedium &lm,
+                  real z,
+                  real z_,
+                  int n,
+                  const Internals &d);
 
     cmplx calc_tau_ud(int n,
                       const std::vector<cmplx> &Gamma_ud,

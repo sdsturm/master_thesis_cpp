@@ -248,33 +248,48 @@ namespace mthesis::tlgf
         return D;
     }
 
-    cmplx V_i_src_layer(const LayeredMedium &lm,
-                        real z,
-                        real z_,
-                        int n,
-                        const Internals &d)
+    cmplx V_i_src_generic(const LayeredMedium &lm,
+                          real z,
+                          real z_,
+                          int n,
+                          const Internals &d,
+                          bool direct_term)
     {
         using std::complex_literals::operator""i;
         auto R = calc_R(d, n);
         auto zeta = calc_zeta(lm, z, z_, n);
         auto D = calc_D(lm, n, d);
 
-        cmplx t1 = std::exp(-1.0i * d.k_z[n] * std::abs(z - z_));
+        cmplx t1;
+        if (direct_term)
+            t1 = std::exp(-1.0i * d.k_z[n] * std::abs(z - z_));
+        else
+            t1 = 0.0;
+
         cmplx t2 = 0.0;
         for (int s = 0; s < 4; s++)
-        {
             t2 += R[s] * std::exp(-1.0i * d.k_z[n] * zeta[s]);
-        }
         t2 /= D;
 
-        return d.Z[n] / 2.0 * (t1 + t2);
+        return t1 + t2;
     }
 
-    cmplx I_i_src_layer(const LayeredMedium &lm,
-                        real z,
-                        real z_,
-                        int n,
-                        const Internals &d)
+    cmplx V_i_src(const LayeredMedium &lm,
+                  real z,
+                  real z_,
+                  int n,
+                  const Internals &d)
+    {
+        bool direct_term = true;
+        cmplx val = V_i_src_generic(lm, z, z_, n, d, direct_term);
+        return d.Z[n] / 2.0 * val;
+    }
+
+    cmplx I_i_src(const LayeredMedium &lm,
+                  real z,
+                  real z_,
+                  int n,
+                  const Internals &d)
     {
         using std::complex_literals::operator""i;
         auto R = calc_R(d, n);
@@ -411,23 +426,21 @@ namespace mthesis::tlgf
         auto n = lm.identify_layer(z_);
 
         auto pm_operator = [](cmplx a, cmplx b)
-        {
-            return a + b;
-        };
+        { return a + b; };
 
         cmplx val;
         if (m == n)
         {
-            val = V_i_src_layer(lm, z, z_, n, d);
+            val = V_i_src(lm, z, z_, n, d);
         }
         else if (m < n)
         {
-            val = V_i_src_layer(lm, lm.z[n], z_, n, d) *
+            val = V_i_src(lm, lm.z[n], z_, n, d) *
                   T_d(lm, z, m, n, pm_operator, d);
         }
         else if (m > n)
         {
-            val = V_i_src_layer(lm, lm.z[n + 1], z_, n, d) *
+            val = V_i_src(lm, lm.z[n + 1], z_, n, d) *
                   T_u(lm, z, m, n, pm_operator, d);
         }
 
@@ -444,23 +457,21 @@ namespace mthesis::tlgf
         auto n = lm.identify_layer(z_);
 
         auto pm_operator = [](cmplx a, cmplx b)
-        {
-            return a - b;
-        };
+        { return a - b; };
 
         cmplx val;
         if (m == n)
         {
-            val = I_i_src_layer(lm, z, z_, n, d);
+            val = I_i_src(lm, z, z_, n, d);
         }
         else if (m < n)
         {
-            val = V_i_src_layer(lm, lm.z[n], z_, n, d) *
+            val = V_i_src(lm, lm.z[n], z_, n, d) *
                   T_d(lm, z, m, n, pm_operator, d) / (-d.Z[m]);
         }
         else if (m > n)
         {
-            val = V_i_src_layer(lm, lm.z[n + 1], z_, n, d) *
+            val = V_i_src(lm, lm.z[n + 1], z_, n, d) *
                   T_u(lm, z, m, n, pm_operator, d) / d.Z[m];
         }
 
