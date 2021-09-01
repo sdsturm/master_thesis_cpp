@@ -8,7 +8,7 @@
 
 // Reference: Michalski2005, Section 7.
 
-namespace mthesis
+namespace mthesis::tlgf
 {
     enum class RiemannSheet
     {
@@ -129,29 +129,29 @@ namespace mthesis
                    const Internals &d);
 
     cmplx V_i(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type);
 
     cmplx I_i(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type);
 
     cmplx I_v(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type);
 
     cmplx V_v(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type);
 
-} // namespace mthesis
+} // namespace mthesis::tlgf
 
 #endif

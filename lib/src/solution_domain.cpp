@@ -42,15 +42,15 @@ namespace mthesis
     {
     }
 
-    std::vector<real> layer_thicknesses(const std::vector<real> &in)
+    std::vector<real> layer_thicknesses(const std::vector<real> &z_interfaces)
     {
-        std::vector<real> ans(in.size() - 1);
-        for (size_t i = 1; i < in.size(); i++)
+        std::vector<real> d(z_interfaces.size() - 1);
+        for (size_t i = 1; i < z_interfaces.size(); i++)
         {
-            assert(in[i] > in[i - 1]);
-            ans[i - 1] = in[i] - in[i - 1];
+            assert(z_interfaces[i] > z_interfaces[i - 1]);
+            d[i - 1] = z_interfaces[i] - z_interfaces[i - 1];
         }
-        return ans;
+        return d;
     }
 
     LayeredMedium::LayeredMedium(const FrequencyDomain &fd,
@@ -64,6 +64,9 @@ namespace mthesis
           bottom_bc(bottom_bc),
           top_bc(top_bc)
     {
+        assert(z_interfaces.size() >= 2);
+        assert(z_interfaces.size() == media.size() + 1);
+
         if (top_bc == BC::open)
             assert(std::isinf(z.back()));
 

@@ -1,6 +1,6 @@
 #include <mthesis/detail/tlgf.hpp>
 
-namespace mthesis
+namespace mthesis::tlgf
 {
     void calc_k_z_select_sheet(std::vector<cmplx> &k_z,
                                RiemannSheet sheet)
@@ -468,47 +468,47 @@ namespace mthesis
     }
 
     cmplx V_i(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type)
     {
         bool dual_solution = false;
-        auto d = Internals(lm, k_ρ, type, dual_solution);
+        auto d = Internals(lm, k_rho, type, dual_solution);
         return V_i_base(lm, z, z_, d);
     }
 
     cmplx I_i(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type)
     {
         bool dual_solution = false;
-        auto d = Internals(lm, k_ρ, type, dual_solution);
+        auto d = Internals(lm, k_rho, type, dual_solution);
         return I_i_base(lm, z, z_, d);
     }
 
     cmplx I_v(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type)
     {
         bool dual_solution = true;
-        auto d = Internals(lm, k_ρ, type, dual_solution);
+        auto d = Internals(lm, k_rho, type, dual_solution);
         return V_i_base(lm, z, z_, d);
     }
 
     cmplx V_v(const LayeredMedium &lm,
-              cmplx k_ρ,
+              cmplx k_rho,
               real z,
               real z_,
               EmMode type)
     {
         bool dual_solution = true;
-        auto d = Internals(lm, k_ρ, type, dual_solution);
+        auto d = Internals(lm, k_rho, type, dual_solution);
         return I_i_base(lm, z, z_, d);
     }
 
-} // namespace mthesis
+} // namespace mthesis::tlgf

@@ -45,7 +45,7 @@ namespace mthesis
         PMC
     };
 
-    std::vector<real> layer_thicknesses(const std::vector<real> &in);
+    std::vector<real> layer_thicknesses(const std::vector<real> &z_interfaces);
 
     struct LayeredMedium
     {

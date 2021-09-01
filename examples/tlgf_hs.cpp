@@ -30,8 +30,8 @@ int main()
 
     for (arma::uword n = 0; n < z.n_elem; n++)
     {
-        V(n) = V_i(hs, k_rho, z(n), z_, type);
-        I(n) = I_i(hs, k_rho, z(n), z_, type);
+        V(n) = tlgf::V_i(hs, k_rho, z(n), z_, type);
+        I(n) = tlgf::I_i(hs, k_rho, z(n), z_, type);
         Z_by_Z_0(n) = V(n) / I(n) / Z_0;
     }
 
