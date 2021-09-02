@@ -1,10 +1,10 @@
 #ifndef MTHESSI_SI_SOMMERFELD_INTEGRALS_HPP
 #define MTHESSI_SI_SOMMERFELD_INTEGRALS_HPP
 
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/solution_domain.hpp>
-#include <mthesis/detail/spectral_gf.hpp>
-#include <mthesis/detail/pe_params.hpp>
+#include <mthesis/definitions.hpp>
+#include <mthesis/solution_domain.hpp>
+#include <mthesis/spectral_gf.hpp>
+#include <mthesis/pe_params.hpp>
 
 #include <functional>
 

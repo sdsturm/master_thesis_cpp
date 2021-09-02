@@ -15,7 +15,7 @@ add_library(${PROJECT_NAME}
     ./src/dgf.cpp
     ./src/gpof.cpp
     ./src/dcim_utils.cpp
-    ./src/dcim.cpp
+    ./src/dcim_three_level_v3.cpp
     )
 target_link_libraries(${PROJECT_NAME}
     armadillo

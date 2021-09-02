@@ -1,4 +1,4 @@
-#include <mthesis/mthesis.hpp>
+#include <mthesis.hpp>
 
 #include <gsl/gsl_const_mksa.h>
 #include <armadillo>

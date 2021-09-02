@@ -7,6 +7,9 @@ target_link_libraries(tlgf_hs mthesis-lib ${GNUPLOT_IOSTREAM_LINK_LIBS})
 add_executable(generic_gf generic_gf.cpp)
 target_link_libraries(generic_gf mthesis-lib)
 
+add_executable(dcim_test dcim_test.cpp)
+target_link_libraries(dcim_test mthesis-lib)
+
 
 
 

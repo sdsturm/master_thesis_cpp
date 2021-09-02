@@ -1,4 +1,4 @@
-#include <mthesis/detail/dgf.hpp>
+#include <mthesis/dgf.hpp>
 
 namespace mthesis::dgf
 {

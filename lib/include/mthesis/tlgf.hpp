@@ -1,8 +1,8 @@
 #ifndef MTHESIS_TLGF_HPP
 #define MTHESIS_TLGF_HPP
 
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/solution_domain.hpp>
+#include <mthesis/definitions.hpp>
+#include <mthesis/solution_domain.hpp>
 
 #include <functional>
 

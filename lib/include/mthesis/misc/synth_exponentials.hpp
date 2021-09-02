@@ -1,7 +1,7 @@
 #ifndef MTHESIS_SYNTH_EXPONENTIALS_HPP
 #define MTHESIS_SYNTH_EXPONENTIALS_HPP
 
-#include <mthesis/detail/gpof.hpp>
+#include <mthesis/gpof.hpp>
 
 #include <random>
 

@@ -1,6 +1,5 @@
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/gpof.hpp>
-#include <mthesis/detail/synth_exponentials.hpp>
+#include <mthesis.hpp>
+#include <mthesis/misc/synth_exponentials.hpp>
 
 #include <armadillo>
 #include "./../submodules/gnuplot-iostream/gnuplot-iostream.h"

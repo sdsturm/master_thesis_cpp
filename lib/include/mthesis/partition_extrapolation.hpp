@@ -1,8 +1,8 @@
 #ifndef MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
 #define MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
 
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/pe_params.hpp>
+#include <mthesis/definitions.hpp>
+#include <mthesis/pe_params.hpp>
 
 namespace mthesis::si::pe
 {

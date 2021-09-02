@@ -1,4 +1,4 @@
-#include <mthesis/detail/tlgf.hpp>
+#include <mthesis/tlgf.hpp>
 
 namespace mthesis::tlgf
 {

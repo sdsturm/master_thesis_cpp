@@ -1,5 +1,5 @@
-#include <mthesis/detail/sommerfeld_integrals.hpp>
-#include <mthesis/detail/partition_extrapolation.hpp>
+#include <mthesis/sommerfeld_integrals.hpp>
+#include <mthesis/partition_extrapolation.hpp>
 
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 

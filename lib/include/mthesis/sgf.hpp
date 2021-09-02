@@ -1,10 +1,10 @@
 #ifndef MTHESIS_SGF_HPP
 #define MTHESIS_SGF_HPP
 
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/solution_domain.hpp>
-#include <mthesis/detail/tlgf.hpp>
-#include <mthesis/detail/spectral_gf.hpp>
+#include <mthesis/definitions.hpp>
+#include <mthesis/solution_domain.hpp>
+#include <mthesis/tlgf.hpp>
+#include <mthesis/spectral_gf.hpp>
 
 // Generic scalar Green's functions.
 namespace mthesis::sgf

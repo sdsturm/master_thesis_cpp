@@ -1,4 +1,4 @@
-#include <mthesis/detail/solution_domain.hpp>
+#include <mthesis/solution_domain.hpp>
 
 #include <gsl/gsl_const_mksa.h>
 

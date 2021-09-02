@@ -1,9 +1,9 @@
 #ifndef MTHESIS_DCIM_UTILS_HPP
 #define MTHESIS_DCIM_UTILS_HPP
 
-#include <mthesis/detail/definitions.hpp>
-#include <mthesis/detail/solution_domain.hpp>
-#include <mthesis/detail/spectral_gf.hpp>
+#include <mthesis/definitions.hpp>
+#include <mthesis/solution_domain.hpp>
+#include <mthesis/spectral_gf.hpp>
 
 #include <functional>
 

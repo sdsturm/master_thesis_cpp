@@ -1,4 +1,4 @@
-#include <mthesis/detail/spectral_gf.hpp>
+#include <mthesis/spectral_gf.hpp>
 
 #include <boost/math/special_functions/bessel.hpp>
 #include <complex_bessel.h>

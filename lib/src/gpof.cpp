@@ -1,4 +1,4 @@
-#include <mthesis/detail/gpof.hpp>
+#include <mthesis/gpof.hpp>
 
 #include <armadillo>
 

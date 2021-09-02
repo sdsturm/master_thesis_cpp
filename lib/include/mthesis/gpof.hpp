@@ -1,7 +1,7 @@
 #ifndef MTHESIS_GPOF_HPP
 #define MTHESIS_GPOF_HPP
 
-#include <mthesis/detail/definitions.hpp>
+#include <mthesis/definitions.hpp>
 
 #include <vector>
 #include <array>

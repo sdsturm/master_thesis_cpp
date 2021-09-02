@@ -1,4 +1,4 @@
-#include <mthesis/detail/dcim.hpp>
+#include <mthesis/dcim_three_level_v3.hpp>
 
 #include <cassert>
 

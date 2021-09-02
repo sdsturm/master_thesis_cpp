@@ -1,5 +1,5 @@
-#include <mthesis/detail/dcim_utils.hpp>
-#include <mthesis/detail/gpof.hpp>
+#include <mthesis/dcim_utils.hpp>
+#include <mthesis/gpof.hpp>
 
 #include <cassert>
 

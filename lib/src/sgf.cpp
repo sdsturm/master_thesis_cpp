@@ -1,5 +1,5 @@
-#include <mthesis/detail/sgf.hpp>
-#include <mthesis/detail/sommerfeld_integrals.hpp>
+#include <mthesis/sgf.hpp>
+#include <mthesis/sommerfeld_integrals.hpp>
 
 namespace mthesis::sgf
 {

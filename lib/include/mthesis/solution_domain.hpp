@@ -1,7 +1,7 @@
 #ifndef MTHESIS_SOLUTION_DOMAIN_HPP
 #define MTHESIS_SOLUTION_DOMAIN_HPP
 
-#include <mthesis/detail/definitions.hpp>
+#include <mthesis/definitions.hpp>
 
 #include <vector>
 
