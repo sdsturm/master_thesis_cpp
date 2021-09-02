@@ -18,7 +18,11 @@ add_library(${PROJECT_NAME}
     ./src/dcim_three_level_v3.cpp
     )
 
-set(BLA_VENDOR OpenBLAS)
+find_package(GSL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS iostreams system filesystem)
+find_package(Armadillo REQUIRED)
+
+set(BLA_VENDOR OpenBLAS) # Repacement for armadillo runtime library.
 find_package(BLAS)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ARMA_DONT_USE_WRAPPER)
@@ -26,6 +30,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC ARMA_DONT_USE_WRAPPER)
 target_link_libraries(${PROJECT_NAME}
     openblas    # Instead of armadillo runtime library.
     # armadillo
+    GSL::gsl GSL::gslcblas
     complex_bessel
     )
 
