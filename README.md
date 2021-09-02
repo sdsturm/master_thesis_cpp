@@ -14,6 +14,7 @@
 - [Boost](https://www.boost.org/) (only the header-only parts and `Boost::test`
 for the main library)
 - [Armadillo](http://arma.sourceforge.net/)
+- openBLAS (to link against instead of armadillo runtime library)
 - [GNU Scientific Library](https://www.gnu.org/software/gsl/)
 
 ### Submodules Dependencies
