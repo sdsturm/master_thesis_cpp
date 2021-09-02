@@ -60,7 +60,7 @@ namespace mthesis::gpof
         arma::cx_mat U;
         arma::vec s;
         arma::cx_mat V;
-        arma::svd_econ(U, s, V, Y, "right");
+        arma::svd_econ(U, s, V, Y, "right", "dc");
 
         // Determine model order.
         int M;

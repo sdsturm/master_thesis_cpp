@@ -87,10 +87,11 @@ namespace mthesis
 
     struct LayeredMediumCoords
     {
-        real rho;
-        real phi;
-        real z;
-        real z_;
+        const VectorR3 R;
+        const real rho;
+        const real phi;
+        const real z;
+        const real z_;
 
         LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_);
     };

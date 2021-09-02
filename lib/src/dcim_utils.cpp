@@ -113,7 +113,9 @@ namespace mthesis::dcim::utils
                 for (int j = 0; j < l - 1; j++)
                     y[i] -= eval_fun(ce_levels[j], sp[l].k_z_vals[i]);
             }
+            std::cout << "level " << l << "\n";
             auto ce_gpof = gpof::gpof(y, sp[l].d_t);
+            std::cout << "passed\n";
             ce_levels[l] = ct_funs[l](ce_gpof);
         }
         return ce_levels;
