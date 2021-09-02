@@ -14,6 +14,9 @@ set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
 
 include_directories(./lib/include)
 
+# Directory for data files to use in TikZ/PGFPlots.
+add_compile_definitions(MTHESIS_RESULTS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/results/")
+
 add_subdirectory(./submodules)
 add_subdirectory(./lib)
 add_subdirectory(./examples)

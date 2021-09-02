@@ -3,12 +3,18 @@
 #include <gsl/gsl_const_mksa.h>
 #include <armadillo>
 
+#include <filesystem>
+#include <iostream>
+
 #include "./../submodules/gnuplot-iostream/gnuplot-iostream.h"
 
 using namespace mthesis;
 
 int main()
 {
+    std::filesystem::path fpath(__FILE__);
+    std::cout << fpath.parent_path() << "\n";
+
     // Problem specification.
     auto fd = FrequencyDomain(GSL_CONST_MKSA_SPEED_OF_LIGHT / 1.0);
     auto eps_r = cmplx_permittivity(fd, 3, 10e-3);
