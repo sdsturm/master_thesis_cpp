@@ -2,6 +2,7 @@
 #define MTHESIS_SGF_HPP
 
 #include <mthesis/definitions.hpp>
+#include <mthesis/geometry.hpp>
 #include <mthesis/solution_domain.hpp>
 #include <mthesis/tlgf.hpp>
 #include <mthesis/spectral_gf.hpp>
