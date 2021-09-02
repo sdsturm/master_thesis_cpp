@@ -18,8 +18,14 @@ add_library(${PROJECT_NAME}
     ./src/dcim_three_level_v3.cpp
     )
 
+set(BLA_VENDOR OpenBLAS)
+find_package(BLAS)
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC ARMA_DONT_USE_WRAPPER)
+
 target_link_libraries(${PROJECT_NAME}
-    armadillo
+    openblas    # Instead of armadillo runtime library.
+    # armadillo
     complex_bessel
     )
 
