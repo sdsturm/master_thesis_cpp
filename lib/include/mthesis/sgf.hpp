@@ -7,28 +7,28 @@
 #include <mthesis/spectral_gf.hpp>
 
 // Generic scalar Green's functions.
-namespace mthesis::sgf
-{
-    cmplx free_space(const Medium &m, const VectorR3 &r, const VectorR3 &r_);
+namespace mthesis::sgf {
 
-    cmplx lm_generic_spectral(const LayeredMedium &lm,
-                              real z,
-                              real z_,
-                              cmplx k_rho,
-                              EmMode mode,
-                              bool direct_term);
+cmplx free_space(const Medium &m, const VectorR3 &r, const VectorR3 &r_);
 
-    const si::SpectralGF lm_get_generic_spectral_gf(const LayeredMedium &lm,
-                                                    const VectorR3 &r,
-                                                    const VectorR3 &r_,
-                                                    EmMode mode,
-                                                    bool direct_term);
+cmplx lm_generic_spectral(const LayeredMedium &lm,
+                          real z,
+                          real z_,
+                          cmplx k_rho,
+                          EmMode mode,
+                          bool direct_term);
 
-    cmplx lm_generic_spatial(const LayeredMedium &lm,
-                             const VectorR3 &r,
-                             const VectorR3 &r_,
-                             EmMode mode,
-                             bool direct_term);
+const si::SpectralGF lm_get_generic_spectral_gf(const LayeredMedium &lm,
+                                                const VectorR3 &r,
+                                                const VectorR3 &r_,
+                                                EmMode mode,
+                                                bool direct_term);
+
+cmplx lm_generic_spatial(const LayeredMedium &lm,
+                         const VectorR3 &r,
+                         const VectorR3 &r_,
+                         EmMode mode,
+                         bool direct_term);
 
 } // namespace mthesis::sgf
 

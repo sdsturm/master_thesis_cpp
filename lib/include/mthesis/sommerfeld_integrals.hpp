@@ -8,24 +8,24 @@
 
 #include <functional>
 
-namespace mthesis::si
-{
-    real calc_indention(const SpectralGF &gf, real rho, real a);
+namespace mthesis::si {
 
-    cmplx eval_head_elliplis(const SpectralGF &gf, real nu, real rho, real a);
+real calc_indention(const SpectralGF &gf, real rho, real a);
 
-    cmplx eval_tail(const SpectralGF &gf,
-                    real nu,
-                    real rho,
-                    real a,
-                    pe::Params params);
+cmplx eval_head_elliplis(const SpectralGF &gf, real nu, real rho, real a);
 
-    real get_a(const LayeredMedium &lm);
+cmplx eval_tail(const SpectralGF &gf,
+                real nu,
+                real rho,
+                real a,
+                pe::Params params);
 
-    cmplx eval_along_sip(const SpectralGF &gf,
-                         real nu,
-                         real rho,
-                         pe::Params pe_params = pe::Params());
+real get_a(const LayeredMedium &lm);
+
+cmplx eval_along_sip(const SpectralGF &gf,
+                     real nu,
+                     real rho,
+                     pe::Params pe_params = pe::Params());
 
 } // namespace mthesis::si
 

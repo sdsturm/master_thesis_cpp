@@ -7,57 +7,57 @@
 
 #include <functional>
 
-namespace mthesis::dcim::utils
+namespace mthesis::dcim::utils {
+
+using ce_vec = std::vector<CmplxExp>;
+using ct_fun = std::function<ce_vec(const ce_vec &)>;
+
+struct CmplxImg
 {
-    using ce_vec = std::vector<CmplxExp>;
-    using ct_fun = std::function<ce_vec(const ce_vec &)>;
+    const cmplx amplitude;
+    const cmplx r;
 
-    struct CmplxImg
-    {
-        const cmplx amplitude;
-        const cmplx r;
+    CmplxImg(cmplx amplitude, cmplx r) : amplitude(amplitude), r(r) {}
+};
 
-        CmplxImg(cmplx amplitude, cmplx r) : amplitude(amplitude), r(r) {}
-    };
+std::vector<cmplx> get_k_rho_vals(const std::vector<cmplx> &k_z_vals,
+                                  real k_0);
 
-    std::vector<cmplx> get_k_rho_vals(const std::vector<cmplx> &k_z_vals,
-                                      real k_0);
+struct SamplingPath
+{
+    const std::vector<cmplx> k_z_vals;
+    const std::vector<cmplx> k_rho_vals;
+    const real d_t;
+    const unsigned N;
 
-    struct SamplingPath
-    {
-        const std::vector<cmplx> k_z_vals;
-        const std::vector<cmplx> k_rho_vals;
-        const real d_t;
-        const unsigned N;
+    SamplingPath(real k_0, const std::vector<cmplx> &k_z_vals, real d_t);
+};
 
-        SamplingPath(real k_0, const std::vector<cmplx> &k_z_vals, real d_t);
-    };
+real get_k_0(const LayeredMedium &lm);
 
-    real get_k_0(const LayeredMedium &lm);
+real find_k_max(const LayeredMedium &lm);
 
-    real find_k_max(const LayeredMedium &lm);
+real get_d_t(real T, int N);
 
-    real get_d_t(real T, int N);
+cmplx calc_r(real rho, cmplx alpha);
 
-    cmplx calc_r(real rho, cmplx alpha);
+cmplx eval_fun(const ce_vec &ce, cmplx k_z);
 
-    cmplx eval_fun(const ce_vec &ce, cmplx k_z);
+std::vector<cmplx> get_y(const si::SpectralGF &gf,
+                         const std::vector<ce_vec> &ce_levels,
+                         const std::vector<SamplingPath> &sp,
+                         int lev);
 
-    std::vector<cmplx> get_y(const si::SpectralGF &gf,
-                             const std::vector<ce_vec> &ce_levels,
-                             const std::vector<SamplingPath> &sp,
-                             int lev);
+std::vector<ce_vec> algo(const si::SpectralGF &gf,
+                         const std::vector<SamplingPath> &sp,
+                         const std::vector<ct_fun> &ct_funs);
 
-    std::vector<ce_vec> algo(const si::SpectralGF &gf,
-                             const std::vector<SamplingPath> &sp,
-                             const std::vector<ct_fun> &ct_funs);
+std::vector<CmplxImg> get_images(const std::vector<ce_vec> &ce_levels,
+                                 real rho);
 
-    std::vector<CmplxImg> get_images(const std::vector<ce_vec> &ce_levels,
-                                     real rho);
-
-    cmplx get_spectral_gf(const std::vector<ce_vec> &ce_levels,
-                          real rho,
-                          real k_0);
+cmplx get_spectral_gf(const std::vector<ce_vec> &ce_levels,
+                      real rho,
+                      real k_0);
 
 } // namespace mthesis::dcim::utils
 

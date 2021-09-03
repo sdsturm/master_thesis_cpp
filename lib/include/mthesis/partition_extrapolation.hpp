@@ -4,59 +4,59 @@
 #include <mthesis/definitions.hpp>
 #include <mthesis/pe_params.hpp>
 
-namespace mthesis::si::pe
-{
-    double mc_mahon(double nu, unsigned m);
+namespace mthesis::si::pe {
 
-    double get_first_zero(double nu, double a, double rho);
+double mc_mahon(double nu, unsigned m);
 
-    cmplx integrate_gap(std::function<cmplx(real)> f,
-                        double a,
-                        double a_pe_start);
+double get_first_zero(double nu, double a, double rho);
 
-    std::vector<double> get_xi(double a, double rho, unsigned max_intervals);
+cmplx integrate_gap(std::function<cmplx(real)> f,
+                    double a,
+                    double a_pe_start);
 
-    bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol);
+std::vector<double> get_xi(double a, double rho, unsigned max_intervals);
 
-    cmplx levin_sidi_extrap(int k,
-                            cmplx s_k,
-                            cmplx omega_k,
-                            const std::vector<double> &xi,
-                            std::vector<cmplx> &A,
-                            std::vector<cmplx> &B);
+bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol);
 
-    cmplx levin_sidi_core(std::function<cmplx(real)> f,
-                          double rho,
-                          double a,
-                          Params params);
+cmplx levin_sidi_extrap(int k,
+                        cmplx s_k,
+                        cmplx omega_k,
+                        const std::vector<double> &xi,
+                        std::vector<cmplx> &A,
+                        std::vector<cmplx> &B);
 
-    cmplx levin_sidi(std::function<cmplx(real)> f,
-                     real nu,
-                     real rho,
-                     real a,
-                     Params params);
+cmplx levin_sidi_core(std::function<cmplx(real)> f,
+                      double rho,
+                      double a,
+                      Params params);
 
-    cmplx mosig_michalski_extrap(double mu,
-                                 int k,
-                                 cmplx s_k,
-                                 double Omega_k,
-                                 const std::vector<double> &xi,
-                                 std::vector<cmplx> &R);
+cmplx levin_sidi(std::function<cmplx(real)> f,
+                 real nu,
+                 real rho,
+                 real a,
+                 Params params);
 
-    cmplx mosig_michalski_core(std::function<cmplx(real)> f,
-                               double rho,
-                               double a,
-                               double alpha,
-                               double zeta,
-                               Params params);
+cmplx mosig_michalski_extrap(double mu,
+                             int k,
+                             cmplx s_k,
+                             double Omega_k,
+                             const std::vector<double> &xi,
+                             std::vector<cmplx> &R);
 
-    cmplx mosig_michalski(std::function<cmplx(real)> f,
-                          real alpha,
-                          real zeta,
-                          real nu,
-                          real rho,
-                          real a,
-                          Params params);
+cmplx mosig_michalski_core(std::function<cmplx(real)> f,
+                           double rho,
+                           double a,
+                           double alpha,
+                           double zeta,
+                           Params params);
+
+cmplx mosig_michalski(std::function<cmplx(real)> f,
+                      real alpha,
+                      real zeta,
+                      real nu,
+                      real rho,
+                      real a,
+                      Params params);
 
 } // namespace mthesis::si::pe
 
