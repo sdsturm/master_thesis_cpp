@@ -14,7 +14,7 @@ int main()
     using std::complex_literals::operator""i;
 
     auto fd = FrequencyDomain(GSL_CONST_MKSA_SPEED_OF_LIGHT / 1.0);
-    auto ground = Medium(fd, 3.0 - 0.2i, 1.0);
+    auto ground = Medium(fd, 3.0, 1.0);
     auto lm = HalfSpace(fd, ground);
     auto mode = EmMode::TM;
 
@@ -22,6 +22,8 @@ int main()
     // auto r_ = rand_point(5 * fd.lambda_0);
     VectorR3 r = {5, 0, 5};
     VectorR3 r_ = {0, 0, 1};
+    r *= fd.lambda_0;
+    r_ *= fd.lambda_0;
 
     std::cout << "r = \n" << r << "\n";
     std::cout << "r_ = \n" << r_ << "\n";

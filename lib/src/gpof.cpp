@@ -56,7 +56,8 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
     arma::cx_mat U;
     arma::vec s;
     arma::cx_mat V;
-    arma::svd_econ(U, s, V, Y, "right", "dc");
+    auto svd_ret = arma::svd_econ(U, s, V, Y, "right", "dc");
+    assert(svd_ret);
 
     // Determine model order.
     int M;
@@ -65,7 +66,7 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
         M = -1;
         for (arma::uword i = 1; i < s.n_elem; i++)
         {
-            if (std::abs(s(i) / s(1)) < params.tol)
+            if (std::abs(s(i) / s(0)) < params.tol)
             {
                 M = i;
                 break;
