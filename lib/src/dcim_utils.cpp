@@ -108,16 +108,12 @@ std::vector<cmplx> get_y(const si::SpectralGF &gf,
     {
         y[n] = gf.f(sp[lev].k_rho_vals[n]) * (1.0i * sp[lev].k_z_vals[n]);
 
-        for (int prev_lev = 0; prev_lev < lev - 1; prev_lev++)
+        for (int prev_lev = 0; prev_lev < lev; prev_lev++)
             y[n] -= eval_fun(ce_levels[prev_lev], sp[lev].k_z_vals[n]);
 
         assert(std::isfinite(y[n].real()));
         assert(std::isfinite(y[n].imag()));
     }
-
-    std::cout << "level = " << lev << "\n";
-    for (const auto &elem : y)
-        std::cout << elem << "\n";
 
     return y;
 }
@@ -166,6 +162,8 @@ cmplx get_spectral_gf(const std::vector<ce_vec> &ce_levels,
     cmplx val = 0;
     for (const auto &img : img_all)
         val += img.amplitude * std::exp(-1.0i * k_0 * img.r) / img.r;
+
+    val /= 2.0 * M_PI;
 
     return val;
 }

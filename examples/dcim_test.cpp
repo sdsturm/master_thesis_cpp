@@ -18,10 +18,10 @@ int main()
     auto lm = HalfSpace(fd, ground);
     auto mode = EmMode::TM;
 
-    // auto r = rand_point(5 * fd.lambda_0);
-    // auto r_ = rand_point(5 * fd.lambda_0);
-    VectorR3 r = {5, 0, 5};
-    VectorR3 r_ = {0, 0, 1};
+     auto r = rand_point(5 * fd.lambda_0);
+     auto r_ = rand_point(5 * fd.lambda_0);
+//    VectorR3 r = {5, 0, 1};
+//    VectorR3 r_ = {0, 0, 1};
     r *= fd.lambda_0;
     r_ *= fd.lambda_0;
 
@@ -40,8 +40,9 @@ int main()
 
     auto val_dcim = dcim::utils::get_spectral_gf(ce_levels, coords.rho, fd.k_0);
 
-    std::cout << "val_ref = " << val_ref << "\n";
-    std::cout << "val_dcim = " << val_dcim << "\n";
+    std::cout << "val_ref:        " << val_ref << "\n";
+    std::cout << "val_dcim:       " << val_dcim << "\n";
+    std::cout << "Relative error: " << calc_rel_err_db(val_dcim, val_ref) << " dB\n";
 
     return 0;
 }

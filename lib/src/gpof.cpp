@@ -48,9 +48,9 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
 
     // Build matrix Y.
     arma::cx_mat Y(N - L, L + 1);
-    for (arma::uword i = 0; i < Y.n_rows; i++)
-        for (arma::uword j = 0; j < Y.n_cols; j++)
-            Y(i, j) = y[i + j];
+    for (arma::uword row = 0; row < Y.n_rows; row++)
+        for (arma::uword col = 0; col < Y.n_cols; col++)
+            Y(row, col) = y[row + col];
 
     // Perform SVD.
     arma::cx_mat U;
@@ -109,7 +109,13 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
 
     std::vector<CmplxExp> ce;
     for (arma::uword i = 0; i < z.n_elem; i++)
-        ce.push_back(CmplxExp{b(i), std::log(z(i)) / d_t});
+    {
+        // Note: if z_i is zero the corresponding term of the series is also
+        // 	 zero. Compare (1) and (2) in Sarkar1995.
+        if (z(i).real() != 0.0 && z(i).imag() != 0.0)
+            ce.push_back(CmplxExp{b(i), std::log(z(i)) / d_t});
+    }
+
 
     return ce;
 }
