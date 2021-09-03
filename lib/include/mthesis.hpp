@@ -17,5 +17,6 @@
 #include <mthesis/dcim.hpp>
 
 #include <mthesis/fmm.hpp>
+#include <mthesis/mom.hpp>
 
 #endif

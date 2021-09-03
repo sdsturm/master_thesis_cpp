@@ -28,6 +28,8 @@ struct Params
 
 using multiindex = arma::ivec3;
 
+using f_of_k_hat = std::vector<cmplx>;
+
 VectorR3 group_center(const Params &params, const multiindex &mi);
 
 multiindex identify_group(const Params &params, const VectorR3 &r);
@@ -67,28 +69,40 @@ public:
 std::vector<Group> build_groups(const Params &params,
                                 const std::vector<VectorR3> &pts);
 
-struct EwaldSpere
+struct EwaldSphere
 {
     std::vector<real> cos_theta_weights;
+    size_t n_phi_nodes;
     real prefactor;
     std::vector<VectorR3> k_hat;
 
-    EwaldSpere(unsigned L);
-    cmplx integrate(const std::vector<cmplx> &f_of_k_hat) const;
+    EwaldSphere(unsigned L);
+    cmplx integrate(const f_of_k_hat &f) const;
 };
 
 unsigned calc_L(const Params &params);
 
-std::vector<cmplx> calc_ff(const FrequencyDomain &fd,
-                           const EwaldSpere &es,
-                           const Group &g,
-                           const VectorR3 &r);
+f_of_k_hat calc_ff(const FrequencyDomain &fd,
+                   const EwaldSphere &es,
+                   const Group &g,
+                   const VectorR3 &r);
 
-std::vector<cmplx> calc_top(unsigned L,
-                            const FrequencyDomain &fd,
-                            const EwaldSpere &es,
-                            const Group &src_group,
-                            const Group &obs_group);
+std::vector<f_of_k_hat> calc_all_ff(const FrequencyDomain &fd,
+                                    const EwaldSphere &es,
+                                    const std::vector<Group> &groups,
+                                    const std::vector<VectorR3> &pts);
+
+f_of_k_hat calc_top(unsigned L,
+                    const FrequencyDomain &fd,
+                    const EwaldSphere &es,
+                    const Group &src_group,
+                    const Group &obs_group);
+
+std::vector<f_of_k_hat> calc_all_top(unsigned L,
+                                     const FrequencyDomain &fd,
+                                     const EwaldSphere &es,
+                                     const std::vector<Group> &src_groups,
+                                     const std::vector<Group> &obs_groups);
 
 struct FreeSpaceFMM
 {
@@ -99,13 +113,16 @@ struct FreeSpaceFMM
     const std::vector<Group> src_groups;
     const std::vector<Group> obs_groups;
     const unsigned L;
-    const EwaldSpere es;
+    const EwaldSphere es;
+    const std::vector<f_of_k_hat> src_ff_all;
+    const std::vector<f_of_k_hat> obs_ff_all;
+    const std::vector<f_of_k_hat> top_all;
 
     FreeSpaceFMM(const Params &params,
                  const std::vector<VectorR3> &src_pts,
                  const std::vector<VectorR3> &obs_pts);
 
-
+    std::vector<cmplx> calc_product(const std::vector<cmplx> &I) const;
 };
 
 } // namespace mthesis::fmm

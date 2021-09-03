@@ -27,7 +27,7 @@ multiindex identify_group(const Params &params, const VectorR3 &r)
 {
     multiindex mi;
     for (size_t i = 0; i < 3; i++)
-       mi(i) = std::floor((r(i) / params.w));
+        mi(i) = std::floor((r(i) / params.w));
 
     return mi;
 }
@@ -128,7 +128,7 @@ void check_separation(const std::vector<Group> &src_groups,
     }
 }
 
-EwaldSpere::EwaldSpere(unsigned L)
+EwaldSphere::EwaldSphere(unsigned L)
     : cos_theta_weights(L)
 {
     // Get nodes and weights for Gauss-Legendre quadrature in [-1, 1].
@@ -144,7 +144,7 @@ EwaldSpere::EwaldSpere(unsigned L)
     gsl_integration_glfixed_table_free(t);
 
     // Get nodes in phi for [0, 2pi).
-    size_t n_phi_nodes = 2 * L;
+    n_phi_nodes = 2 * L;
     real phi_step = 2.0 * M_PI / n_phi_nodes;
     std::vector<real> phi_nodes(n_phi_nodes);
     for (size_t n = 0; n < n_phi_nodes; n++)
@@ -152,7 +152,7 @@ EwaldSpere::EwaldSpere(unsigned L)
         phi_nodes[n] = n * phi_step;
     }
 
-    this->prefactor = phi_step;
+    prefactor = phi_step;
 
     k_hat.resize(cos_theta_weights.size() * n_phi_nodes);
     size_t i = 0;
@@ -170,13 +170,18 @@ EwaldSpere::EwaldSpere(unsigned L)
     }
 }
 
-cmplx EwaldSpere::integrate(const std::vector<cmplx> &f_of_k_hat) const
+cmplx EwaldSphere::integrate(const f_of_k_hat &f) const
 {
-    assert(k_hat.size() == f_of_k_hat.size());
+    assert(k_hat.size() == f.size());
+
+    auto cos_theta_ind = [&](size_t k) { return k % cos_theta_weights.size(); }; // TODO: check
 
     cmplx val = 0;
-    for (size_t n = 0; n < k_hat.size(); n++)
-        val += cos_theta_weights[n] * f_of_k_hat[n];
+    for (size_t k = 0; k < k_hat.size(); k++)
+    {
+        assert(cos_theta_ind(k) < cos_theta_weights.size());
+        val += cos_theta_weights[cos_theta_ind(k)] * f[k];
+    }
 
     return prefactor * val;
 }
@@ -192,10 +197,10 @@ unsigned calc_L(const Params &params)
     return std::ceil(L);
 }
 
-std::vector<cmplx> calc_ff(const FrequencyDomain &fd,
-                           const EwaldSpere &es,
-                           const Group &g,
-                           const VectorR3 &r)
+f_of_k_hat calc_ff(const FrequencyDomain &fd,
+                   const EwaldSphere &es,
+                   const Group &g,
+                   const VectorR3 &r)
 {
     using std::complex_literals::operator""i;
     VectorR3 R = r - g.r_center;
@@ -206,11 +211,30 @@ std::vector<cmplx> calc_ff(const FrequencyDomain &fd,
     return V_of_k_hat;
 }
 
-std::vector<cmplx> calc_top(unsigned L,
-                            const FrequencyDomain &fd,
-                            const EwaldSpere &es,
-                            const Group &src_group,
-                            const Group &obs_group)
+std::vector<f_of_k_hat> calc_all_ff(const FrequencyDomain &fd,
+                                    const EwaldSphere &es,
+                                    const std::vector<Group> &groups,
+                                    const std::vector<VectorR3> &pts)
+{
+    size_t K = es.k_hat.size();
+    std::vector<f_of_k_hat> ff_all(pts.size(), f_of_k_hat(K));
+
+    for (const auto &g : groups)
+    {
+        for (const auto &n : g.pts_idx)
+        {
+            ff_all[n] = calc_ff(fd, es, g, pts[n]);
+        }
+    }
+
+    return ff_all;
+}
+
+f_of_k_hat calc_top(unsigned L,
+                    const FrequencyDomain &fd,
+                    const EwaldSphere &es,
+                    const Group &src_group,
+                    const Group &obs_group)
 {
     using std::complex_literals::operator""i;
 
@@ -245,6 +269,31 @@ std::vector<cmplx> calc_top(unsigned L,
     return top;
 }
 
+std::vector<f_of_k_hat> calc_all_top(unsigned L,
+                                     const FrequencyDomain &fd,
+                                     const EwaldSphere &es,
+                                     const std::vector<Group> &src_groups,
+                                     const std::vector<Group> &obs_groups)
+{
+    size_t M_ = src_groups.size();
+    size_t M = obs_groups.size();
+    size_t K = es.k_hat.size();
+    using f_of_k_hat = std::vector<cmplx>;
+    std::vector<f_of_k_hat> top_all(M_ * M, f_of_k_hat(K));
+
+    size_t i = 0;
+    for (const auto &sg : src_groups)
+    {
+        for (const auto &og : obs_groups)
+        {
+            top_all[i] = calc_top(L, fd, es, sg, og);
+            i++;
+        }
+    }
+
+    return top_all;
+}
+
 FreeSpaceFMM::FreeSpaceFMM(const Params &params,
                            const std::vector<VectorR3> &src_pts,
                            const std::vector<VectorR3> &obs_pts)
@@ -255,8 +304,59 @@ FreeSpaceFMM::FreeSpaceFMM(const Params &params,
       src_groups(build_groups(params, src_pts)),
       obs_groups(build_groups(params, obs_pts)),
       L(calc_L(params)),
-      es(EwaldSpere(L))
+      es(EwaldSphere(L)),
+      src_ff_all(calc_all_ff(params.fd, es, src_groups, src_pts)),
+      obs_ff_all(calc_all_ff(params.fd, es, obs_groups, obs_pts)),
+      top_all(calc_all_top(L, params.fd, es, src_groups, obs_groups))
 {
+}
+
+std::vector<cmplx> FreeSpaceFMM::calc_product(const std::vector<cmplx> &I) const
+{
+    size_t M_ = src_groups.size();
+    size_t M = obs_groups.size();
+    size_t K = es.k_hat.size();
+
+    std::vector<f_of_k_hat> s(M_, f_of_k_hat(K));
+    for (size_t m_ = 0; m_ < M_; m_++)
+    {
+        for (const auto &n : src_groups[m_].pts_idx)
+        {
+            for (size_t k = 0; k < K; k++)
+            {
+                s[m_][k] += std::conj(src_ff_all[n][k]) * I[n];
+            }
+        }
+    }
+
+    std::vector<f_of_k_hat> g(M, f_of_k_hat(K));
+    for (size_t m = 0; m < M; m++)
+    {
+        for (size_t m_ = 0; m_ < M_; m_++)
+        {
+            for (size_t k = 0; k < K; k++)
+            {
+                size_t top_ind = m_ * M + m;
+                g[m][k] += top_all[top_ind][k] * s[m_][k];
+            }
+        }
+    }
+
+    std::vector<cmplx> V(obs_pts.size());
+    for (size_t m = 0; m < M; m++)
+    {
+        for (const auto &n : obs_groups[m].pts_idx)
+        {
+            f_of_k_hat f(K);
+            for (size_t k = 0; k < K; k++)
+            {
+                f[k] = obs_ff_all[n][k] * g[m][k];
+            }
+            V[n] = es.integrate(f);
+        }
+    }
+
+    return V;
 }
 
 } // namespace mthesis::fmm
