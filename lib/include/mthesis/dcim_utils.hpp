@@ -43,6 +43,11 @@ namespace mthesis::dcim::utils
 
     cmplx eval_fun(const ce_vec &ce, cmplx k_z);
 
+    std::vector<cmplx> get_y(const si::SpectralGF &gf,
+                             const std::vector<ce_vec> &ce_levels,
+                             const std::vector<SamplingPath> &sp,
+                             int lev);
+
     std::vector<ce_vec> algo(const si::SpectralGF &gf,
                              const std::vector<SamplingPath> &sp,
                              const std::vector<ct_fun> &ct_funs);

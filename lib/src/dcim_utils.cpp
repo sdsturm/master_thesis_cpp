@@ -85,38 +85,56 @@ namespace mthesis::dcim::utils
     cmplx eval_fun(const ce_vec &ce, cmplx k_z)
     {
         cmplx val = 0;
-
         for (const auto e : ce)
             val += e.front() * std::exp(-e.back() * k_z);
 
+        assert(std::isfinite(val.real()));
+        assert(std::isfinite(val.imag()));
+
         return val;
+    }
+
+    std::vector<cmplx> get_y(const si::SpectralGF &gf,
+                             const std::vector<ce_vec> &ce_levels,
+                             const std::vector<SamplingPath> &sp,
+                             int lev)
+    {
+        using std::complex_literals::operator""i;
+
+        int n_pts = sp[lev].k_rho_vals.size();
+        std::vector<cmplx> y(n_pts);
+
+        for (int n = 0; n < n_pts; n++)
+        {
+            y[n] = gf.f(sp[lev].k_rho_vals[n]) * (1.0i * sp[lev].k_z_vals[n]);
+
+            for (int prev_lev = 0; prev_lev < lev - 1; prev_lev++)
+                y[n] -= eval_fun(ce_levels[prev_lev], sp[lev].k_z_vals[n]);
+                
+            assert(std::isfinite(y[n].real()));
+            assert(std::isfinite(y[n].imag()));
+        }
+
+        std::cout << "level = " << lev << "\n";
+        for (const auto &elem : y)
+            std::cout << elem << "\n";
+
+        return y;
     }
 
     std::vector<ce_vec> algo(const si::SpectralGF &gf,
                              const std::vector<SamplingPath> &sp,
                              const std::vector<ct_fun> &ct_funs)
     {
-        using std::complex_literals::operator""i;
         assert(sp.size() == ct_funs.size());
+        int n_lev = sp.size();
+        std::vector<ce_vec> ce_levels(n_lev);
 
-        int L = sp.size();
-
-        std::vector<ce_vec> ce_levels(L);
-
-        for (int l = 0; l < L; l++)
+        for (int lev = 0; lev < n_lev; lev++)
         {
-            int I = sp[l].k_rho_vals.size();
-            std::vector<cmplx> y(I);
-            for (int i = 0; i < I; i++)
-            {
-                y[i] = gf.f(sp[l].k_rho_vals[i]) / (1.0i * sp[l].k_z_vals[i]);
-                for (int j = 0; j < l - 1; j++)
-                    y[i] -= eval_fun(ce_levels[j], sp[l].k_z_vals[i]);
-            }
-            std::cout << "level " << l << "\n";
-            auto ce_gpof = gpof::gpof(y, sp[l].d_t);
-            std::cout << "passed\n";
-            ce_levels[l] = ct_funs[l](ce_gpof);
+            auto y = get_y(gf, ce_levels, sp, lev);
+            auto ce_gpof = gpof::gpof(y, sp[lev].d_t);
+            ce_levels[lev] = ct_funs[lev](ce_gpof);
         }
         return ce_levels;
     }
