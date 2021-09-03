@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME}
     ./src/gpof.cpp
     ./src/dcim_utils.cpp
     ./src/dcim_three_level_v3.cpp
+    ./src/fmm.cpp
     )
 
 find_package(GSL REQUIRED)
