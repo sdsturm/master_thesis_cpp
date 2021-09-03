@@ -36,6 +36,9 @@ std::vector<VectorR3> rand_pts_in_group(const Params &params,
                                         const multiindex &mi,
                                         unsigned N);
 
+void append_pts(std::vector<VectorR3> &pts,
+                const std::vector<VectorR3> &new_pts);
+
 struct Group
 {
     const multiindex mi;

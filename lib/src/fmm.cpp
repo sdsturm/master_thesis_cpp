@@ -54,6 +54,12 @@ std::vector<VectorR3> rand_pts_in_group(const Params &params,
     return pts;
 }
 
+void append_pts(std::vector<VectorR3> &pts,
+                const std::vector<VectorR3> &new_pts)
+{
+    pts.insert(pts.end(), new_pts.begin(), new_pts.end());
+}
+
 Group::Group(const Params &params, const multiindex &mi)
     : mi(mi), r_center(group_center(params, mi))
 {

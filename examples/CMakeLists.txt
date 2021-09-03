@@ -10,6 +10,9 @@ target_link_libraries(generic_gf mthesis-lib)
 add_executable(dcim_test dcim_test.cpp)
 target_link_libraries(dcim_test mthesis-lib)
 
+add_executable(fmm_test fmm_test.cpp)
+target_link_libraries(fmm_test mthesis-lib)
+
 
 
 

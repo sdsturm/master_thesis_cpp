@@ -16,4 +16,6 @@
 #include <mthesis/gpof.hpp>
 #include <mthesis/dcim.hpp>
 
+#include <mthesis/fmm.hpp>
+
 #endif
