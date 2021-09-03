@@ -3,7 +3,6 @@
 
 #include <mthesis/definitions.hpp>
 
-#include <mthesis/geometry.hpp>
 #include <mthesis/solution_domain.hpp>
 #include <mthesis/tlgf.hpp>
 

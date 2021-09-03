@@ -10,8 +10,28 @@ namespace mthesis
 {
     using real = double;
     using cmplx = std::complex<real>;
+
     using VectorR3 = arma::vec3;
     using VectorC3 = arma::cx_vec3;
+    using DyadC3 = arma::cx_mat33;
+
+    struct LayeredMediumCoords
+    {
+        const VectorR3 R;
+        const real rho;
+        const real phi;
+        const real z;
+        const real z_;
+
+        LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_)
+            : R(r - r_),
+              rho(std::sqrt(std::pow(R[0], 2) + std::pow(R[1], 2))),
+              phi(std::atan2(R[1], R[0])),
+              z(r[2]),
+              z_(r_[2])
+        {
+        }
+    };
 
     using CmplxExp = std::array<cmplx, 2>;
 
