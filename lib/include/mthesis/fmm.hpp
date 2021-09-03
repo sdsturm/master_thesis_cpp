@@ -47,6 +47,9 @@ struct Group
     void add_point_index(size_t index);
 };
 
+std::vector<Group> build_groups(const Params &params,
+                                const std::vector<VectorR3> &pts);
+
 class GroupSeparationError : public std::exception
 {
 private:
@@ -69,6 +72,37 @@ struct EwaldSpere
 
     EwaldSpere(unsigned L);
     cmplx integrate(const std::vector<cmplx> &f_of_k_hat) const;
+};
+
+unsigned calc_L(const Params &params);
+
+std::vector<cmplx> calc_ff(const FrequencyDomain &fd,
+                           const EwaldSpere &es,
+                           const Group &g,
+                           const VectorR3 &r);
+
+std::vector<cmplx> calc_top(unsigned L,
+                            const FrequencyDomain &fd,
+                            const EwaldSpere &es,
+                            const Group &src_group,
+                            const Group &obs_group);
+
+struct FreeSpaceFMM
+{
+    const FrequencyDomain &fd;
+    const real w;
+    const std::vector<VectorR3> &src_pts;
+    const std::vector<VectorR3> &obs_pts;
+    const std::vector<Group> src_groups;
+    const std::vector<Group> obs_groups;
+    const unsigned L;
+    const EwaldSpere es;
+
+    FreeSpaceFMM(const Params &params,
+                 const std::vector<VectorR3> &src_pts,
+                 const std::vector<VectorR3> &obs_pts);
+
+
 };
 
 } // namespace mthesis::fmm

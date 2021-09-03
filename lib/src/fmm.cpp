@@ -1,6 +1,8 @@
 #include <mthesis/fmm.hpp>
 
 #include <gsl/gsl_integration.h>
+#include <boost/math/special_functions/hankel.hpp>
+#include <boost/math/special_functions/legendre.hpp>
 
 #include <random>
 #include <cassert>
@@ -171,6 +173,84 @@ cmplx EwaldSpere::integrate(const std::vector<cmplx> &f_of_k_hat) const
         val += cos_theta_weights[n] * f_of_k_hat[n];
 
     return prefactor * val;
+}
+
+unsigned calc_L(const Params &params)
+{
+    real D = std::sqrt(3.0) * params.w;
+    real kD = params.fd.k_0 * D;
+
+    // See (25) in Coifman1993.
+    real L = kD + 10.0 * std::log(kD + M_PI);
+
+    return std::ceil(L);
+}
+
+std::vector<cmplx> calc_ff(const FrequencyDomain &fd,
+                           const EwaldSpere &es,
+                           const Group &g,
+                           const VectorR3 &r)
+{
+    using std::complex_literals::operator""i;
+    VectorR3 R = r - g.r_center;
+    std::vector<cmplx> V_of_k_hat(es.k_hat.size());
+    for (size_t k = 0; k < es.k_hat.size(); k++)
+        V_of_k_hat[k] = std::exp(1.0i * fd.k_0 * arma::dot(es.k_hat[k], R));
+
+    return V_of_k_hat;
+}
+
+std::vector<cmplx> calc_top(unsigned L,
+                            const FrequencyDomain &fd,
+                            const EwaldSpere &es,
+                            const Group &src_group,
+                            const Group &obs_group)
+{
+    using std::complex_literals::operator""i;
+
+    VectorR3 X = obs_group.r_center - src_group.r_center;
+    real X_norm = arma::norm(X);
+    VectorR3 X_hat = X / X_norm;
+
+    real hankel_arg = fd.k_0 * X_norm;
+    std::vector<cmplx> hankel_term(L + 1);
+    for (unsigned l = 0; l <= L; l++)
+    {
+        hankel_term[l] = std::pow(1.0i, l) * (2.0*l + 1.0) *
+                boost::math::sph_hankel_1(l, hankel_arg);
+    }
+
+    std::vector<real> cos_theta(es.k_hat.size());
+    for (size_t k = 0; k < es.k_hat.size(); k++)
+    {
+        cos_theta[k] = arma::dot(es.k_hat[k], X_hat);
+    }
+
+    std::vector<cmplx> top(es.k_hat.size());
+    for (size_t k = 0; k < es.k_hat.size(); k++)
+    {
+        for (unsigned l = 0; l < L; l++)
+        {
+            top[k] += hankel_term[l] * boost::math::legendre_p(l, cos_theta[k]);
+        }
+        top[k] *= 1.0i * fd.k_0 / (4.0 * M_PI);
+    }
+
+    return top;
+}
+
+FreeSpaceFMM::FreeSpaceFMM(const Params &params,
+                           const std::vector<VectorR3> &src_pts,
+                           const std::vector<VectorR3> &obs_pts)
+    : fd(params.fd),
+      w(params.w),
+      src_pts(src_pts),
+      obs_pts(obs_pts),
+      src_groups(build_groups(params, src_pts)),
+      obs_groups(build_groups(params, obs_pts)),
+      L(calc_L(params)),
+      es(EwaldSpere(L))
+{
 }
 
 } // namespace mthesis::fmm
