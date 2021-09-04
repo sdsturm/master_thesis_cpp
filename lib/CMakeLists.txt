@@ -5,7 +5,7 @@ add_compile_options(-Wextra)
 add_compile_options(-pedantic)
 # add_compile_options(-Werror)
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
     ./src/solution_domain.cpp
     ./src/tlgf.cpp
     ./src/spectral_gf.cpp

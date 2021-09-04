@@ -39,6 +39,7 @@ int main()
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
+
             auto num = sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
             auto ref = sgf::free_space(vacuum, r, r_);
 

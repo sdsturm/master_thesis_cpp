@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 find_package(Armadillo REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS iostreams system filesystem)
+find_package(Boost REQUIRED COMPONENTS timer iostreams system filesystem)
 set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
 
 include_directories(./lib/include)
