@@ -6,14 +6,17 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
+# Dependencies needed for main library and applications.
 find_package(Armadillo REQUIRED)
-
 find_package(Boost REQUIRED COMPONENTS timer iostreams system filesystem)
-set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
 
+# Add headers of the main library to the include path.
 include_directories(./lib/include)
 
 add_subdirectory(./submodules)
 add_subdirectory(./lib)
+
+set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
+
 add_subdirectory(./examples)
 add_subdirectory(./production)

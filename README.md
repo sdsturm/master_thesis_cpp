@@ -1,32 +1,17 @@
-# Propagating Plane-Wave Representations of Half-Space Green's Functions
+# Master's Thesis C++ Codes
 
 ## Structure
 
 - `./lib`: Main library (`mthesis-lib`)
 - `./production`: Executables to produce results for the actual thesis
-- `./results`: Generated data output files (ignored by Git)
 - `./examples`: Example applications to demonstrate the use of `mthesis-lib`
+- `./submodules`: External modules which are typically not available by the 
+system package manager.
 
 ## Dependencies
 
-### System
+See `CMakeLists.txt` files at top level `./` and in `./lib` and `./submodules`.
 
-- [Boost](https://www.boost.org/) (only the header-only parts and `Boost::test`
-for the main library)
-- [Armadillo](http://arma.sourceforge.net/)
-- openBLAS (to link against instead of armadillo runtime library)
-- [GNU Scientific Library](https://www.gnu.org/software/gsl/)
-
-### Submodules Dependencies
-
-#### [complex_bessel](https://github.com/joeydumont/complex_bessel.git)
-
-- Fortran compiler
-- HDF 5
-- Google Test (optional to run tests)
-
-#### [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream.git)
-
-- Installation of [gnuplot](http://www.gnuplot.info/) at default location
-- Boost binary components `Boost::iostreams`, `Boost::system`,
-`Boost::filesystem`
+Note: [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream.git)
+needs the [gnuplot](http://www.gnuplot.info/) application to be found by the
+system shell.
