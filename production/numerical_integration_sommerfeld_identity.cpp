@@ -8,12 +8,14 @@
 
 using namespace mthesis;
 
-int main()
+// Note: directory to write file can be passed as single command line argument.
+int main(int argc, char** argv)
 {
+    // Problem specification.
     auto fd = FrequencyDomain(3e9);
     auto vacuum = Vacuum(fd);
     auto lm = FreeSpace(fd);
-    EmMode mode = EmMode::TM;
+    EmMode mode = EmMode::TM;	// Does not matter here...
     bool direct_term = true;
 
     VectorR3 r_ = {0, 0, 0};
@@ -22,19 +24,12 @@ int main()
     arma::vec x_vals = arma::logspace(-1, 3, 60) * fd.lambda_0;
     arma::vec z_vals = arma::logspace(-1, 3, 60) * fd.lambda_0;
 
-    auto data_file_path = std::filesystem::path(MTHESIS_RESULTS_DIR);
-    data_file_path /= "numerical_integration_sommerfeld_identity.dat";
-    FILE *data_file;
-    data_file = fopen(data_file_path.c_str(), "w");
-    if (!data_file)
-    {
-        std::cerr << "Unable to open TEX data output file.\n";
-        return -1;
-    }
-    fprintf(data_file, "x_by_lambda_0 z_by_lambda_0 rel_err_db time\n");
-    size_t n = 1;
+    // Perform computations and measure execution time.
     size_t N = x_vals.size() * z_vals.size();
+    std::vector<real> rel_err_db(N);
+    std::vector<real> time_s(N);
     boost::timer::auto_cpu_timer timer;
+    size_t n = 0;
     for (auto &x : x_vals)
     {
         for (auto &z : z_vals)
@@ -46,27 +41,57 @@ int main()
             int N_runs = 50;
             timer.start();
             for (int i = 0; i < N_runs - 1; i++)
+            {
                 sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
+            }
             // One final time for the result.
             auto num = sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
             timer.stop();
 
-            auto rel_err_db = calc_rel_err_db(num, ref);
-            auto t_str = timer.format(9, "%u");
+            rel_err_db[n] = calc_rel_err_db(num, ref);
+            time_s[n] = std::stod(timer.format(9, "%u"));
 
-            fprintf(data_file, "%.12f %.12f %.12f %s\n",
-                    x / fd.lambda_0,
-                    z / fd.lambda_0,
-                    rel_err_db,
-                    t_str.c_str());
-
-            printf("Processing point %4ld of %4ld\n", n, N);
+            printf("Processing point %4ld of %4ld\n", n + 1, N);
             n++;
         }
-        fprintf(data_file, "\n");
     }
     printf("Done.\n");
-    fclose(data_file);
+
+    printf("Maximum error: %.2f dB\n",
+           *std::max_element(rel_err_db.begin(), rel_err_db.end()));
+
+    real time_s_min = *std::min_element(time_s.begin(), time_s.end());
+
+    // Check where to write output.
+    FILE *out_target;
+    if (2 == argc && std::filesystem::exists(argv[1]))
+    {
+        auto file_fullpath = std::filesystem::path(argv[1]);
+        file_fullpath /= "numerical_integration_sommerfeld_identity.dat";
+        out_target = fopen(file_fullpath.c_str(), "w");
+    }
+    else
+    {
+        out_target = stdout;
+    }
+
+    // Write output.
+    fprintf(out_target, "x_by_lambda_0 z_by_lambda_0 rel_err_db rel_time\n");
+    n = 0;
+    for (auto &x : x_vals)
+    {
+        for (auto &z : z_vals)
+        {
+            fprintf(out_target, "%.12f %.12f %.12f %.9f\n",
+                    x / fd.lambda_0,
+                    z / fd.lambda_0,
+                    rel_err_db[n],
+                    time_s[n] / time_s_min);
+            n++;
+        }
+        fprintf(out_target, "\n");
+    }
+    fclose(out_target);
 
     return 0;
 }

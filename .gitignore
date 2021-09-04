@@ -1,5 +1,3 @@
-## For C++
-
 # Prerequisites
 *.d
 
@@ -34,11 +32,6 @@
 *.app
 
 ## For CMake
-
-[Bb][Uu][Ii][Ll][Dd]/*
-debug/*
-release/*
-
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -52,6 +45,8 @@ CTestTestfile.cmake
 _deps
 
 ## VS Code
-
 .vscode/*
 *.json
+
+## Build directories
+build*/*
