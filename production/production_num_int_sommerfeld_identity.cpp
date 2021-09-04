@@ -17,6 +17,8 @@ int main(int argc, char** argv)
     auto lm = FreeSpace(fd);
     EmMode mode = EmMode::TM;	// Does not matter here...
     bool direct_term = true;
+    real nu = 0;
+    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
 
     VectorR3 r_ = {0, 0, 0};
     r_ *= fd.lambda_0;
@@ -35,17 +37,17 @@ int main(int argc, char** argv)
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
-            auto ref = sgf::free_space(vacuum, r, r_);
+            auto ref = scalargf::freespace::G_0(vacuum, r, r_);
 
             // Multiple runs for timer.
             int N_runs = 50;
             timer.start();
             for (int i = 0; i < N_runs - 1; i++)
             {
-                sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
+                si.eval_si_along_sip(r, r_);
             }
             // One final time for the result.
-            auto num = sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
+            auto num = si.eval_si_along_sip(r, r_);
             timer.stop();
 
             rel_err_db[n] = calc_rel_err_db(num, ref);
@@ -67,7 +69,7 @@ int main(int argc, char** argv)
     if (2 == argc && std::filesystem::exists(argv[1]))
     {
         auto file_fullpath = std::filesystem::path(argv[1]);
-        file_fullpath /= "numerical_integration_sommerfeld_identity.dat";
+        file_fullpath /= "production_num_int_sommerfeld_identity.dat";
         out_target = fopen(file_fullpath.c_str(), "w");
     }
     else
@@ -86,7 +88,8 @@ int main(int argc, char** argv)
                     x / fd.lambda_0,
                     z / fd.lambda_0,
                     rel_err_db[n],
-                    time_s[n] / time_s_min);
+                    std::log10(time_s[n] / time_s_min)
+                    );
             n++;
         }
         fprintf(out_target, "\n");

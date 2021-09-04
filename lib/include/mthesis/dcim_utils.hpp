@@ -3,22 +3,32 @@
 
 #include <mthesis/definitions.hpp>
 #include <mthesis/solution_domain.hpp>
-#include <mthesis/spectral_gf.hpp>
+#include <mthesis/sommerfeld_integrals.hpp>
 
 #include <functional>
 
-namespace mthesis::dcim::utils {
+namespace mthesis::dcim {
 
 using ce_vec = std::vector<CmplxExp>;
 using ct_fun = std::function<ce_vec(const ce_vec &)>;
 
 struct CmplxImg
 {
-    const cmplx amplitude;
+    const cmplx amp;
     const cmplx r;
 
-    CmplxImg(cmplx amplitude, cmplx r) : amplitude(amplitude), r(r) {}
+    CmplxImg(cmplx amplitude, cmplx r) : amp(amplitude), r(r) {}
 };
+
+std::vector<CmplxImg> get_images(const std::vector<ce_vec> &ce_levels,
+                                 real rho);
+
+cmplx get_spatial_gf(const std::vector<ce_vec> &ce_levels,
+                     real rho,
+                     real k_0);
+
+// Hide implementation details in nested namespace utils.
+namespace utils {
 
 std::vector<cmplx> get_k_rho_vals(const std::vector<cmplx> &k_z_vals,
                                   real k_0);
@@ -43,22 +53,18 @@ cmplx calc_r(real rho, cmplx alpha);
 
 cmplx eval_fun(const ce_vec &ce, cmplx k_z);
 
-std::vector<cmplx> get_y(const si::SpectralGF &gf,
+
+std::vector<cmplx> get_y(const std::function<cmplx(cmplx)> &G,
                          const std::vector<ce_vec> &ce_levels,
                          const std::vector<SamplingPath> &sp,
                          int lev);
 
-std::vector<ce_vec> algo(const si::SpectralGF &gf,
-                         const std::vector<SamplingPath> &sp,
-                         const std::vector<ct_fun> &ct_funs);
+std::vector<ce_vec> dcim_main_algo(const std::function<cmplx(cmplx)> &G,
+                                   const std::vector<SamplingPath> &sp,
+                                   const std::vector<ct_fun> &ct_funs);
 
-std::vector<CmplxImg> get_images(const std::vector<ce_vec> &ce_levels,
-                                 real rho);
+} // namespace utils
 
-cmplx get_spectral_gf(const std::vector<ce_vec> &ce_levels,
-                      real rho,
-                      real k_0);
-
-} // namespace mthesis::dcim::utils
+} // namespace mthesis::dcim
 
 #endif

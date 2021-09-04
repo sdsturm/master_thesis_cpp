@@ -70,7 +70,7 @@ utils::SamplingPath calc_C_1(real k_0, real T_01, real T_02, real T_03, int N)
     return utils::SamplingPath(k_0, k_z_vals, d_t);
 }
 
-utils::ce_vec calc_coeffs_1(const utils::ce_vec &ce_in,
+ce_vec calc_coeffs_1(const ce_vec &ce_in,
                             real k_0,
                             real T_02,
                             real T_03)
@@ -83,18 +83,18 @@ utils::ce_vec calc_coeffs_1(const utils::ce_vec &ce_in,
     auto calc_a = [&](cmplx b, cmplx alpha)
     { return b * std::exp(-1.0i * k_0 * alpha * T_02 / (T_03 + 1)); };
 
-    utils::ce_vec ce_out(ce_in.size());
+    ce_vec ce_out;
     for (size_t n = 0; n < ce_in.size(); n++)
     {
-        auto alpha = calc_alpha(ce_in[n].back());
-        auto a = calc_a(ce_in[n].front(), alpha);
-        ce_out[n] = {a, alpha};
+        auto alpha = calc_alpha(ce_in[n].exp);
+        auto a = calc_a(ce_in[n].amp, alpha);
+        ce_out.emplace_back(a, alpha);
     }
 
     return ce_out;
 }
 
-utils::ce_vec calc_coeffs_2(const utils::ce_vec &ce_in,
+ce_vec calc_coeffs_2(const ce_vec &ce_in,
                             real k_0,
                             real T_02,
                             real T_03)
@@ -107,18 +107,18 @@ utils::ce_vec calc_coeffs_2(const utils::ce_vec &ce_in,
     auto calc_a = [&](cmplx b, cmplx alpha)
     { return b * std::exp(k_0 * alpha / (T_03 + 1)); };
 
-    utils::ce_vec ce_out(ce_in.size());
+    ce_vec ce_out;
     for (size_t n = 0; n < ce_in.size(); n++)
     {
-        auto alpha = calc_alpha(ce_in[n].back());
-        auto a = calc_a(ce_in[n].front(), alpha);
-        ce_out[n] = {a, alpha};
+        auto alpha = calc_alpha(ce_in[n].exp);
+        auto a = calc_a(ce_in[n].amp, alpha);
+        ce_out.emplace_back(a, alpha);
     }
 
     return ce_out;
 }
 
-utils::ce_vec calc_coeffs_3(const utils::ce_vec &ce_in,
+ce_vec calc_coeffs_3(const ce_vec &ce_in,
                             real k_0,
                             real T_03)
 {
@@ -130,21 +130,22 @@ utils::ce_vec calc_coeffs_3(const utils::ce_vec &ce_in,
     auto calc_a = [&](cmplx b, cmplx alpha)
     { return b * std::exp(k_0 * alpha); };
 
-    utils::ce_vec ce_out(ce_in.size());
+    ce_vec ce_out;
     for (size_t n = 0; n < ce_in.size(); n++)
     {
-        auto alpha = calc_alpha(ce_in[n].back());
-        auto a = calc_a(ce_in[n].front(), alpha);
-        ce_out[n] = {a, alpha};
+        auto alpha = calc_alpha(ce_in[n].exp);
+        auto a = calc_a(ce_in[n].amp, alpha);
+        ce_out.emplace_back(a, alpha);
     }
 
     return ce_out;
 }
 
-std::vector<utils::ce_vec> three_level_v2(const si::SpectralGF &gf)
+std::vector<ce_vec> three_level_v2(const SommerfeldIntegral &si,
+                                   real z, real z_)
 {
-    auto k_0 = utils::get_k_0(gf.lm);
-    auto k_max = utils::find_k_max(gf.lm);
+    auto k_0 = utils::get_k_0(si.get_lm());
+    auto k_max = utils::find_k_max(si.get_lm());
 
     // Set up sampling paths.
     real k_rho_max_3 = 0.8 * k_0; // empirical
@@ -165,21 +166,23 @@ std::vector<utils::ce_vec> three_level_v2(const si::SpectralGF &gf)
     sp.push_back(calc_C_3(k_0, T_03, N_3));
 
     // Set up coefficient transforms.
-    auto f1 = [=](const utils::ce_vec &ce_in)
+    auto f1 = [=](const ce_vec &ce_in)
     { return calc_coeffs_1(ce_in, k_0, T_02, T_03); };
 
-    auto f2 = [=](const utils::ce_vec &ce_in)
+    auto f2 = [=](const ce_vec &ce_in)
     { return calc_coeffs_2(ce_in, k_0, T_02, T_03); };
 
-    auto f3 = [=](const utils::ce_vec &ce_in)
+    auto f3 = [=](const ce_vec &ce_in)
     { return calc_coeffs_3(ce_in, k_0, T_03); };
 
-    std::vector<utils::ct_fun> ct_funs;
+    std::vector<ct_fun> ct_funs;
     ct_funs.push_back(f1);
     ct_funs.push_back(f2);
     ct_funs.push_back(f3);
 
-    auto ce_levels = utils::algo(gf, sp, ct_funs);
+    auto G = [=](cmplx k_rho) { return si.eval_spectral_gf(z, z_, k_rho); };
+
+    auto ce_levels = utils::dcim_main_algo(G, sp, ct_funs);
 
     return ce_levels;
 }

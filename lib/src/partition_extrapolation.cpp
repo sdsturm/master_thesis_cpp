@@ -5,7 +5,63 @@
 
 #include <cassert>
 
-namespace mthesis::si::pe {
+namespace mthesis::pe {
+
+void Params::set_max_intervals(int max_intervals)
+{
+    assert(max_intervals > 0);
+    this->max_intervals = max_intervals;
+}
+
+void Params::set_tol(double tol)
+{
+    assert(tol > 0.0);
+    this->tol = tol;
+}
+
+unsigned Params::get_max_intervals() const
+{
+    return max_intervals;
+}
+
+double Params::get_tol() const
+{
+    return tol;
+}
+
+cmplx levin_sidi(std::function<cmplx(real)> f,
+                 real nu,
+                 real rho,
+                 real a,
+                 Params params)
+{
+    double a_pe_start = utils::get_first_zero(nu, a, rho);
+
+    cmplx gap = utils::integrate_gap(f, a, a_pe_start);
+
+    cmplx tail = utils::levin_sidi_core(f, rho, a_pe_start, params);
+
+    return gap + tail;
+}
+
+cmplx mosig_michalski(std::function<cmplx(real)> f,
+                      real alpha,
+                      real zeta,
+                      real nu,
+                      real rho,
+                      real a,
+                      Params params)
+{
+    double a_pe_start = utils::get_first_zero(nu, a, rho);
+
+    cmplx gap = utils::integrate_gap(f, a, a_pe_start);
+
+    cmplx tail = utils::mosig_michalski_core(f, rho, a, alpha, zeta, params);
+
+    return gap + tail;
+}
+
+namespace utils {
 
 double mc_mahon(double nu, unsigned m)
 {
@@ -168,7 +224,7 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
 {
     constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
 
-    auto xi = get_xi(a, rho, params.max_intervals);
+    auto xi = get_xi(a, rho, params.get_max_intervals());
     std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
 
     cmplx s = 0.0;
@@ -188,7 +244,7 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
         }
         cmplx omega = u;
         cmplx val = levin_sidi_extrap(k, s, omega, xi, A, B);
-        if (k > 1 && check_converged(val, old, params.tol))
+        if (k > 1 && check_converged(val, old, params.get_tol()))
         {
             return val;
         }
@@ -198,21 +254,6 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
 
     std::cerr << "Levin-Sidi PE quit without reaching convergence.\n";
     return std::numeric_limits<real>::quiet_NaN();
-}
-
-cmplx levin_sidi(std::function<cmplx(real)> f,
-                 real nu,
-                 real rho,
-                 real a,
-                 Params params)
-{
-    double a_pe_start = get_first_zero(nu, a, rho);
-
-    cmplx gap = integrate_gap(f, a, a_pe_start);
-
-    cmplx tail = levin_sidi_core(f, rho, a_pe_start, params);
-
-    return gap + tail;
 }
 
 cmplx mosig_michalski_extrap(double mu,
@@ -241,7 +282,7 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
 {
     constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
 
-    auto xi = get_xi(a, rho, params.max_intervals);
+    auto xi = get_xi(a, rho, params.get_max_intervals());
     std::vector<cmplx> R(xi.size() - 1);
 
     auto Omega = [&](int k)
@@ -268,7 +309,7 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
         cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
         s += u;
         cmplx val = mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
-        if (k > 1 && check_converged(val, old, params.tol))
+        if (k > 1 && check_converged(val, old, params.get_tol()))
         {
             return val;
         }
@@ -280,21 +321,6 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
     return std::numeric_limits<real>::quiet_NaN();
 }
 
-cmplx mosig_michalski(std::function<cmplx(real)> f,
-                      real alpha,
-                      real zeta,
-                      real nu,
-                      real rho,
-                      real a,
-                      Params params)
-{
-    double a_pe_start = get_first_zero(nu, a, rho);
+} // namespace utils
 
-    cmplx gap = integrate_gap(f, a, a_pe_start);
-
-    cmplx tail = mosig_michalski_core(f, rho, a, alpha, zeta, params);
-
-    return gap + tail;
-}
-
-} // namespace mthesis::si::pe
+} // namespace mthesis::pe

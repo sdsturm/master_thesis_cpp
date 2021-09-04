@@ -12,6 +12,33 @@ namespace mthesis::tlgf {
 
 enum class RiemannSheet {I, II, III, IV};
 
+cmplx V_i(const LayeredMedium &lm,
+          cmplx k_rho,
+          real z,
+          real z_,
+          EmMode type);
+
+cmplx I_i(const LayeredMedium &lm,
+          cmplx k_rho,
+          real z,
+          real z_,
+          EmMode type);
+
+cmplx I_v(const LayeredMedium &lm,
+          cmplx k_rho,
+          real z,
+          real z_,
+          EmMode type);
+
+cmplx V_v(const LayeredMedium &lm,
+          cmplx k_rho,
+          real z,
+          real z_,
+          EmMode type);
+
+// Hide implementation details in nested namespace utils.
+namespace utils {
+
 void calc_k_z_select_sheet(std::vector<cmplx> &k_z, RiemannSheet sheet);
 
 std::vector<cmplx> calc_k_z(const LayeredMedium &lm,
@@ -129,29 +156,7 @@ cmplx I_i_base(const LayeredMedium &lm,
                real z_,
                const Internals &d);
 
-cmplx V_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type);
-
-cmplx I_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type);
-
-cmplx I_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type);
-
-cmplx V_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type);
+} // namespace utils
 
 } // namespace mthesis::tlgf
 

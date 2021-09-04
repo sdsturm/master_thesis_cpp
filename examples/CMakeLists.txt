@@ -1,17 +1,21 @@
-add_executable(gpof_synth_signal gpof_synth_signal.cpp)
-target_link_libraries(gpof_synth_signal mthesis-lib ${GNUPLOT_IOSTREAM_LINK_LIBS})
+add_executable(example_gpof_synth_signal example_gpof_synth_signal.cpp)
+target_link_libraries(example_gpof_synth_signal
+    mthesis-lib
+    ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
-add_executable(tlgf_hs tlgf_hs.cpp)
-target_link_libraries(tlgf_hs mthesis-lib ${GNUPLOT_IOSTREAM_LINK_LIBS})
+add_executable(example_tlgf_hs example_tlgf_hs.cpp)
+target_link_libraries(example_tlgf_hs
+    mthesis-lib
+    ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
-add_executable(generic_gf generic_gf.cpp)
-target_link_libraries(generic_gf mthesis-lib)
+add_executable(example_generic_gf example_generic_gf.cpp)
+target_link_libraries(example_generic_gf mthesis-lib)
 
-add_executable(dcim_test dcim_test.cpp)
-target_link_libraries(dcim_test mthesis-lib)
+add_executable(example_dcim example_dcim.cpp)
+target_link_libraries(example_dcim mthesis-lib)
 
-add_executable(fmm_test fmm_test.cpp)
-target_link_libraries(fmm_test mthesis-lib)
+add_executable(example_fmm example_fmm.cpp)
+target_link_libraries(example_fmm mthesis-lib)
 
 
 

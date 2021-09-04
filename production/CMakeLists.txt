@@ -1,5 +1,5 @@
-add_executable(numerical_integration_sommerfeld_identity
-    numerical_integration_sommerfeld_identity.cpp)
-target_link_libraries(numerical_integration_sommerfeld_identity
+add_executable(production_num_int_sommerfeld_identity
+    production_num_int_sommerfeld_identity.cpp)
+target_link_libraries(production_num_int_sommerfeld_identity
     mthesis-lib
     Boost::timer)

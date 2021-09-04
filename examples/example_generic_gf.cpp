@@ -16,7 +16,10 @@ int main()
     auto ground = Medium(fd, eps_r, 1);
     auto lm = HalfSpace(fd, ground);
     EmMode mode = EmMode::TM;
+    real nu = 0;
     bool direct_term = true;
+
+    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
 
     VectorR3 r_ = {0, 0, 1};
     r_ *= fd.lambda_0;
@@ -24,14 +27,14 @@ int main()
     arma::vec x_vals = arma::linspace(-3, 3, 70) * fd.lambda_0;
     arma::vec z_vals = arma::linspace(-3, 3, 70) * fd.lambda_0;
 
+
     printf("x  z  g_re \n");
     for (auto &x : x_vals)
     {
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
-            auto g_lm = sgf::lm_generic_spatial(lm, r, r_, mode, direct_term);
-            // auto g_0 = sgf::free_space(lm.media.back(), r, r_);
+            auto g_lm = si.eval_si_along_sip(r, r_);
 
             printf("%.8f  %.8f  %.8f  \n", x, z, g_lm.real());
         }

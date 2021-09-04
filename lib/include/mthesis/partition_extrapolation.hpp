@@ -1,10 +1,43 @@
-#ifndef MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
-#define MTHESIS_SI_PE_PARTITION_EXTRAPOLATION_HPP
+#ifndef MTHESIS_PE_PARTITION_EXTRAPOLATION_HPP
+#define MTHESIS_PE_PARTITION_EXTRAPOLATION_HPP
 
 #include <mthesis/definitions.hpp>
-#include <mthesis/pe_params.hpp>
 
-namespace mthesis::si::pe {
+namespace mthesis::pe {
+
+class Params
+{
+private:
+    unsigned max_intervals;
+    double tol;
+
+public:
+    Params() : max_intervals(15), tol(1e-8) {}
+
+    void set_max_intervals(int max_intervals);
+    void set_tol(double tol);
+
+    unsigned get_max_intervals() const;
+    double get_tol() const;
+};
+
+
+cmplx levin_sidi(std::function<cmplx(real)> f,
+                 real nu,
+                 real rho,
+                 real a,
+                 Params params);
+
+cmplx mosig_michalski(std::function<cmplx(real)> f,
+                      real alpha,
+                      real zeta,
+                      real nu,
+                      real rho,
+                      real a,
+                      Params params);
+
+// Hide helper functions in nested namespace utils.
+namespace utils {
 
 double mc_mahon(double nu, unsigned m);
 
@@ -30,12 +63,6 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
                       double a,
                       Params params);
 
-cmplx levin_sidi(std::function<cmplx(real)> f,
-                 real nu,
-                 real rho,
-                 real a,
-                 Params params);
-
 cmplx mosig_michalski_extrap(double mu,
                              int k,
                              cmplx s_k,
@@ -50,14 +77,8 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
                            double zeta,
                            Params params);
 
-cmplx mosig_michalski(std::function<cmplx(real)> f,
-                      real alpha,
-                      real zeta,
-                      real nu,
-                      real rho,
-                      real a,
-                      Params params);
+} // namespace mthesis::pe::utils
 
-} // namespace mthesis::si::pe
+} // namespace mthesis::pe
 
 #endif

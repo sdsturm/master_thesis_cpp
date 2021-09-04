@@ -36,17 +36,17 @@ int main()
     bool direct_term = false;
     real nu = 0;
     
-    auto gf = sgf::lm_get_generic_spectral_gf(lm, r, r_, mode, direct_term);
+    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
 
-    auto coords = LayeredMediumCoords(r, r_);
-    auto val_ref = si::eval_along_sip(gf, nu, coords.rho);
+    auto lmc = LayeredMediumCoords(r, r_);
+    auto val_ref = si.eval_si_along_sip(r, r_);
 
-    auto ce_levels = dcim::threelevelv2::three_level_v2(gf);
-    auto val_dcim = dcim::utils::get_spectral_gf(ce_levels, coords.rho, fd.k_0);
+    auto ce_levels = dcim::threelevelv2::three_level_v2(si, lmc.z, lmc.z_);
+    auto val_dcim = dcim::get_spatial_gf(ce_levels, lmc.rho, fd.k_0);
 
-    std::cout << "val_ref:        " << val_ref << "\n";
-    std::cout << "val_dcim:       " << val_dcim << "\n";
-    std::cout << "Error: " << calc_rel_err_db(val_dcim, val_ref) << " dB\n";
+    std::cout << "reference: " << val_ref << "\n";
+    std::cout << "dcim:      " << val_dcim << "\n";
+    std::cout << "Error:     " << calc_rel_err_db(val_dcim, val_ref) << " dB\n";
 
     return 0;
 }

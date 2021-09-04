@@ -107,15 +107,12 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
     // Postprocessing.
     assert(b.n_elem == z.n_elem);
 
+    // Note: If z_i is zero the corresponding term of the series is also zero.
+    //       Compare (1) and (2) in Sarkar1995.
     std::vector<CmplxExp> ce;
     for (arma::uword i = 0; i < z.n_elem; i++)
-    {
-        // Note: if z_i is zero the corresponding term of the series is also
-        // 	 zero. Compare (1) and (2) in Sarkar1995.
         if (z(i).real() != 0.0 && z(i).imag() != 0.0)
-            ce.push_back(CmplxExp{b(i), std::log(z(i)) / d_t});
-    }
-
+            ce.emplace_back( b(i), std::log(z(i)) / d_t );
 
     return ce;
 }
@@ -131,7 +128,7 @@ std::vector<cmplx> reconstruct_signal(std::vector<CmplxExp> &ce,
         for (const auto &elem : ce)
         {
             double t = n * d_t;
-            y[n] += elem[0] * std::exp(elem[1] * t);
+            y[n] += elem.amp * std::exp(elem.exp * t);
         }
     }
 

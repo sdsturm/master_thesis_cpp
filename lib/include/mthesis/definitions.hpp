@@ -4,7 +4,6 @@
 #include <armadillo>
 
 #include <complex>
-#include <array>
 
 namespace mthesis {
 
@@ -14,6 +13,13 @@ using cmplx = std::complex<real>;
 using VectorR3 = arma::vec3;
 using VectorC3 = arma::cx_vec3;
 using DyadC3 = arma::cx_mat33;
+
+struct CmplxExp
+{
+    const cmplx amp;
+    const cmplx exp;
+    CmplxExp(cmplx amplitude, cmplx exponent) : amp(amplitude), exp(exponent) {}
+};
 
 struct LayeredMediumCoords
 {
@@ -32,8 +38,6 @@ struct LayeredMediumCoords
     {
     }
 };
-
-using CmplxExp = std::array<cmplx, 2>;
 
 enum class EmMode{TM, TE};
 
