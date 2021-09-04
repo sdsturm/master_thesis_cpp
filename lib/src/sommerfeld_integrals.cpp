@@ -10,18 +10,21 @@
 
 namespace mthesis {
 
-SiParams::SiParams()
-    : alpha(std::numeric_limits<real>::quiet_NaN()),
-      zeta(std::numeric_limits<real>::quiet_NaN()),
-      identify_singularities(false)
+SiParams::SiParams(real alpha, real zeta, bool identify_singularities)
+    : alpha(alpha), zeta(zeta), identify_singularities(identify_singularities)
 {
     assert( (std::isnan(alpha) && std::isnan(zeta)) ||
             (std::isfinite(alpha) && std::isfinite(zeta)) );
 
     if (std::isfinite(zeta))
         assert(zeta >= 0.0);
-
 }
+
+SiParams::SiParams()
+    : SiParams(std::numeric_limits<real>::quiet_NaN(),
+               std::numeric_limits<real>::quiet_NaN(),
+               false)
+{}
 
 void SiParams::set_alpha(real alpha)
 {
@@ -200,8 +203,8 @@ cmplx SommerfeldIntegral::eval_tail_on_sip(real rho,
         std::cerr << "SI with rho = |z - z_| = 0. Returning NaN.";
         val = std::numeric_limits<real>::quiet_NaN();
     }
-    return val;
 
+    return val;
 }
 
 std::vector<cmplx> get_branch_points(const LayeredMedium &lm)

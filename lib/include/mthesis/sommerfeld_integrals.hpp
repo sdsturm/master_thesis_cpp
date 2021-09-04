@@ -15,6 +15,7 @@ class SiParams
 {
     friend class SommerfeldIntegral;
 public:
+    SiParams(real alpha, real zeta, bool identify_singularities = false);
     SiParams();
 
     void set_alpha(real alpha);
