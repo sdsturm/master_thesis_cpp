@@ -24,8 +24,10 @@ T legendre_p_recurrence(unsigned nu, T z)
         val = z;
         break;
     default:
-        val = ((2 * nu - 1) * z * legendre_p_recurrence(nu - 1, z) -
-               (nu - 1) * legendre_p_recurrence(nu - 2, z)) / nu;
+        T t1 = static_cast<T>(2 * nu - 1) * z * legendre_p_recurrence(nu - 1, z);
+        T t2 = static_cast<T>(nu - 1) * legendre_p_recurrence(nu - 2, z);
+        T den = static_cast<T>(nu);
+        val = (t1 - t2) / den;
         break;
     }
 

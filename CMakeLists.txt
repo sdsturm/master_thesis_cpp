@@ -8,7 +8,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 # Dependencies needed for main library and applications.
 find_package(Armadillo REQUIRED)
-find_package(Boost REQUIRED COMPONENTS timer iostreams system filesystem)
+find_package(Boost REQUIRED COMPONENTS
+    unit_test_framework
+    timer
+    iostreams	# For gnuplot-iostream.
+    system	# For gnuplot-iostream.
+    filesystem  # For gnuplot-iostream.
+    )
 
 # Add headers of the main library to the include path.
 include_directories(./lib/include)
