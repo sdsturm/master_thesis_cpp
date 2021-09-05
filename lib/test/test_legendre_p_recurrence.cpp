@@ -14,5 +14,5 @@ BOOST_DATA_TEST_CASE(legendre_p_recurrence,
 {
     auto ref = boost::math::legendre_p(nu, x);
     auto num = mthesis::legendre_p_recurrence(nu, x);
-    BOOST_TEST(ref = num);
+    BOOST_CHECK_CLOSE(num, ref, 1e-10);
 }
