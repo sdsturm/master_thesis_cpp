@@ -15,7 +15,9 @@ add_executable(example_dcim example_dcim.cpp)
 target_link_libraries(example_dcim mthesis-lib)
 
 add_executable(example_fmm example_fmm.cpp)
-target_link_libraries(example_fmm mthesis-lib)
+target_link_libraries(example_fmm
+    mthesis-lib
+    Boost::timer)
 
 
 

@@ -5,6 +5,7 @@
 #include <boost/math/special_functions/legendre.hpp>
 
 #include <random>
+#include <cmath>
 #include <cassert>
 
 namespace mthesis::fmm {
@@ -79,7 +80,7 @@ std::vector<Group> build_groups(const Params &params,
     {
         auto mi = identify_group(params, pts[n]);
         bool group_exists = false;
-        for (auto g : glist)
+        for (auto &g : glist)
         {
             if (arma::all(mi == g.mi))
             {
@@ -317,6 +318,7 @@ std::vector<cmplx> FreeSpaceFMM::calc_product(const std::vector<cmplx> &I) const
     size_t M = obs_groups.size();
     size_t K = es.k_hat.size();
 
+    // Step 1: aggregation weighted with source amplitudes.
     std::vector<f_of_k_hat> s(M_, f_of_k_hat(K));
     for (size_t m_ = 0; m_ < M_; m_++)
     {
@@ -329,19 +331,21 @@ std::vector<cmplx> FreeSpaceFMM::calc_product(const std::vector<cmplx> &I) const
         }
     }
 
+    // Step 2: translation to observation groups.
     std::vector<f_of_k_hat> g(M, f_of_k_hat(K));
     for (size_t m = 0; m < M; m++)
     {
         for (size_t m_ = 0; m_ < M_; m_++)
         {
+            size_t top_ind = m_ * M + m; // See loop nesting in calc_all_top.
             for (size_t k = 0; k < K; k++)
             {
-                size_t top_ind = m_ * M + m;
                 g[m][k] += top_all[top_ind][k] * s[m_][k];
             }
         }
     }
 
+    // Step 3: disaggregation at observation groups to f(k_hat) and integration.
     std::vector<cmplx> V(obs_pts.size());
     for (size_t m = 0; m < M; m++)
     {

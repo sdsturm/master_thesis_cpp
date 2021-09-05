@@ -88,7 +88,7 @@ int main(int argc, char** argv)
                     x / fd.lambda_0,
                     z / fd.lambda_0,
                     rel_err_db[n],
-                    std::log10(time_s[n] / time_s_min)
+                    time_s[n] / time_s_min
                     );
             n++;
         }
