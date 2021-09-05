@@ -14,7 +14,8 @@ int main()
 
     fmm::Params params(fd, w);
 
-    unsigned n_pts = 300;
+//    unsigned n_pts = 300;
+    unsigned n_pts = 1e4;
 
     auto src_pts = fmm::rand_pts_in_group(params, {0, 0, 4}, n_pts);
     fmm::append_pts(src_pts, fmm::rand_pts_in_group(params, {5, 0, 0}, n_pts));

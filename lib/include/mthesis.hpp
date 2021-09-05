@@ -15,6 +15,7 @@
 #include <mthesis/gpof.hpp>
 #include <mthesis/dcim.hpp>
 
+#include <mthesis/legendre_p_recurrence.hpp>
 #include <mthesis/fmm.hpp>
 #include <mthesis/mom.hpp>
 
