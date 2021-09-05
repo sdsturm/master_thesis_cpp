@@ -8,10 +8,8 @@ namespace mthesis::dcim {
 std::vector<CmplxImg> get_images(const std::vector<ce_vec> &ce_levels, real rho)
 {
     std::vector<CmplxImg> img_all;
-    for (const auto &ce_level : ce_levels)
-    {
-        for (const auto &ce : ce_level)
-        {
+    for (const auto &ce_level : ce_levels) {
+        for (const auto &ce : ce_level) {
             auto r = utils::calc_r(rho, ce.exp);
             img_all.emplace_back(ce.amp, r);
         }
@@ -27,8 +25,9 @@ cmplx get_spatial_gf(const std::vector<ce_vec> &ce_levels, real rho, real k_0)
     auto img_all = get_images(ce_levels, rho);
 
     cmplx val = 0;
-    for (const auto &img : img_all)
+    for (const auto &img : img_all) {
         val += img.amp * std::exp(-1.0i * k_0 * img.r) / img.r;
+    }
 
     val /= 2.0 * M_PI;
 
@@ -52,8 +51,9 @@ std::vector<cmplx> get_k_rho_vals(const std::vector<cmplx> &k_z_vals,
 
     std::vector<cmplx> k_rho_vals(k_z_vals.size());
 
-    for (size_t n = 0; n < k_z_vals.size(); n++)
+    for (size_t n = 0; n < k_z_vals.size(); n++) {
         k_rho_vals[n] = calc_k_rho(k_z_vals[n]);
+    }
 
     return k_rho_vals;
 }
@@ -74,9 +74,11 @@ real get_k_0(const LayeredMedium &lm)
 
     real k_min = std::numeric_limits<real>::infinity();
 
-    for (const auto &medium : lm.media)
-        if (medium.k.real() < k_min)
+    for (const auto &medium : lm.media) {
+        if (medium.k.real() < k_min) {
             k_min = medium.k.real();
+        }
+    }
 
     assert(vacuum.k == k_min);
 
@@ -87,9 +89,11 @@ real find_k_max(const LayeredMedium &lm)
 {
     real k_max = -std::numeric_limits<real>::infinity();
 
-    for (const auto &medium : lm.media)
-        if (medium.k.real() > k_max)
+    for (const auto &medium : lm.media) {
+        if (medium.k.real() > k_max) {
             k_max = medium.k.real();
+        }
+    }
 
     return k_max;
 }
@@ -108,8 +112,9 @@ cmplx calc_r(real rho, cmplx alpha)
     cmplx r = std::sqrt(arg);
 
     // See Michalski2007a p. 3 for the branch of the square root.
-    if (r.real() < 0.0)
+    if (r.real() < 0.0) {
         r *= -1.0;
+    }
 
     return r;
 }
@@ -117,8 +122,9 @@ cmplx calc_r(real rho, cmplx alpha)
 cmplx eval_fun(const ce_vec &ce, cmplx k_z)
 {
     cmplx val = 0;
-    for (const auto &e : ce)
+    for (const auto &e : ce) {
         val += e.amp * std::exp(-e.exp * k_z);
+    }
 
     assert(std::isfinite(val.real()));
     assert(std::isfinite(val.imag()));
@@ -135,8 +141,7 @@ std::vector<cmplx> get_y(const std::function<cmplx (cmplx)> &G,
     int n_pts = sp[lev].k_rho_vals.size();
     std::vector<cmplx> y(n_pts);
 
-    for (int n = 0; n < n_pts; n++)
-    {
+    for (int n = 0; n < n_pts; n++) {
         y[n] = G(sp[lev].k_rho_vals[n]) * (1.0i * sp[lev].k_z_vals[n]);
 
         for (int prev_lev = 0; prev_lev < lev; prev_lev++)
@@ -157,12 +162,12 @@ std::vector<ce_vec> dcim_main_algo(const std::function<cmplx (cmplx)> &G,
     int n_lev = sp.size();
     std::vector<ce_vec> ce_levels(n_lev);
 
-    for (int lev = 0; lev < n_lev; lev++)
-    {
+    for (int lev = 0; lev < n_lev; lev++) {
         auto y = get_y(G, ce_levels, sp, lev);
         auto ce_gpof = gpof::gpof(y, sp[lev].d_t);
         ce_levels[lev] = ct_funs[lev](ce_gpof);
     }
+
     return ce_levels;
 }
 

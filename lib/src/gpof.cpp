@@ -37,20 +37,26 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
                            const Params params)
 {
     assert(d_t > 0.0);
+    for (const auto &y_val : y) {
+        assert(std::isfinite(y_val.real()) && std::isfinite(y_val.imag()));
+    }
     int N = y.size();
 
     // Set pencil parameter.
     int L;
-    if (params.L > 0)
+    if (params.L > 0) {
         L = params.L;
-    else
+    } else {
         L = N / 2 - 1;
+    }
 
     // Build matrix Y.
     arma::cx_mat Y(N - L, L + 1);
-    for (arma::uword row = 0; row < Y.n_rows; row++)
-        for (arma::uword col = 0; col < Y.n_cols; col++)
+    for (arma::uword row = 0; row < Y.n_rows; row++) {
+        for (arma::uword col = 0; col < Y.n_cols; col++) {
             Y(row, col) = y[row + col];
+        }
+    }
 
     // Perform SVD.
     arma::cx_mat U;
@@ -61,30 +67,24 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
 
     // Determine model order.
     int M;
-    if (params.M < 0)
-    {
+    if (params.M < 0) {
         M = -1;
-        for (arma::uword i = 1; i < s.n_elem; i++)
-        {
-            if (std::abs(s(i) / s(0)) < params.tol)
-            {
+        for (arma::uword i = 1; i < s.n_elem; i++) {
+            if (std::abs(s(i) / s(0)) < params.tol) {
                 M = i;
                 break;
             }
         }
-        if (-1 == M)
-        {
+        if (-1 == M) {
             M = std::min(params.M_max, L - 1);
         }
-    }
-    else
-    {
+    } else {
         M = params.M;
     }
     assert(M <= L);
     assert(L <= N - M);
 
-    // Compute eigenvalues.
+    // Compute eigenvalues (see Appendix I in Sarkar1995, not (21) and (22)).
     arma::cx_mat Y_1 =
             V(arma::span(1, V.n_rows - 1), arma::span(0, M - 1)).t() *
             V(arma::span(0, V.n_rows - 2), arma::span(0, M - 1));
@@ -95,24 +95,28 @@ std::vector<CmplxExp> gpof(const std::vector<cmplx> &y,
 
     arma::cx_vec z = arma::eig_pair(Y_1, Y_2);
 
-    // Compute exponents (see Appendix I in Sarkar1995 not (21) and (22)).
+    // Solve linear least squares for amplitudes.
     arma::cx_mat Z(N, z.n_elem);
-    for (int r = 0; r < N; r++)
-        for (int c = 0; c < static_cast<int>(z.n_elem); c++)
+    for (int r = 0; r < N; r++) {
+        for (int c = 0; c < static_cast<int>(z.n_elem); c++) {
             Z(r, c) = std::pow(z(c), r);
+        }
+    }
 
     arma::cx_vec rhs(y);
     arma::cx_vec b = arma::solve(Z, rhs);
 
     // Postprocessing.
-    assert(b.n_elem == z.n_elem);
-
     // Note: If z_i is zero the corresponding term of the series is also zero.
     //       Compare (1) and (2) in Sarkar1995.
+    assert(b.n_elem == z.n_elem);
+
     std::vector<CmplxExp> ce;
-    for (arma::uword i = 0; i < z.n_elem; i++)
-        if (z(i).real() != 0.0 && z(i).imag() != 0.0)
+    for (arma::uword i = 0; i < z.n_elem; i++) {
+        if (z(i).real() != 0.0 && z(i).imag() != 0.0) {
             ce.emplace_back( b(i), std::log(z(i)) / d_t );
+        }
+    }
 
     return ce;
 }
@@ -123,10 +127,8 @@ std::vector<cmplx> reconstruct_signal(std::vector<CmplxExp> &ce,
 {
     std::vector<cmplx> y(N);
 
-    for (size_t n = 0; n < N; n++)
-    {
-        for (const auto &elem : ce)
-        {
+    for (size_t n = 0; n < N; n++) {
+        for (const auto &elem : ce) {
             double t = n * d_t;
             y[n] += elem.amp * std::exp(elem.exp * t);
         }

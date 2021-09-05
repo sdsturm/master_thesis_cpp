@@ -11,10 +11,8 @@ MoM::MoM(const FrequencyDomain &fd,
 {
     using std::complex_literals::operator""i;
 
-    for (size_t m = 0; m < obs_pts.size(); m++)
-    {
-        for (size_t m_ = 0; m_ < src_pts.size(); m_++)
-        {
+    for (size_t m = 0; m < obs_pts.size(); m++) {
+        for (size_t m_ = 0; m_ < src_pts.size(); m_++) {
             auto R = arma::norm(obs_pts[m] - src_pts[m_]);
             A(m, m_) = std::exp(1.0i * fd.k_0 * R) / R;
         }

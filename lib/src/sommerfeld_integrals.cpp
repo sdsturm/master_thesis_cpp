@@ -16,8 +16,9 @@ SiParams::SiParams(real alpha, real zeta, bool identify_singularities)
     assert( (std::isnan(alpha) && std::isnan(zeta)) ||
             (std::isfinite(alpha) && std::isfinite(zeta)) );
 
-    if (std::isfinite(zeta))
+    if (std::isfinite(zeta)) {
         assert(zeta >= 0.0);
+    }
 }
 
 SiParams::SiParams()
@@ -57,8 +58,7 @@ SommerfeldIntegral::SommerfeldIntegral(spectral_gf f,
 {
     assert(nu >= 0.0);
 
-    if (params.identify_singularities)
-    {
+    if (params.identify_singularities) {
         this->bp = get_branch_points(lm);
 
         assert(false);	// Not implemented yet.
@@ -86,8 +86,9 @@ cmplx SommerfeldIntegral::eval_integrand_sip(real rho, real z, real z_,
 cmplx SommerfeldIntegral::eval_si_along_sip(real rho, real z, real z_,
                                             pe::Params pe_params) const
 {
-    if (rho == 0.0 && nu != 0.0)
+    if (rho == 0.0 && nu != 0.0) {
         return 0.0;
+    }
 
     auto a = get_a();
 
@@ -120,8 +121,9 @@ const LayeredMedium &SommerfeldIntegral::get_lm() const
 real SommerfeldIntegral::get_a() const
 {
     std::vector<real> k_re(lm.media.size());
-    for (size_t n = 0; n < lm.media.size(); n++)
+    for (size_t n = 0; n < lm.media.size(); n++) {
         k_re[n] = lm.media[n].k.real();
+    }
 
     real k_re_max = *std::max_element(k_re.begin(), k_re.end());
 
@@ -133,10 +135,11 @@ real SommerfeldIntegral::get_a() const
 real SommerfeldIntegral::calc_indention(real rho, real a) const
 {
     real w;
-    if (rho > 0.0)
+    if (rho > 0.0) {
         w = 1.0 / rho;
-    else
+    } else {
         w = a / 2.0;
+    }
 
     return w;
 }
@@ -175,31 +178,25 @@ cmplx SommerfeldIntegral::eval_tail_on_sip(real rho,
                                            const pe::Params &pe_params) const
 {
     auto integrand = [=](real k_rho)
-    { return eval_integrand_sip(rho, z, z_, k_rho); };
+    {
+        return eval_integrand_sip(rho, z, z_, k_rho);
+    };
 
     cmplx val;
-    if (rho > 0.0)
-    {
-        if (std::isfinite(params.alpha) && std::isfinite(params.zeta))
-        {
+    if (rho > 0.0) {
+        if (std::isfinite(params.alpha) && std::isfinite(params.zeta)) {
             return pe::mosig_michalski(integrand,
                                        params.alpha, params.zeta,
                                        nu, rho, a,
                                        pe_params);
-        }
-        else
-        {
+        } else {
             return pe::levin_sidi(integrand, nu, rho, a, pe_params);
         }
-    }
-    else if (rho == 0 && std::abs(z - z_) > 0.0)
-    {
+    } else if (rho == 0 && std::abs(z - z_) > 0.0) {
         constexpr real b = std::numeric_limits<real>::infinity();
         constexpr boost::math::quadrature::gauss_kronrod<real, 15> quad;
         val = quad.integrate(integrand, a, b);
-    }
-    else
-    {
+    } else {
         std::cerr << "SI with rho = |z - z_| = 0. Returning NaN.";
         val = std::numeric_limits<real>::quiet_NaN();
     }
@@ -211,11 +208,13 @@ std::vector<cmplx> get_branch_points(const LayeredMedium &lm)
 {
     std::vector<cmplx> bp_locations;
 
-    if (std::isinf(lm.d.front()))
+    if (std::isinf(lm.d.front())) {
         bp_locations.push_back(lm.media.front().k);
+    }
 
-    if (std::isinf(lm.d.back()))
+    if (std::isinf(lm.d.back())) {
         bp_locations.push_back(lm.media.back().k);
+    }
 
     return bp_locations;
 }
@@ -224,7 +223,7 @@ std::vector<cmplx> identify_swp(/* TODO */)
 {
     std::vector<cmplx> sip_locations;
 
-    // TODO
+    // TODO: implement pole searching algorithm.
 
     return sip_locations;
 }

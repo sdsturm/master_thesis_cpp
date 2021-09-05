@@ -39,14 +39,12 @@ cmplx cmplx_permittivity(const FrequencyDomain &fd, real eps_r, real sigma)
 }
 
 Vacuum::Vacuum(const FrequencyDomain &fd) : Medium(fd, 1.0, 1.0)
-{
-}
+{}
 
 std::vector<real> layer_thicknesses(const std::vector<real> &z_interfaces)
 {
     std::vector<real> d(z_interfaces.size() - 1);
-    for (size_t i = 1; i < z_interfaces.size(); i++)
-    {
+    for (size_t i = 1; i < z_interfaces.size(); i++) {
         assert(z_interfaces[i] > z_interfaces[i - 1]);
         d[i - 1] = z_interfaces[i] - z_interfaces[i - 1];
     }
@@ -67,14 +65,17 @@ LayeredMedium::LayeredMedium(const FrequencyDomain &fd,
     assert(z_interfaces.size() >= 2);
     assert(z_interfaces.size() == media.size() + 1);
 
-    if (top_bc == BC::open)
+    if (top_bc == BC::open) {
         assert(std::isinf(z.back()));
+    }
 
-    if (bottom_bc == BC::open)
+    if (bottom_bc == BC::open) {
         assert(std::isinf(z.front()));
+    }
 
-    for (size_t n = 1; n < d.size() - 1; n++)
+    for (size_t n = 1; n < d.size() - 1; n++) {
         assert(std::isfinite(d[n]));
+    }
 }
 
 int LayeredMedium::identify_layer(real z) const
@@ -82,9 +83,11 @@ int LayeredMedium::identify_layer(real z) const
     assert(z < this->z.back());
     assert(z >= this->z.front());
 
-    for (size_t n = 0; n < media.size(); n++)
-        if (z >= this->z[n] && z < this->z[n + 1])
+    for (size_t n = 0; n < media.size(); n++) {
+        if (z >= this->z[n] && z < this->z[n + 1]) {
             return static_cast<int>(n);
+        }
+    }
 
     throw std::runtime_error("LayeredMedium::identify_layer failed.");
 }
@@ -95,8 +98,7 @@ FreeSpace::FreeSpace(const FrequencyDomain &fd)
                     std::vector<Medium>{Vacuum(fd)},
                     BC::open,
                     BC::open)
-{
-}
+{}
 
 HalfSpace::HalfSpace(const FrequencyDomain &fd, const Medium &ground)
     : LayeredMedium(fd,
@@ -104,8 +106,7 @@ HalfSpace::HalfSpace(const FrequencyDomain &fd, const Medium &ground)
                     std::vector<Medium>{ground, Vacuum(fd)},
                     BC::open,
                     BC::open)
-{
-}
+{}
 
 HalfSpacePEC::HalfSpacePEC(const FrequencyDomain &fd)
     : LayeredMedium(fd,
@@ -113,8 +114,7 @@ HalfSpacePEC::HalfSpacePEC(const FrequencyDomain &fd)
                     std::vector<Medium>{Vacuum(fd)},
                     BC::PEC,
                     BC::open)
-{
-}
+{}
 
 HalfSpacePMC::HalfSpacePMC(const FrequencyDomain &fd)
     : LayeredMedium(fd,
@@ -122,7 +122,6 @@ HalfSpacePMC::HalfSpacePMC(const FrequencyDomain &fd)
                     std::vector<Medium>{Vacuum(fd)},
                     BC::PMC,
                     BC::open)
-{
-}
+{}
 
 } // namespace mthesis

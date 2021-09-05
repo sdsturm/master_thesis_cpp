@@ -83,8 +83,7 @@ double mc_mahon(double nu, unsigned m)
 std::vector<double> get_j_table(double nu)
 {
 
-    if (0.0 == nu)
-    {
+    if (0.0 == nu) {
         return std::vector<double>{
             2.404825557696,
             5.520078110286,
@@ -106,9 +105,7 @@ std::vector<double> get_j_table(double nu)
             55.765510755020,
             58.906983926081,
             62.048469190227};
-    }
-    else if (1.0 == nu)
-    {
+    } else if (1.0 == nu) {
         return std::vector<double>{
             3.831705970208,
             7.015586669816,
@@ -130,9 +127,7 @@ std::vector<double> get_j_table(double nu)
             57.327525437901,
             60.469457845347,
             63.611356698481};
-    }
-    else
-    {
+    } else {
         std::vector<double> j_table;
         constexpr unsigned n_roots = 20;
         boost::math::cyl_bessel_j_zero(
@@ -151,19 +146,29 @@ double get_first_zero(double nu, double a, double rho)
 
     double bessel_arg = a * rho;
 
-    for (size_t i = 0; i < j_table.size(); i++)
-        if (j_table[i] > bessel_arg)
-            return j_table[i] / rho;
-
-    unsigned m = j_table.size();
-    while (true)
-    {
-        auto j = mc_mahon(nu, m);
-        if (j > bessel_arg)
-            return j / rho;
-        else
-            m++;
+    // First search tabulated values.
+    double j_found = std::numeric_limits<double>::quiet_NaN(); // Flag.
+    for (size_t i = 0; i < j_table.size(); i++) {
+        if (j_table[i] > bessel_arg) {
+            j_found = j_table[i];
+            break;
+        }
     }
+
+    // Use McMahon's expansion if not contained in table.
+    unsigned m = j_table.size();
+    while (std::isnan(j_found)) {
+        auto j = mc_mahon(nu, m);
+        if (j > bessel_arg) {
+            j_found = j;
+            break;
+        } else {
+            m++;
+        }
+    }
+
+    // Normalize zero.
+    return j_found / rho;
 }
 
 cmplx integrate_gap(std::function<cmplx(real)> f,
@@ -181,8 +186,9 @@ std::vector<double> get_xi(double a, double rho, unsigned max_intervals)
     std::vector<double> xi(max_intervals + 1);
 
     xi.front() = a;
-    for (size_t i = 1; i < xi.size(); i++)
+    for (size_t i = 1; i < xi.size(); i++) {
         xi[i] = a + i * q;
+    }
 
     return xi;
 }
@@ -191,8 +197,9 @@ bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol)
 {
     std::vector<double> diff(old.size());
 
-    for (size_t i = 0; i < old.size(); i++)
+    for (size_t i = 0; i < old.size(); i++) {
         diff[i] = std::abs(val - old[i]);
+    }
 
     double max = *std::max_element(diff.begin(), diff.end());
 
@@ -208,8 +215,7 @@ cmplx levin_sidi_extrap(int k,
 {
     B[k] = 1.0 / omega_k;
     A[k] = s_k * B[k];
-    for (int j = 1; j <= k; j++)
-    {
+    for (int j = 1; j <= k; j++) {
         double d = 1.0 / xi[k + 1] - 1.0 / xi[k - j + 1];
         A[k - j] = (A[k - j + 1] - A[k - j]) / d;
         B[k - j] = (B[k - j + 1] - B[k - j]) / d;
@@ -231,12 +237,10 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
     std::vector<cmplx> old(2);
 
     int k_max = xi.size() - 2;
-    for (int k = 0; k <= k_max; k++)
-    {
+    for (int k = 0; k <= k_max; k++) {
         cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
         s += u;
-        if (std::abs(u) < 1e-100 && std::abs(s) < 1e-20)
-        {
+        if (std::abs(u) < 1e-100 && std::abs(s) < 1e-20) {
             // Double check if function is identical to zero.
             cmplx u_tot = quad.integrate(f, xi.front(), xi.back());
             assert(std::abs(u_tot) < 1e-16);
@@ -244,8 +248,7 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
         }
         cmplx omega = u;
         cmplx val = levin_sidi_extrap(k, s, omega, xi, A, B);
-        if (k > 1 && check_converged(val, old, params.get_tol()))
-        {
+        if (k > 1 && check_converged(val, old, params.get_tol())) {
             return val;
         }
         old[0] = old[1];
@@ -264,8 +267,7 @@ cmplx mosig_michalski_extrap(double mu,
                              std::vector<cmplx> &R)
 {
     R[k] = s_k;
-    for (int j = 1; j <= k; j++)
-    {
+    for (int j = 1; j <= k; j++) {
         double d = xi[k - j + 2] - xi[k - j + 1];
         double eta = Omega_k / (1.0 + mu * (j - 1) * d / xi[k - j + 1]);
         R[k - j] = (R[k - j + 1] - eta * R[k - j]) / (1.0 - eta);
@@ -285,14 +287,10 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
     auto xi = get_xi(a, rho, params.get_max_intervals());
     std::vector<cmplx> R(xi.size() - 1);
 
-    auto Omega = [&](int k)
-    {
-        if (0 == k)
-        {
+    auto Omega = [&](int k) {
+        if (0 == k) {
             return 0.0;
-        }
-        else
-        {
+        } else {
             return -std::exp(-(xi[k + 1] - xi[k]) * zeta) *
                     std::pow(xi[k] / xi[k + 1], alpha);
         }
@@ -304,13 +302,11 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
 
     using boost::math::quadrature::gauss_kronrod;
     int k_max = xi.size() - 2;
-    for (int k = 0; k <= k_max; k++)
-    {
+    for (int k = 0; k <= k_max; k++) {
         cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
         s += u;
         cmplx val = mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
-        if (k > 1 && check_converged(val, old, params.get_tol()))
-        {
+        if (k > 1 && check_converged(val, old, params.get_tol())) {
             return val;
         }
         old[0] = old[1];

@@ -51,8 +51,9 @@ int main()
 
     // Compute error.
     std::vector<real> rel_err_db(obs_pts.size());
-    for (size_t n = 0; n < obs_pts.size(); n++)
+    for (size_t n = 0; n < obs_pts.size(); n++) {
         rel_err_db[n] = calc_rel_err_db(V_fmm[n], V_mom[n]);
+    }
 
     printf("Maximum error: %.2f dB\n",
            *std::max_element(rel_err_db.begin(), rel_err_db.end()));
