@@ -6,7 +6,7 @@
 #include <vector>
 #include <array>
 
-namespace mthesis::gpof {
+namespace mthesis::dcim::gpof {
 
 struct Params
 {
@@ -30,6 +30,6 @@ std::vector<cmplx> reconstruct_signal(std::vector<CmplxExp> &ce,
                                       double d_t,
                                       unsigned N);
 
-} // namespace mthesis::gpof
+} // namespace mthesis::dcim::gpof
 
 #endif

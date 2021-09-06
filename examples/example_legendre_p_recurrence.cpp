@@ -15,7 +15,7 @@ int main()
         double err_max = 0;
         for (const auto &x : x_vals) {
             auto ref = boost::math::legendre_p(nu, x);
-            auto num = mthesis::legendre_p_recurrence(nu, x);
+            auto num = mthesis::fmm::legendre_p_recurrence(nu, x);
             auto err = std::abs(num - ref);
             if (err > err_max) {
                 err_max = err;

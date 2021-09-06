@@ -1,11 +1,11 @@
 #ifndef MTHESIS_SYNTH_EXPONENTIALS_HPP
 #define MTHESIS_SYNTH_EXPONENTIALS_HPP
 
-#include <mthesis/gpof.hpp>
+#include <mthesis/dcim/gpof.hpp>
 
 #include <random>
 
-namespace mthesis::gpof
+namespace mthesis::dcim::gpof
 {
     struct SynthExponentials
     {
@@ -56,6 +56,6 @@ namespace mthesis::gpof
         }
     };
 
-} // namespace mthesis::gpof
+} // namespace mthesis::dcim::gpof
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace mthesis {
+namespace mthesis::fmm {
 
 template<typename  T>
 T legendre_p_recurrence(unsigned nu, T z)

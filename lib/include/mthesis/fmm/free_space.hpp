@@ -1,7 +1,7 @@
 #ifndef MTHESIS_FMM_FREE_SPACE_HPP
 #define MTHESIS_FMM_FREE_SPACE_HPP
 
-#include <mthesis/fmm_utils.hpp>
+#include <mthesis/fmm/utils.hpp>
 
 namespace mthesis::fmm::freespace {
 

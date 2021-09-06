@@ -1,10 +1,10 @@
-#include <mthesis/gpof.hpp>
+#include <mthesis/dcim/gpof.hpp>
 
 #include <armadillo>
 
 #include <cassert>
 
-namespace mthesis::gpof {
+namespace mthesis::dcim::gpof {
 
 Params::Params() : tol(1e-6), M(-1), M_max(10), L(-1) {}
 
@@ -137,4 +137,4 @@ std::vector<cmplx> reconstruct_signal(std::vector<CmplxExp> &ce,
     return y;
 }
 
-} // namespace mthesis::gpof
+} // namespace mthesis::dcim::gpof

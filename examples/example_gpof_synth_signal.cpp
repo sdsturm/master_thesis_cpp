@@ -1,5 +1,5 @@
 #include <mthesis.hpp>
-#include <mthesis/misc/synth_exponentials.hpp>
+#include <mthesis/dcim/synth_exponentials.hpp>
 
 #include <armadillo>
 #include "./../submodules/gnuplot-iostream/gnuplot-iostream.h"
@@ -9,6 +9,7 @@
 #include <cstdio>
 
 using namespace mthesis;
+using namespace mthesis::dcim;
 
 int main()
 {

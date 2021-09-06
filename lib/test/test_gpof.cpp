@@ -4,12 +4,13 @@
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/data/monomorphic.hpp>
 
-#include <mthesis/gpof.hpp>
-#include <mthesis/misc/synth_exponentials.hpp>
+#include <mthesis/dcim/gpof.hpp>
+#include <mthesis/dcim/synth_exponentials.hpp>
 
 BOOST_AUTO_TEST_SUITE(GPOF)
 
 using namespace mthesis;
+using namespace mthesis::dcim;
 
 constexpr unsigned M_min = 3;
 constexpr unsigned M_max = 21;

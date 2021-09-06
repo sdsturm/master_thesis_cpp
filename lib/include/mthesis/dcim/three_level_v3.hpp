@@ -1,7 +1,7 @@
 #ifndef MTHESIS_DCIM_THREE_LEVELV3_HPP
 #define MTHESIS_DCIM_THREE_LEVELV3_HPP
 
-#include <mthesis/dcim_utils.hpp>
+#include <mthesis/dcim/utils.hpp>
 
 namespace mthesis::dcim::threelevelv2 {
 

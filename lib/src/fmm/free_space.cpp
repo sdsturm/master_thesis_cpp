@@ -1,4 +1,4 @@
-#include <mthesis/fmm_free_space.hpp>
+#include <mthesis/fmm/free_space.hpp>
 
 #include <boost/math/special_functions/hankel.hpp>
 #include <boost/math/special_functions/legendre.hpp>

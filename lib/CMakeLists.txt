@@ -12,14 +12,20 @@ add_compile_options(-pedantic)
 add_library(${PROJECT_NAME} SHARED
     ./src/solution_domain.cpp
     ./src/tlgf.cpp
+
     ./src/partition_extrapolation.cpp
     ./src/sommerfeld_integrals.cpp
+
     ./src/dyadicgf.cpp
-    ./src/gpof.cpp
-    ./src/dcim_utils.cpp
-    ./src/dcim_three_level_v3.cpp
-    ./src/fmm_utils.cpp
-    ./src/fmm_free_space.cpp
+
+    ./src/dcim/gpof.cpp
+    ./src/dcim/utils.cpp
+    ./src/dcim/three_level_v3.cpp
+
+    ./src/fmm/utils.cpp
+    ./src/fmm/free_space.cpp
+    ./src/fmm/gegenbauer.cpp
+
     ./src/mom.cpp
     )
 
