@@ -14,8 +14,11 @@ int main()
 
     fmm::Params params(fd, w);
 
-//    unsigned n_pts = 300;
+#if 1
+    unsigned n_pts = 300;
+#else
     unsigned n_pts = 1e4;
+#endif
 
     auto src_pts = fmm::rand_pts_in_group(params, {0, 0, 4}, n_pts);
     fmm::append_pts(src_pts, fmm::rand_pts_in_group(params, {5, 0, 0}, n_pts));
@@ -34,7 +37,7 @@ int main()
 
     // FMM solution.
     timer.start();
-    fmm::FreeSpaceFMM my_fmm(params, src_pts, obs_pts);
+    fmm::freespace::FMM my_fmm(params, src_pts, obs_pts);
     printf("FMM setup time: %s seconds\n", timer.format(9, "%u").c_str());
 
     timer.start();
