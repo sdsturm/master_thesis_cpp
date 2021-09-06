@@ -2,7 +2,6 @@
 
 namespace mthesis::tlgf {
 
-
 cmplx V_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
@@ -47,6 +46,7 @@ cmplx V_v(const LayeredMedium &lm,
     return utils::I_i_base(lm, z, z_, d);
 }
 
+// Hide implementation details in nested namespace utils.
 namespace utils {
 
 void calc_k_z_select_sheet(std::vector<cmplx> &k_z,
@@ -374,7 +374,7 @@ cmplx calc_tau_prod_d(int m, int n, const Internals &d)
 {
     cmplx val = 1.0;
     for (int k = m + 1; k <= n - 1; k++) {
-        val *= calc_tau_ud(k, d.Gamma_d, d.Gamma_u);
+        val *= calc_tau_ud(k, d.Gamma_d, d.theta);
     }
 
     return val;

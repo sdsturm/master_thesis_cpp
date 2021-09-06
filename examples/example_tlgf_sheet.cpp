@@ -12,16 +12,22 @@ using namespace mthesis;
 
 int main()
 {
+    using std::complex_literals::operator""i;
+
     // Problem specification.
-    FrequencyDomain fd(GSL_CONST_MKSA_SPEED_OF_LIGHT / 1.0);
-    auto eps_r = cmplx_permittivity(fd, 3, 10e-3);
-    Medium ground(fd, eps_r, 1);
-    HalfSpace lm(fd, ground);
+    auto fd = FrequencyDomain(GSL_CONST_MKSA_SPEED_OF_LIGHT / 1.0);
+    Medium medium(fd, 3.0 - 0.2i, 1);
+    std::vector<real> z_interfces = {-INFINITY,
+                                     -fd.lambda_0,
+                                     fd.lambda_0,
+                                     INFINITY};
+    std::vector<Medium> media = {Vacuum(fd), medium, Vacuum(fd)};
+    LayeredMedium lm(fd, z_interfces, media, BC::open, BC::open);
 
     real k_rho = 0.0;
     EmMode type = EmMode::TM;
 
-    real z_ = fd.lambda_0;
+    real z_ = 2.0 * fd.lambda_0;
 
     arma::vec z = arma::linspace(-3, 3, 1e3) * fd.lambda_0;
 

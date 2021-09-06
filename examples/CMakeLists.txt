@@ -8,6 +8,11 @@ target_link_libraries(example_tlgf_hs
     mthesis-lib
     ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
+add_executable(example_tlgf_sheet example_tlgf_sheet.cpp)
+target_link_libraries(example_tlgf_sheet
+    mthesis-lib
+    ${GNUPLOT_IOSTREAM_LINK_LIBS})
+
 add_executable(example_generic_gf example_generic_gf.cpp)
 target_link_libraries(example_generic_gf mthesis-lib)
 
