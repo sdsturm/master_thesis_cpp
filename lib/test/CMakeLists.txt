@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     test_gpof.cpp
     test_fmm_free_space.cpp
     test_sommerfeld_integrals.cpp
+    test_dgf.cpp
     )
 
 target_link_libraries(${PROJECT_NAME}

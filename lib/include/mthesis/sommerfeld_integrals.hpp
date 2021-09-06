@@ -37,7 +37,7 @@ public:
     SommerfeldIntegral(spectral_gf f,
                        real nu,
                        const LayeredMedium &lm,
-                       SiParams params);
+                       SiParams params = SiParams());
 
     cmplx eval_spectral_gf(real z, real z_, cmplx k_rho) const;
 
