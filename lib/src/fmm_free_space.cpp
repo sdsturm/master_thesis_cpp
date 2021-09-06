@@ -120,7 +120,9 @@ FMM::FMM(const Params &params,
       src_ff_all(calc_all_ff(params.fd, es, src_groups, src_pts)),
       obs_ff_all(calc_all_ff(params.fd, es, obs_groups, obs_pts)),
       top_all(calc_all_top(L, params.fd, es, src_groups, obs_groups))
-{}
+{
+    check_group_separation(src_groups, obs_groups, L, fd);
+}
 
 std::vector<cmplx> FMM::calc_product(const std::vector<cmplx> &I) const
 {

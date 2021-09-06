@@ -108,16 +108,16 @@ void GroupSeparationError::print_message() const
     std::cout << "Observation group: multiindex = \n" << og.mi << "\n";
 }
 
-void check_separation(const std::vector<Group> &src_groups,
-                      const std::vector<Group> &obs_groups,
-                      unsigned L,
-                      const FrequencyDomain &fd)
+void check_group_separation(const std::vector<Group> &src_groups,
+                            const std::vector<Group> &obs_groups,
+                            unsigned L,
+                            const FrequencyDomain &fd)
 {
     for (const auto &sg : src_groups) {
         for (const auto &og : obs_groups) {
             real R = arma::norm(og.r_center - sg.r_center);
             real factor = 1.0;	// TODO: play around with this.
-            auto L_max = factor * fd.lambda_0 * R;
+            auto L_max = factor * fd.k_0 * R;
             if (L > L_max)
                 throw GroupSeparationError(sg, og);
         }

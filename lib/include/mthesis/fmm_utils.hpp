@@ -66,8 +66,10 @@ public:
     void print_message() const;
 };
 
-std::vector<Group> build_groups(const Params &params,
-                                const std::vector<VectorR3> &pts);
+void check_group_separation(const std::vector<Group> &src_groups,
+                            const std::vector<Group> &obs_groups,
+                            unsigned L,
+                            const FrequencyDomain &fd);
 
 struct EwaldSphere
 {
