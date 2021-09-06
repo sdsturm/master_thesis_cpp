@@ -5,6 +5,33 @@ namespace mthesis::gf::dyadic
 namespace free_space
 {
 
+DyadC3 G_EJ(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
+{
+    using std::complex_literals::operator""i;
+
+    return -1.0i * medium.fd.omega * medium.mu * utils::G_e0(medium, r, r_);
+
+}
+
+DyadC3 G_EM(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
+{
+    // Use duality; compare (2.2.35) and (2.2.38) in Jin2015.
+    return -utils::G_m0(medium, r, r_);
+}
+
+DyadC3 G_HJ(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
+{
+    return utils::G_m0(medium, r, r_);
+}
+
+DyadC3 G_HM(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
+{
+    using std::complex_literals::operator""i;
+
+    // Use duality; compare (2.2.35) and (2.2.38) in Jin2015.
+    return -1.0i * medium.fd.omega * medium.eps * utils::G_e0(medium, r, r_);
+}
+
 namespace utils {
 
 DyadC3 G_e0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
@@ -26,25 +53,25 @@ DyadC3 G_e0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 
     DyadC3 G;
 
-    G(1, 1) = G_0 * ( -1.0i * pow(R, 3) * k - pow(R,2) * (pow(k, 2) * pow(x - x_, 2) + 1) + 3.0i * R * k * pow(x - x_, 2) + 3 * pow(x - x_, 2) ) / pow(R, 4);
+    G(1, 1) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R,2) * (std::pow(k, 2) * std::pow(x - x_, 2) + 1) + 3.0i * R * k * std::pow(x - x_, 2) + 3 * std::pow(x - x_, 2) ) / std::pow(R, 4);
 
-    G(2, 1) = G_0 * (x - x_) * (y - y_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(2, 1) = G_0 * (x - x_) * (y - y_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(3, 1) = G_0 * (x - x_) * (z - z_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(3, 1) = G_0 * (x - x_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(1, 2) = G_0 * (x - x_) * (y - y_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(1, 2) = G_0 * (x - x_) * (y - y_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(2, 2) = G_0 * ( -1.0i * pow(R, 3) * k - pow(R, 2) * (pow(k, 2) * pow(y - y_, 2) + 1) + 3.0i * R * k * pow(y - y_, 2) + 3 * pow(y - y_, 2) ) / pow(R, 4);
+    G(2, 2) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R, 2) * (std::pow(k, 2) * std::pow(y - y_, 2) + 1) + 3.0i * R * k * std::pow(y - y_, 2) + 3 * std::pow(y - y_, 2) ) / std::pow(R, 4);
 
-    G(3, 2) = G_0 * (y - y_) * (z - z_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(3, 2) = G_0 * (y - y_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(1, 3) = G_0 * (x - x_) * (z - z_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(1, 3) = G_0 * (x - x_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(2, 3) = G_0 * (y - y_) * (z - z_) * (-pow(R, 2) * pow(k, 2) + 3.0i * R * k + 3.0) / pow(R, 4);
+    G(2, 3) = G_0 * (y - y_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(3, 3) = G_0 * (-1.0i * pow(R, 3) * k - pow(R, 2) * (pow(k, 2) * pow(z - z_, 2) + 1) + 3.0i * R * k * pow(z - z_, 2) + 3 * pow(z - z_, 2) ) / pow(R, 4);
+    G(3, 3) = G_0 * (-1.0i * std::pow(R, 3) * k - std::pow(R, 2) * (std::pow(k, 2) * std::pow(z - z_, 2) + 1) + 3.0i * R * k * std::pow(z - z_, 2) + 3 * std::pow(z - z_, 2) ) / std::pow(R, 4);
 
-    G /= pow(k, 2);
+    G /= std::pow(k, 2);
     G += arma::diagmat(arma::ones(3)) * G_0;
     G /= 4.0 * M_PI;
 
@@ -70,9 +97,9 @@ DyadC3 G_m0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 
     arma::cx_vec3 grad_G;
 
-    grad_G(0) = -G_0 * (x - x_) * (1.0i * R * k + 1.0) / pow(R, 2);
-    grad_G(1) = -G_0 * (y - y_) * (1.0i * R * k + 1.0) / pow(R, 2);
-    grad_G(2) = -G_0 * (z - z_) * (1.0i * R * k + 1.0) / pow(R, 2);
+    grad_G(0) = -G_0 * (x - x_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
+    grad_G(1) = -G_0 * (y - y_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
+    grad_G(2) = -G_0 * (z - z_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
 
     DyadC3 G;
 
@@ -85,12 +112,20 @@ DyadC3 G_m0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
     return G;
 }
 
-} // namespace utils
+}
+
+// namespace utils
 
 } // namespace free_space
 
 namespace layered_media
 {
+
+namespace utils {
+
+// TODO
+
+} // namespace utils
 
 } // namespace layered_media
 
