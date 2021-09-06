@@ -11,11 +11,18 @@ namespace mthesis::scalargf {
 
 namespace freespace {
 
-cmplx G_0(const Medium &m, const VectorR3 &r, const VectorR3 &r_)
+cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 {
     using std::complex_literals::operator""i;
     real R = arma::norm(r - r_);
-    return std::exp(-1.0i * m.k * R) / (4.0 * M_PI * R);
+    return std::exp(-1.0i * medium.k * R) / (4.0 * M_PI * R);
+}
+
+cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorC3 &r_)
+{
+    using std::complex_literals::operator""i;
+    cmplx R = cmplx_length(r - r_);
+    return std::exp(-1.0i * medium.k * R) / (4.0 * M_PI * R);
 }
 
 } // namespace freespace

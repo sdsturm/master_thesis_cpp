@@ -63,7 +63,7 @@ f_of_k_hat calc_top(unsigned L,
     real hankel_arg = fd.k_0 * X_norm;
     std::vector<cmplx> hankel_term(L + 1);
     for (unsigned l = 0; l <= L; l++) {
-        hankel_term[l] = std::pow(-1.0i, l) * (2.0*l + 1.0) *
+        hankel_term[l] = std::pow(-1.0i, l) * (2.0 * l + 1.0) *
                 boost::math::sph_hankel_2(l, hankel_arg);
     }
 

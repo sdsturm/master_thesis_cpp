@@ -1,4 +1,4 @@
-#include <mthesis/fmm.hpp>
+#include <mthesis/fmm/helpers.hpp>
 
 #include <gsl/gsl_integration.h>
 
@@ -33,25 +33,27 @@ multiindex identify_group(const Params &params, const VectorR3 &r)
     return mi;
 }
 
+VectorR3 rand_point_in_group(const Params &params, const multiindex &mi)
+{
+    std::random_device dev;
+    std::mt19937 gen(dev());
+    real d = params.w / 2.0;
+    std::uniform_real_distribution<real> dist(-d , d);
+
+    VectorR3 r_center = group_center(params, mi);
+    VectorR3 shift = {dist(gen), dist(gen), dist(gen)};
+
+    return r_center + shift;
+}
+
 std::vector<VectorR3> rand_pts_in_group(const Params &params,
                                         const multiindex &mi,
                                         unsigned N)
 {
-    auto r_center = group_center(params, mi);
-    std::vector<VectorR3> pts(N, r_center);
+    std::vector<VectorR3> pts(N);
 
-    real d = params.w / 2.0;
-
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::uniform_real_distribution<real> dist(-d , d);
-
-    auto rand_rel_point = [&]() {
-        return VectorR3 {dist(gen), dist(gen), dist(gen)};
-    };
-
-    for (auto &r : pts) {
-        r += rand_rel_point();
+    for (size_t n = 0; n < pts.size(); n++) {
+        pts[n] = rand_point_in_group(params, mi);
     }
 
     return pts;

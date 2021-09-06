@@ -4,11 +4,14 @@
 #include <armadillo>
 
 #include <complex>
+#include <cmath>
 
 namespace mthesis {
 
 using real = double;
 using cmplx = std::complex<real>;
+
+enum class EmMode{TM, TE};
 
 using VectorR3 = arma::vec3;
 using VectorC3 = arma::cx_vec3;
@@ -39,7 +42,21 @@ struct LayeredMediumCoords
     }
 };
 
-enum class EmMode{TM, TE};
+inline cmplx cmplx_length(const VectorC3 &r)
+{
+    cmplx val;
+    for (const auto &component : r) {
+        val += std::pow(component, 2.0);
+    }
+    val = std::sqrt(val);
+
+    // Choose branch with non-negative real part, see Hansen2013.
+    if (val.real() < 0.0) {
+        val *= -1.0;
+    }
+
+    return val;
+}
 
 template <typename T1, typename T2>
 real calc_rel_err(T1 num, T2 ref)

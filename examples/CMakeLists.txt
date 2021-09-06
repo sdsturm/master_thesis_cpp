@@ -29,6 +29,10 @@ target_link_libraries(example_legendre_p_recurrence
     mthesis-lib
     ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
+add_executable(example_gegenbauer_formula example_gegenbauer_formula.cpp)
+target_link_libraries(example_gegenbauer_formula mthesis-lib)
+
+
 
 
 

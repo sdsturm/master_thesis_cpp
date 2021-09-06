@@ -1,5 +1,5 @@
-#ifndef MTHESIS_FMM_UTILS_HPP
-#define MTHESIS_FMM_UTILS_HPP
+#ifndef MTHESIS_FMM_HELPERS_HPP
+#define MTHESIS_FMM_HELPERS_HPP
 
 #include <mthesis/definitions.hpp>
 #include <mthesis/solution_domain.hpp>
@@ -33,6 +33,10 @@ using f_of_k_hat = std::vector<cmplx>;
 VectorR3 group_center(const Params &params, const multiindex &mi);
 
 multiindex identify_group(const Params &params, const VectorR3 &r);
+
+VectorR3 pseudo_rand_point_in_group(const Params &params, const multiindex &mi);
+
+VectorR3 rand_point_in_group(const Params &params, const multiindex &mi);
 
 std::vector<VectorR3> rand_pts_in_group(const Params &params,
                                         const multiindex &mi,
@@ -85,5 +89,5 @@ struct EwaldSphere
 } // namespace mthesis::fmm
 
 
-#endif // MTHESIS_FMM_UTILS_HPP
+#endif // MTHESIS_FMM_HELPERS_HPP
 
