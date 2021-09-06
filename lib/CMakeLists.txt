@@ -16,7 +16,7 @@ add_library(${PROJECT_NAME} SHARED
     ./src/partition_extrapolation.cpp
     ./src/sommerfeld_integrals.cpp
 
-    ./src/dyadicgf.cpp
+    ./src/gf/scalar.cpp
 
     ./src/dcim/gpof.cpp
     ./src/dcim/utils.cpp

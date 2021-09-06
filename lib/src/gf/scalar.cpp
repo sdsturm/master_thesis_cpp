@@ -1,15 +1,11 @@
-#ifndef MTHESIS_SCALAR_GF_HPP
-#define MTHESIS_SCALAR_GF_HPP
+#include <mthesis/gf/scalar.hpp>
 
-#include <mthesis/definitions.hpp>
-#include <mthesis/solution_domain.hpp>
 #include <mthesis/tlgf.hpp>
 #include <mthesis/sommerfeld_integrals.hpp>
 
-// Generic scalar Green's functions.
-namespace mthesis::scalargf {
+namespace mthesis::gf::scalar {
 
-namespace freespace {
+namespace free_space {
 
 cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 {
@@ -25,16 +21,16 @@ cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorC3 &r_)
     return std::exp(-1.0i * medium.k * R) / (4.0 * M_PI * R);
 }
 
-} // namespace freespace
+} // namespace free_space
 
-namespace layeredmedia {
+namespace layered_media {
 
 cmplx generic_spectral(const LayeredMedium &lm,
-                          real z,
-                          real z_,
-                          cmplx k_rho,
-                          EmMode mode,
-                          bool direct_term)
+                       real z,
+                       real z_,
+                       cmplx k_rho,
+                       EmMode mode,
+                       bool direct_term)
 {
     using std::complex_literals::operator""i;
 
@@ -51,7 +47,7 @@ SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
                                            real nu,
                                            EmMode mode,
                                            bool direct_term,
-                                           SiParams si_params = SiParams())
+                                           SiParams si_params)
 {
     auto f = [=](real z, real z_, cmplx k_rho)
     {
@@ -61,8 +57,6 @@ SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
     return SommerfeldIntegral(f, nu, lm, si_params);
 }
 
-} // namespace layeredmedia
+} // namespace layered_media
 
-} // namespace mthesis::scalargf
-
-#endif
+} // namespace mthesis::gf::scalar

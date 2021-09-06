@@ -18,7 +18,8 @@ int main(int argc, char** argv)
     EmMode mode = EmMode::TM;	// Does not matter here...
     bool direct_term = true;
     real nu = 0;
-    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
+    auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
+                                                                 direct_term);
 
     VectorR3 r_ = {0, 0, 0};
     r_ *= fd.lambda_0;
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
-            auto ref = scalargf::freespace::G_0(vacuum, r, r_);
+            cmplx ref = gf::scalar::free_space::G_0(vacuum, r, r_);
 
             // Multiple runs for timer.
             int N_runs = 50;

@@ -30,7 +30,8 @@ BOOST_DATA_TEST_CASE(sommerfeld_identity,
     auto lm = FreeSpace(fd);
     bool direct_term = true;
     real nu = 0;
-    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
+    auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
+                                                                 direct_term);
 
     VectorR3 r_ = {0, 0, 0};
     r_ *= fd.lambda_0;
@@ -43,7 +44,7 @@ BOOST_DATA_TEST_CASE(sommerfeld_identity,
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
-            cmplx ref = scalargf::freespace::G_0(vacuum, r, r_);
+            cmplx ref = gf::scalar::free_space::G_0(vacuum, r, r_);
 
             // Multiple runs for timer.
             cmplx num = si.eval_si_along_sip(r, r_);

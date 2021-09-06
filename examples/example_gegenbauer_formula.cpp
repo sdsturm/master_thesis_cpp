@@ -1,5 +1,5 @@
 #include <mthesis/fmm/gegenbauer.hpp>
-#include <mthesis/scalargf.hpp>
+#include <mthesis/gf.hpp>
 
 #include <gsl/gsl_const_mksa.h>
 
@@ -17,7 +17,7 @@ int main()
     VectorR3 r =  fmm::rand_point_in_group(params, {10, 0, 0});
     VectorR3 r_ = fmm::rand_point_in_group(params, {0, 0, 0});
 
-    cmplx ref = scalargf::freespace::G_0(medium, r, r_);
+    cmplx ref = gf::scalar::free_space::G_0(medium, r, r_);
 
     unsigned L = 20;
     cmplx num = fmm::compute_gegenbauer_pw(params, r, r_, L);

@@ -36,7 +36,8 @@ int main()
     bool direct_term = false;
     real nu = 0;
     
-    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
+    auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
+                                                                 direct_term);
 
     auto lmc = LayeredMediumCoords(r, r_);
     auto val_ref = si.eval_si_along_sip(r, r_);

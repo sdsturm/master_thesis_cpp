@@ -19,7 +19,8 @@ int main()
     real nu = 0;
     bool direct_term = true;
 
-    auto si = scalargf::layeredmedia::get_sommerfeld_integral(lm, nu, mode, direct_term);
+    auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
+                                                                 direct_term);
 
     VectorR3 r_ = {0, 0, 1};
     r_ *= fd.lambda_0;

@@ -9,12 +9,12 @@
 #include <mthesis/partition_extrapolation.hpp>
 #include <mthesis/sommerfeld_integrals.hpp>
 
-#include <mthesis/scalargf.hpp>
-#include <mthesis/dyadicgf.hpp>
+#include <mthesis/gf.hpp>
 
 #include <mthesis/dcim.hpp>
 
 #include <mthesis/fmm.hpp>
+
 #include <mthesis/mom.hpp>
 
 #endif
