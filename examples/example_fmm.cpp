@@ -29,7 +29,6 @@ int main()
     fmm::append_pts(obs_pts, fmm::rand_pts_in_group(params, {30, 10, 5}, n_pts));
     fmm::append_pts(obs_pts, fmm::rand_pts_in_group(params, {-50, -10, -10}, n_pts));
 
-
     // Excitation vector.
     std::vector<cmplx> I(src_pts.size(), 1.0);
 

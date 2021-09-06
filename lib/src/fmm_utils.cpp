@@ -50,7 +50,7 @@ std::vector<VectorR3> rand_pts_in_group(const Params &params,
         return VectorR3 {dist(gen), dist(gen), dist(gen)};
     };
 
-    for (auto r : pts) {
+    for (auto &r : pts) {
         r += rand_rel_point();
     }
 
