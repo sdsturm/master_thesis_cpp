@@ -19,8 +19,8 @@ target_link_libraries(example_fmm
     mthesis-lib
     Boost::timer)
 
-add_executable(example_complex_legendre example_complex_legendre.cpp)
-target_link_libraries(example_complex_legendre
+add_executable(example_legendre_p_recurrence example_legendre_p_recurrence.cpp)
+target_link_libraries(example_legendre_p_recurrence
     mthesis-lib
     ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
