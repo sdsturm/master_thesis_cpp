@@ -7,6 +7,23 @@
 
 int main()
 {
+#if 1
+    arma::vec x_vals = arma::linspace(-1, 1, 51);
+
+    unsigned nu_max = 500;
+    for (unsigned nu = 0; nu <= nu_max; nu++) {
+        double err_max = 0;
+        for (const auto &x : x_vals) {
+            auto ref = boost::math::legendre_p(nu, x);
+            auto num = mthesis::legendre_p_recurrence(nu, x);
+            auto err = std::abs(num - ref);
+            if (err > err_max) {
+                err_max = err;
+            }
+        }
+        printf("L = %3d    max_err = %.4e\n", nu, err_max);
+    }
+#else
     arma::vec x_vals = arma::linspace(-1, 1, 61);
     arma::vec y_vals = arma::linspace(-1, 1, 61);
 
@@ -35,6 +52,7 @@ int main()
         }
         printf("\n");
     }
+#endif
 
     return 0;
 }

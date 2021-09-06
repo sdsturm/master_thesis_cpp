@@ -1,37 +1,29 @@
 #ifndef MTHESIS_LEGENDRE_P_RECURRENCE_HPP
 #define MTHESIS_LEGENDRE_P_RECURRENCE_HPP
 
-#include <complex>
-#include <iostream>
+#include <vector>
 
 namespace mthesis {
 
-template<typename T>
+template<typename  T>
 T legendre_p_recurrence(unsigned nu, T z)
 {
-    if (nu > 30) {
-        std::cerr << "WARNING: legendre_p_recurrence "
-                     "is slow for large degrees as nu = " << nu << "\n";
-    }
-    // See NIST Handbook of Mathematical Functions (14.10.3).
-    T val;
+    // See (14.10.3) in NIST Handbook of Mathematical Functions.
+    std::vector<T> P(nu + 1);
 
-    switch (nu) {
-    case 0:
-        val = 1;
-        break;
-    case 1:
-        val = z;
-        break;
-    default:
-        T t1 = static_cast<T>(2 * nu - 1) * z * legendre_p_recurrence(nu - 1, z);
-        T t2 = static_cast<T>(nu - 1) * legendre_p_recurrence(nu - 2, z);
-        T den = static_cast<T>(nu);
-        val = (t1 - t2) / den;
-        break;
+    P[0] = static_cast<T>(1);
+    if (nu > 0) {
+        P[1] = z;
+        if (nu > 1) {
+            for (unsigned l = 2; l <= nu; l++) {
+                T den = static_cast<T>(l);
+                T t1 = static_cast<T>(2 * l - 1) * z * P[l - 1];
+                T t2 = static_cast<T>(l - 1) * P[l - 2];
+                P[l] = (t1 - t2) / den;
+            }
+        }
     }
-
-    return val;
+    return P.back();
 }
 
 } // namespace mthesis
