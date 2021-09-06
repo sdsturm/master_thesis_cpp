@@ -17,6 +17,7 @@ add_library(${PROJECT_NAME} SHARED
     ./src/sommerfeld_integrals.cpp
 
     ./src/gf/scalar.cpp
+    ./src/gf/dyadic.cpp
 
     ./src/dcim/gpof.cpp
     ./src/dcim/utils.cpp
