@@ -11,6 +11,7 @@ MoM::MoM(const FrequencyDomain &fd,
 {
     using std::complex_literals::operator""i;
 
+#pragma omp parallel for collapse(2)
     for (size_t m = 0; m < obs_pts.size(); m++) {
         for (size_t m_ = 0; m_ < src_pts.size(); m_++) {
             auto R = arma::norm(obs_pts[m] - src_pts[m_]);

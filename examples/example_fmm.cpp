@@ -14,7 +14,7 @@ int main()
 
     fmm::Params params(fd, w);
 
-#if 1
+#if 0
     unsigned n_pts = 300;
 #else
     unsigned n_pts = 1e4;
