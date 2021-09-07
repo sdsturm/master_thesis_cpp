@@ -58,42 +58,29 @@ DyadC3 G_e0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 
     DyadC3 G;
 
-    G(0, 0) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R,2) *
-                      (std::pow(k, 2) * std::pow(x - x_, 2) + 1) +
-                      3.0i * R * k * std::pow(x - x_, 2) +
-                      3 * std::pow(x - x_, 2) ) / std::pow(R, 4);
+    G(0, 0) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R, 2) * ( std::pow(k * (x - x_), 2) + 1.0 ) + 3.0i * R * k * std::pow(x - x_, 2) + 3.0 * std::pow(x - x_, 2) ) / std::pow(R, 4);
 
-    G(1, 0) = G_0 * (x - x_) * (y - y_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(1, 0) = G_0 * (x - x_) * (y - y_) * (-std::pow(R * k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(2, 0) = G_0 * (x - x_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(2, 0) = G_0 * (x - x_) * (z - z_) * (-std::pow(R * k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(0, 1) = G_0 * (x - x_) * (y - y_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(0, 1) = G_0 * (x - x_) * (y - y_) * (-std::pow(R * k, 2) + 3.0i * R * k + 3.0) / std::pow(R, 4);
 
-    G(1, 1) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R, 2) *
-                      (std::pow(k, 2) * std::pow(y - y_, 2) + 1) +
-                      3.0i * R * k * std::pow(y - y_, 2)
-                      + 3 * std::pow(y - y_, 2) ) / std::pow(R, 4);
+    G(1, 1) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R, 2) * ( std::pow(k * (y - y_), 2) + 1.0 ) + 3.0i * R * k * std::pow(y - y_, 2) + 3.0 * std::pow(y - y_, 2) ) / std::pow(R, 4);
 
-    G(2, 1) = G_0 * (y - y_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(2, 1) = G_0 * (y - y_) * (z - z_) * ( -std::pow(R * k, 2) + 3.0i * R * k + 3.0 ) / std::pow(R, 4);
 
-    G(0, 2) = G_0 * (x - x_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(0, 2) = G_0 * (x - x_) * (z - z_) * ( -std::pow(R * k, 2) + 3.0i * R * k + 3.0 ) / std::pow(R, 4);
 
-    G(1, 2) = G_0 * (y - y_) * (z - z_) * (-std::pow(R, 2) * std::pow(k, 2) +
-                                           3.0i * R * k + 3.0) / std::pow(R, 4);
+    G(1, 2) = G_0 * (y - y_) * (z - z_) * ( -std::pow(R * k, 2) + 3.0i * R * k + 3.0 ) / std::pow(R, 4);
 
-    G(2, 2) = G_0 * (-1.0i * std::pow(R, 3) * k -
-                     std::pow(R, 2) * (std::pow(k, 2) *
-                                       std::pow(z - z_, 2) + 1) +
-                     3.0i * R * k * std::pow(z - z_, 2) +
-                     3 * std::pow(z - z_, 2) ) / std::pow(R, 4);
+    G(2, 2) = G_0 * ( -1.0i * std::pow(R, 3) * k - std::pow(R, 2) * ( std::pow(k * (z - z_), 2) + 1.0 ) + 3.0i * R * k * std::pow(z - z_, 2) + 3.0 * std::pow(z - z_, 2) ) / std::pow(R, 4);
 
     G /= std::pow(k, 2);
-    G += arma::diagmat(arma::ones(3)) * G_0;
+
+    arma::cx_mat33 I(arma::fill::eye);
+    G += I * G_0;
+
     G /= 4.0 * M_PI;
 
     return G;
@@ -118,15 +105,24 @@ DyadC3 G_m0(const Medium &medium, const VectorR3 &r, const VectorR3 &r_)
 
     arma::cx_vec3 grad_G;
 
-    grad_G(0) = -G_0 * (x - x_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
-    grad_G(1) = -G_0 * (y - y_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
-    grad_G(2) = -G_0 * (z - z_) * (1.0i * R * k + 1.0) / std::pow(R, 2);
+    cmplx term = -G_0 * (1.0i * R * k + 1.0) / std::pow(R, 2);
+    grad_G(0) = term * (x - x_);
+    grad_G(1) = term * (y - y_);
+    grad_G(2) = term * (z - z_);
 
     DyadC3 G;
 
-    G.col(0) = arma::cross(grad_G, arma::cx_vec3 {1, 0, 0});
-    G.col(1) = arma::cross(grad_G, arma::cx_vec3 {1, 0, 0});
-    G.col(2) = arma::cross(grad_G, arma::cx_vec3 {1, 0, 0});
+    G(0, 0) = 0;
+    G(1, 0) = grad_G(2);
+    G(2, 0) = -grad_G(1);
+
+    G(0, 1) = -grad_G(2);
+    G(1, 1) = 0;
+    G(2, 1) = grad_G(0);
+
+    G(0, 2) = grad_G(1);
+    G(1, 2) = -grad_G(0);
+    G(2, 2) = 0;
 
     G /= 4.0 * M_PI;
 
@@ -193,13 +189,13 @@ DyadC3 G_HJ(const LayeredMedium &lm, const VectorR3 &r, const VectorR3 &r_)
 DyadC3 G_EM(const LayeredMedium &lm, const VectorR3 &r, const VectorR3 &r_)
 {
     // Use reciprocity relation (10) in Michalski2005.
-    return -arma::strans(G_HJ(lm, r, r_));
+    return -arma::strans(G_HJ(lm, r_, r));
 }
 
 // Hide details.
 namespace utils {
 
-real get_Z_0()
+real get_eta_0()
 {
     return sqrt(GSL_CONST_MKSA_VACUUM_PERMEABILITY /
                 GSL_CONST_MKSA_VACUUM_PERMITTIVITY);
@@ -211,7 +207,7 @@ cmplx calc_electric_factor(const LayeredMedium &lm, real z)
 
     size_t m = lm.identify_layer(z);
 
-    return get_Z_0() / (1.0i * lm.fd.k_0 * lm.media[m].eps_r);
+    return get_eta_0() / (1.0i * lm.fd.k_0 * lm.media[m].eps_r);
 }
 
 cmplx calc_magnetic_factor(const LayeredMedium &lm, real z)
@@ -220,7 +216,7 @@ cmplx calc_magnetic_factor(const LayeredMedium &lm, real z)
 
     size_t m = lm.identify_layer(z);
 
-    return 1.0 / (1.0i * lm.fd.k_0 * get_Z_0() * lm.media[m].mu_r);
+    return 1.0 / (1.0i * lm.fd.k_0 * get_eta_0() * lm.media[m].mu_r);
 }
 
 std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
@@ -228,43 +224,43 @@ std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
 {
     using namespace mthesis::tlgf;
 
-    auto f1 = [=](real z, real z_, cmplx k_rho)
+    auto f0 = [=](real z, real z_, cmplx k_rho)
     {
         return V_i(lm, k_rho, z, z_, EmMode::TM);
     };
 
-    auto f2 = [=](real z, real z_, cmplx k_rho)
+    auto f1 = [=](real z, real z_, cmplx k_rho)
     {
         return V_i(lm, k_rho, z, z_, EmMode::TE);
     };
 
-    auto f3 = [=](real z, real z_, cmplx k_rho)
+    auto f2 = [=](real z, real z_, cmplx k_rho)
     {
-        return f1(z, z_, k_rho) * f2(z, z_, k_rho) / k_rho;
+        return (f0(z, z_, k_rho) - f1(z, z_, k_rho)) / k_rho;
     };
 
-    auto f4 = [=](real z, real z_, cmplx k_rho)
+    auto f3 = [=](real z, real z_, cmplx k_rho)
     {
         return k_rho * V_v(lm, k_rho, z, z_, EmMode::TM);
     };
 
-    auto f5 = [=](real z, real z_, cmplx k_rho)
+    auto f4 = [=](real z, real z_, cmplx k_rho)
     {
         return k_rho * I_i(lm, k_rho, z, z_, EmMode::TM);
     };
 
-    auto f6 = [=](real z, real z_, cmplx k_rho)
+    auto f5 = [=](real z, real z_, cmplx k_rho)
     {
         return pow(k_rho, 2) * I_v(lm, k_rho, z, z_, EmMode::TM);
     };
 
     std::vector<SommerfeldIntegral> si;
+    si.push_back(SommerfeldIntegral(f0, 0, lm));
     si.push_back(SommerfeldIntegral(f1, 0, lm));
-    si.push_back(SommerfeldIntegral(f2, 0, lm));
+    si.push_back(SommerfeldIntegral(f2, 1, lm));
     si.push_back(SommerfeldIntegral(f3, 1, lm));
     si.push_back(SommerfeldIntegral(f4, 1, lm));
-    si.push_back(SommerfeldIntegral(f5, 1, lm));
-    si.push_back(SommerfeldIntegral(f6, 0, lm));
+    si.push_back(SommerfeldIntegral(f5, 0, lm));
 
     std::vector<cmplx> si_vals(6);
     for (size_t n = 0; n < si.size(); n++) {
@@ -279,90 +275,45 @@ std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm,
 {
     using namespace mthesis::tlgf;
 
-    auto f1 = [=](real z, real z_, cmplx k_rho)
+    auto f0 = [=](real z, real z_, cmplx k_rho)
     {
         return I_v(lm, k_rho, z, z_, EmMode::TE);
     };
 
-    auto f2 = [=](real z, real z_, cmplx k_rho)
+    auto f1 = [=](real z, real z_, cmplx k_rho)
     {
         return I_v(lm, k_rho, z, z_, EmMode::TM);
     };
 
-    auto f3 = [=](real z, real z_, cmplx k_rho)
+    auto f2 = [=](real z, real z_, cmplx k_rho)
     {
-        return f1(z, z_, k_rho) * f2(z, z_, k_rho) / k_rho;
+        return (f0(z, z_, k_rho) - f1(z, z_, k_rho)) / k_rho;
     };
 
-    auto f4 = [=](real z, real z_, cmplx k_rho)
+    auto f3 = [=](real z, real z_, cmplx k_rho)
     {
         return k_rho * I_i(lm, k_rho, z, z_, EmMode::TE);
     };
 
-    auto f5 = [=](real z, real z_, cmplx k_rho)
+    auto f4 = [=](real z, real z_, cmplx k_rho)
     {
         return k_rho * V_v(lm, k_rho, z, z_, EmMode::TE);
     };
 
-    auto f6 = [=](real z, real z_, cmplx k_rho)
+    auto f5 = [=](real z, real z_, cmplx k_rho)
     {
         return pow(k_rho, 2) * V_i(lm, k_rho, z, z_, EmMode::TE);
     };
 
     std::vector<SommerfeldIntegral> si;
+    si.push_back(SommerfeldIntegral(f0, 0, lm));
     si.push_back(SommerfeldIntegral(f1, 0, lm));
-    si.push_back(SommerfeldIntegral(f2, 0, lm));
+    si.push_back(SommerfeldIntegral(f2, 1, lm));
     si.push_back(SommerfeldIntegral(f3, 1, lm));
     si.push_back(SommerfeldIntegral(f4, 1, lm));
-    si.push_back(SommerfeldIntegral(f5, 1, lm));
-    si.push_back(SommerfeldIntegral(f6, 0, lm));
+    si.push_back(SommerfeldIntegral(f5, 0, lm));
 
     std::vector<cmplx> si_vals(6);
-    for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
-    }
-
-    return si_vals;
-}
-
-std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
-                                     const LayeredMediumCoords &coords)
-{
-    using namespace mthesis::tlgf;
-
-    auto f1 = [=](real z, real z_, cmplx k_rho)
-    {
-        return I_i(lm, k_rho, z, z_, EmMode::TE);
-    };
-
-    auto f2 = [=](real z, real z_, cmplx k_rho)
-    {
-        return I_i(lm, k_rho, z, z_, EmMode::TM);
-    };
-
-    auto f3 = [=](real z, real z_, cmplx k_rho)
-    {
-        return (f1(z, z_, k_rho) - f2(z, z_, k_rho)) / k_rho;
-    };
-
-    auto f4 = [=](real z, real z_, cmplx k_rho)
-    {
-        return k_rho * I_v(lm, k_rho, z, z_, EmMode::TM);
-    };
-
-    auto f5 = [=](real z, real z_, cmplx k_rho)
-    {
-        return k_rho * V_i(lm, k_rho, z, z_, EmMode::TE);
-    };
-
-    std::vector<SommerfeldIntegral> si;
-    si.push_back(SommerfeldIntegral(f1, 0, lm));
-    si.push_back(SommerfeldIntegral(f2, 0, lm));
-    si.push_back(SommerfeldIntegral(f3, 1, lm));
-    si.push_back(SommerfeldIntegral(f4, 1, lm));
-    si.push_back(SommerfeldIntegral(f5, 1, lm));
-
-    std::vector<cmplx> si_vals(5);
     for (size_t n = 0; n < si.size(); n++) {
         si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
     }
@@ -382,6 +333,13 @@ cmplx G_EJ_HM_xx(const std::vector<cmplx> &si_vals,
     return val;
 }
 
+cmplx G_EJ_HM_xz(const std::vector<cmplx> &si_vals,
+                 const LayeredMediumCoords &coords,
+                 cmplx f_)
+{
+    return f_ * cos(coords.phi) * si_vals[3];
+}
+
 cmplx G_EJ_HM_yx(const std::vector<cmplx> &si_vals,
                  const LayeredMediumCoords &coords)
 {
@@ -392,13 +350,6 @@ cmplx G_EJ_HM_yx(const std::vector<cmplx> &si_vals,
     }
 
     return sin(2.0 * coords.phi) * val;
-}
-
-cmplx G_EJ_HM_xz(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
-                 cmplx f_)
-{
-    return f_ * cos(coords.phi) * si_vals[3];
 }
 
 cmplx G_EJ_HM_yy(const std::vector<cmplx> &si_vals,
@@ -470,6 +421,51 @@ DyadC3 G_EJ_HM_common(const std::vector<cmplx> &si_vals,
     G(2, 2) = G_EJ_HM_zz(si_vals, coords, f, f_);
 
     return G;
+}
+
+std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
+                                     const LayeredMediumCoords &coords)
+{
+    using namespace mthesis::tlgf;
+
+    auto f0 = [=](real z, real z_, cmplx k_rho)
+    {
+        return I_i(lm, k_rho, z, z_, EmMode::TE);
+    };
+
+    auto f1 = [=](real z, real z_, cmplx k_rho)
+    {
+        return I_i(lm, k_rho, z, z_, EmMode::TM);
+    };
+
+    auto f2 = [=](real z, real z_, cmplx k_rho)
+    {
+        return (f0(z, z_, k_rho) - f1(z, z_, k_rho)) / k_rho;
+    };
+
+    auto f3 = [=](real z, real z_, cmplx k_rho)
+    {
+        return k_rho * I_v(lm, k_rho, z, z_, EmMode::TM);
+    };
+
+    auto f4 = [=](real z, real z_, cmplx k_rho)
+    {
+        return k_rho * V_i(lm, k_rho, z, z_, EmMode::TE);
+    };
+
+    std::vector<SommerfeldIntegral> si;
+    si.push_back(SommerfeldIntegral(f0, 0, lm));
+    si.push_back(SommerfeldIntegral(f1, 0, lm));
+    si.push_back(SommerfeldIntegral(f2, 1, lm));
+    si.push_back(SommerfeldIntegral(f3, 1, lm));
+    si.push_back(SommerfeldIntegral(f4, 1, lm));
+
+    std::vector<cmplx> si_vals(5);
+    for (size_t n = 0; n < si.size(); n++) {
+        si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
+    }
+
+    return si_vals;
 }
 
 cmplx G_HJ_xx(const std::vector<cmplx> &si_vals,

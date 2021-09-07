@@ -39,6 +39,7 @@ cmplx V_v(const LayeredMedium &lm,
 // Hide implementation details in nested namespace utils.
 namespace utils {
 
+// Basic quantities like k_z, impedance, reflection coefficients, ...
 void calc_k_z_select_sheet(std::vector<cmplx> &k_z, RiemannSheet sheet);
 
 std::vector<cmplx> calc_k_z(const LayeredMedium &lm,
@@ -81,6 +82,7 @@ struct Internals
               RiemannSheet riemann_sheet = RiemannSheet::I);
 };
 
+// TLGF for z inside source layer.
 std::vector<cmplx> calc_R(const Internals &d, int n);
 
 std::vector<cmplx> calc_zeta(const LayeredMedium &lm, real z, real z_, int n);
@@ -106,6 +108,7 @@ cmplx I_i_src(const LayeredMedium &lm,
               int n,
               const Internals &d);
 
+// Transmission through the structure if n != m.
 cmplx calc_tau_ud(int n,
                   const std::vector<cmplx> &Gamma_ud,
                   const std::vector<cmplx> &theta);
@@ -140,6 +143,7 @@ cmplx T_u(const LayeredMedium &lm,
           std::function<cmplx(cmplx, cmplx)> pm_operator,
           const Internals &d);
 
+// General TLGF.
 cmplx V_i_base_generic(const LayeredMedium &lm,
                        real z,
                        real z_,

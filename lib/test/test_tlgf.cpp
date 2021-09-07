@@ -8,6 +8,7 @@
 BOOST_TEST_DONT_PRINT_LOG_VALUE( mthesis::EmMode ) // To avoid compiler error.
 #include <mthesis/solution_domain.hpp>
 #include <mthesis/tlgf.hpp>
+#include <mthesis/gf/scalar.hpp>
 
 #include <armadillo>
 #include <gsl/gsl_const_mksa.h>
@@ -35,7 +36,7 @@ cmplx rand_k_rho(const FrequencyDomain &fd)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<real> dist_re(0.0, 2.0 * fd.k_0);
-    std::uniform_real_distribution<real> dist_im(0.0, 2.0 * fd.k_0);
+    std::uniform_real_distribution<real> dist_im(0.0, 1.0 * fd.k_0);
     return cmplx(dist_re(gen), dist_im(gen));
 }
 
