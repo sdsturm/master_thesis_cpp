@@ -9,23 +9,14 @@
 
 namespace mthesis {
 
-class SommerfeldIntegral; 	// Forward for friend declaration in SiParams.
-
-class SiParams
+struct SiParams
 {
-    friend class SommerfeldIntegral;
-public:
-    SiParams(real alpha, real zeta, bool identify_singularities = false);
-    SiParams();
-
-    void set_alpha(real alpha);
-    void set_zeta(real zeta);
-    void set_identify_singularities(bool identify_singularities);
-
-private:
     real alpha;				// Michalski2016a (70)
     real zeta;				// Michalski2016a (70)
     bool identify_singularities;
+
+    SiParams(real alpha, real zeta, bool identify_singularities = false);
+    SiParams();
 };
 
 

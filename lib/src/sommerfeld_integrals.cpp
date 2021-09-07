@@ -27,24 +27,6 @@ SiParams::SiParams()
                false)
 {}
 
-void SiParams::set_alpha(real alpha)
-{
-    assert(std::isfinite(alpha));
-    this->alpha = alpha;
-}
-
-void SiParams::set_zeta(real zeta)
-{
-    assert(zeta >= 0.0);
-    this->zeta = zeta;
-}
-
-void SiParams::set_identify_singularities(bool identify_singularities)
-{
-    this->identify_singularities = identify_singularities;
-
-}
-
 SommerfeldIntegral::SommerfeldIntegral(spectral_gf f,
                                        real nu,
                                        const LayeredMedium &lm,
@@ -57,6 +39,9 @@ SommerfeldIntegral::SommerfeldIntegral(spectral_gf f,
       swp()		// not determined by default
 {
     assert(nu >= 0.0);
+    if (std::isfinite(params.alpha) && std::isfinite(params.zeta)) {
+        assert(params.zeta >= 0.0);
+    }
 
     if (params.identify_singularities) {
         this->bp = get_branch_points(lm);
