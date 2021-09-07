@@ -3,6 +3,7 @@
 ## Structure
 
 - `./lib`: Main library (`mthesis-lib`)
+- `./lib/test`: Unit tests for main library
 - `./production`: Executables to produce results for the actual thesis
 - `./examples`: Example applications to demonstrate the use of `mthesis-lib`
 - `./submodules`: External modules which are typically not available by the 
