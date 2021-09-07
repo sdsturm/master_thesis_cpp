@@ -25,22 +25,37 @@ cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorC3 &r_)
 
 namespace layered_media {
 
-cmplx generic_spectral(const LayeredMedium &lm,
-                       real z,
-                       real z_,
-                       cmplx k_rho,
-                       EmMode mode,
-                       bool direct_term)
+cmplx generic_spectral_gf(const LayeredMedium &lm,
+                          cmplx k_rho,
+                          real z,
+                          real z_,
+                          EmMode mode,
+                          bool direct_term)
 {
     using std::complex_literals::operator""i;
 
-    auto n = lm.identify_layer(z_);
-    bool dual_solution = false;
-    const auto d = tlgf::utils::Internals(lm, k_rho, mode, dual_solution);
-    auto val = tlgf::utils::V_i_base_generic(lm, z, z_, d, direct_term);
+    cmplx val;
+    size_t n = lm.identify_layer(z_);
 
-    // Sommerfeld identity + reflected term.
-    return val / (2.0i * d.k_z[n]);
+    // Note: this function is not reciprocal if z and z_ lie in layers with
+    // 	     different material paramters.
+    //       This is due to the division by possibliy different eps or mu
+    //       in both argument cases (z, z_) and (z_, z).
+    //       For the case m == n (z and z_ in the same layer) this function
+    //       fulfills reciprocity.
+
+    switch (mode) {
+    case (EmMode::TM):
+        val = tlgf::I_v(lm, k_rho, z, z_, mode, direct_term);
+        val /= 1.0i * lm.fd.omega * lm.media[n].eps;
+        break;
+    case (EmMode::TE):
+        val = tlgf::V_i(lm, k_rho, z, z_, mode, direct_term);
+        val /= 1.0i * lm.fd.omega * lm.media[n].mu;
+        break;
+    }
+
+    return val;
 }
 
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
@@ -51,7 +66,7 @@ SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
 {
     auto f = [=](real z, real z_, cmplx k_rho)
     {
-        return generic_spectral(lm, z, z_, k_rho, mode, direct_term);
+        return generic_spectral_gf(lm, k_rho, z, z_, mode, direct_term);
     };
 
     return SommerfeldIntegral(f, nu, lm, si_params);

@@ -6,44 +6,48 @@ cmplx V_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type)
+          EmMode type,
+          bool direct_term)
 {
     bool dual_solution = false;
     auto d = utils::Internals(lm, k_rho, type, dual_solution);
-    return utils::V_i_base(lm, z, z_, d);
+    return utils::V_i_base(lm, z, z_, d, direct_term);
 }
 
 cmplx I_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type)
+          EmMode type,
+          bool direct_term)
 {
     bool dual_solution = false;
     auto d = utils::Internals(lm, k_rho, type, dual_solution);
-    return utils::I_i_base(lm, z, z_, d);
+    return utils::I_i_base(lm, z, z_, d, direct_term);
 }
 
 cmplx I_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type)
+          EmMode type,
+          bool direct_term)
 {
     bool dual_solution = true;
     auto d = utils::Internals(lm, k_rho, type, dual_solution);
-    return utils::V_i_base(lm, z, z_, d);
+    return utils::V_i_base(lm, z, z_, d, direct_term);
 }
 
 cmplx V_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type)
+          EmMode type,
+          bool direct_term)
 {
     bool dual_solution = true;
     auto d = utils::Internals(lm, k_rho, type, dual_solution);
-    return utils::I_i_base(lm, z, z_, d);
+    return utils::I_i_base(lm, z, z_, d, direct_term);
 }
 
 // Hide implementation details in nested namespace utils.
@@ -284,12 +288,12 @@ cmplx calc_D(const LayeredMedium &lm,
     return D;
 }
 
-cmplx V_i_src_generic(const LayeredMedium &lm,
-                      real z,
-                      real z_,
-                      int n,
-                      const Internals &d,
-                      bool direct_term)
+cmplx V_i_src(const LayeredMedium &lm,
+              real z,
+              real z_,
+              int n,
+              const Internals &d,
+              bool direct_term)
 {
     using std::complex_literals::operator""i;
     auto R = calc_R(d, n);
@@ -300,55 +304,49 @@ cmplx V_i_src_generic(const LayeredMedium &lm,
     if (direct_term) {
         t1 = std::exp(-1.0i * d.k_z[n] * std::abs(z - z_));
     } else {
-        t1 = 0.0;
+        t1 = 0;
     }
 
-    cmplx t2 = 0.0;
+    cmplx t2 = 0;
     for (int s = 0; s < 4; s++) {
         t2 += R[s] * std::exp(-1.0i * d.k_z[n] * zeta[s]);
     }
     t2 /= D;
 
-    return t1 + t2;
-}
-
-cmplx V_i_src(const LayeredMedium &lm,
-              real z,
-              real z_,
-              int n,
-              const Internals &d)
-{
-    bool direct_term = true;
-    auto val = V_i_src_generic(lm, z, z_, n, d, direct_term);
-    return d.Z[n] / 2.0 * val;
+    return d.Z[n] * (t1 + t2) / 2.0;
 }
 
 cmplx I_i_src(const LayeredMedium &lm,
               real z,
               real z_,
               int n,
-              const Internals &d)
+              const Internals &d,
+              bool direct_term)
 {
     using std::complex_literals::operator""i;
     auto R = calc_R(d, n);
     auto zeta = calc_zeta(lm, z, z_, n);
     auto D = calc_D(lm, n, d);
 
-    // Note: set direct term to zero for z == z′.
-    // Argument: the function is undefined only for z == z′, i.e., only at
-    //           one point => one point contributes nothing to an integral.
-    real dist = z - z_;
-
-    real sign;
-    if (dist > 0.0) {
-        sign = 1.0;
-    } else if (dist < 0.0) {
-        sign = -1.0;
+    cmplx t1;
+    if (direct_term) {
+        real dist = z - z_;
+        real sign;
+        if (dist > 0.0) {
+            sign = 1;
+        } else if (dist < 0.0) {
+            sign = -1;
+        } else {
+            // Note: set direct term to zero for z == z′.
+            // Argument: the function is undefined only for z == z′, i.e., only
+            //           at one point => one point contributes nothing to an
+           //            integral.
+            sign = 0;
+        }
+        t1 = sign * std::exp(-1.0i * d.k_z[n] * std::abs(dist));
     } else {
-        sign = 0.0;
+        t1 = 0;
     }
-
-    cmplx t1 = sign * std::exp(-1.0i * d.k_z[n] * std::abs(dist));
 
     cmplx t2 = 0.0;
     for (int a = 0; a < 4; a++) {
@@ -449,11 +447,11 @@ cmplx T_u(const LayeredMedium &lm,
             factor_eq_117(lm, z, m, pm_operator, d);
 }
 
-cmplx V_i_base_generic(const LayeredMedium &lm,
-                       real z,
-                       real z_,
-                       const Internals &d,
-                       bool direct_term)
+cmplx V_i_base(const LayeredMedium &lm,
+               real z,
+               real z_,
+               const Internals &d,
+               bool direct_term)
 {
     auto m = lm.identify_layer(z);
     auto n = lm.identify_layer(z_);
@@ -462,36 +460,24 @@ cmplx V_i_base_generic(const LayeredMedium &lm,
 
     cmplx val;
     if (m == n) {
-        val = V_i_src_generic(lm, z, z_, n, d, direct_term);
+        val = V_i_src(lm, z, z_, n, d, direct_term);
     } else if (m < n) {
-        val = V_i_src_generic(lm, lm.z[n], z_, n, d, direct_term) *
+        val = V_i_src(lm, lm.z[n], z_, n, d, direct_term) *
                 T_d(lm, z, m, n, pm_operator, d);
     } else if (m > n) {
-        val = V_i_src_generic(lm, lm.z[n + 1], z_, n, d, direct_term) *
+        val = V_i_src(lm, lm.z[n + 1], z_, n, d, direct_term) *
                 T_u(lm, z, m, n, pm_operator, d);
     }
 
     return val;
-}
 
-cmplx V_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               const Internals &d)
-{
-    auto n = lm.identify_layer(z_);
-
-    bool direct_term = true;
-
-    auto val = V_i_base_generic(lm, z, z_, d, direct_term);
-
-    return val * d.Z[n] / 2.0;
 }
 
 cmplx I_i_base(const LayeredMedium &lm,
                real z,
                real z_,
-               const Internals &d)
+               const Internals &d,
+               bool direct_term)
 {
 
     auto m = lm.identify_layer(z);
@@ -501,12 +487,12 @@ cmplx I_i_base(const LayeredMedium &lm,
 
     cmplx val;
     if (m == n) {
-        val = I_i_src(lm, z, z_, n, d);
+        val = I_i_src(lm, z, z_, n, d, direct_term);
     } else if (m < n) {
-        val = V_i_src(lm, lm.z[n], z_, n, d) *
+        val = V_i_src(lm, lm.z[n], z_, n, d, direct_term) *
                 T_d(lm, z, m, n, pm_operator, d) / (-d.Z[m]);
     } else if (m > n) {
-        val = V_i_src(lm, lm.z[n + 1], z_, n, d) *
+        val = V_i_src(lm, lm.z[n + 1], z_, n, d, direct_term) *
                 T_u(lm, z, m, n, pm_operator, d) / d.Z[m];
     }
 

@@ -12,29 +12,34 @@ namespace mthesis::tlgf {
 
 enum class RiemannSheet {I, II, III, IV};
 
+// Equivalent transmission line network Green's functions.
 cmplx V_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type);
+          EmMode type,
+          bool direct_term = true);
 
 cmplx I_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type);
+          EmMode type,
+          bool direct_term = true);
 
 cmplx I_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type);
+          EmMode type,
+          bool direct_term = true);
 
 cmplx V_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
-          EmMode type);
+          EmMode type,
+          bool direct_term = true);
 
 // Hide implementation details in nested namespace utils.
 namespace utils {
@@ -89,24 +94,19 @@ std::vector<cmplx> calc_zeta(const LayeredMedium &lm, real z, real z_, int n);
 
 cmplx calc_D(const LayeredMedium &lm, int n, const Internals &d);
 
-cmplx V_i_src_generic(const LayeredMedium &lm,
-                      real z,
-                      real z_,
-                      int n,
-                      const Internals &d,
-                      bool direct_term);
-
 cmplx V_i_src(const LayeredMedium &lm,
               real z,
               real z_,
               int n,
-              const Internals &d);
+              const Internals &d,
+              bool direct_term);
 
 cmplx I_i_src(const LayeredMedium &lm,
               real z,
               real z_,
               int n,
-              const Internals &d);
+              const Internals &d,
+              bool direct_term);
 
 // Transmission through the structure if n != m.
 cmplx calc_tau_ud(int n,
@@ -153,12 +153,14 @@ cmplx V_i_base_generic(const LayeredMedium &lm,
 cmplx V_i_base(const LayeredMedium &lm,
                real z,
                real z_,
-               const Internals &d);
+               const Internals &d,
+               bool direct_term);
 
 cmplx I_i_base(const LayeredMedium &lm,
                real z,
                real z_,
-               const Internals &d);
+               const Internals &d,
+               bool direct_term);
 
 } // namespace utils
 

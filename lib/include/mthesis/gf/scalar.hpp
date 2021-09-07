@@ -17,13 +17,15 @@ cmplx G_0(const Medium &medium, const VectorR3 &r, const VectorC3 &r_);
 
 namespace layered_media {
 
-cmplx generic_spectral(const LayeredMedium &lm,
-                       real z,
-                       real z_,
-                       cmplx k_rho,
-                       EmMode mode,
-                       bool direct_term);
+// Generic spectral Green's functions (generalized Sommerfeld identity).
+cmplx generic_spectral_gf(const LayeredMedium &lm,
+                          cmplx k_rho,
+                          real z,
+                          real z_,
+                          EmMode mode,
+                          bool direct_term = true);
 
+// Return a SommerfeldIntegral object which can be evaluated in spatial domain.
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
                                            real nu,
                                            EmMode mode,

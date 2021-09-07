@@ -17,10 +17,72 @@ using namespace mthesis;
 
 EmMode mode_vals[] = {EmMode::TE, EmMode::TM};
 
-#if 0
+real rand_frequency()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<real> dist(1.0, 1e9);
+    return dist(gen);
+}
+
+cmplx rand_k_rho(const FrequencyDomain &fd)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<real> dist_re(0.0, 2.0 * fd.k_0);
+    std::uniform_real_distribution<real> dist_im(0.0, 1.0 * fd.k_0);
+    return cmplx(dist_re(gen), dist_im(gen));
+}
+
+cmplx rand_param() // Material parameters.
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<real> dist_re(1, 15);
+    std::uniform_real_distribution<real> dist_im(-1.0, 0.0);
+    return cmplx(dist_re(gen), dist_im(gen));
+}
+
+BOOST_DATA_TEST_CASE(generic_spectral_gf_reciprocity_in_half_space_same_layer,
+                     boost::unit_test::data::make(mode_vals) *
+                     boost::unit_test::data::xrange(15), // Multiple runs.
+                     mode, n_run)
+{
+    // Note: generic spectral GF is "like" V_i and I_v
+    //       -> check using reciprocity relation (38) in Michalski2005.
+
+    (void)n_run;	// Hush the unused variable warning.
+
+    FrequencyDomain fd(rand_frequency());
+    auto ground = Medium(fd, rand_param(), rand_param());
+    auto lm = HalfSpace(fd, ground);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<real> dist_pos(0.0, 4.0 * fd.lambda_0);
+
+    // Note: generic spectral GF is only reciprocal for m == n.
+    real z =  dist_pos(gen);
+    real z_ = dist_pos(gen);
+
+    cmplx k_rho = rand_k_rho(fd);
+
+    bool direct_term = true;
+
+    using gf::scalar::layered_media::generic_spectral_gf;
+    cmplx val_1 = generic_spectral_gf(lm, k_rho, z, z_, mode, direct_term);
+    cmplx val_2 = generic_spectral_gf(lm, k_rho, z_, z, mode, direct_term);
+
+    real tol_in_percent = 1e-6;
+    BOOST_CHECK_CLOSE(val_1.real(), val_2.real(), tol_in_percent);
+    BOOST_CHECK_CLOSE(val_1.imag(), val_2.imag(), tol_in_percent);
+}
+
 BOOST_DATA_TEST_CASE(sommerfeld_identity,
-                     boost::unit_test::data::make(mode_vals),
-                     mode)
+                     boost::unit_test::data::make(mode_vals) *
+                     boost::unit_test::data::make(arma::logspace(-1, 3, 20)) *
+                     boost::unit_test::data::make(arma::logspace(-1, 3, 20)),
+                     mode, x, z)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -35,69 +97,16 @@ BOOST_DATA_TEST_CASE(sommerfeld_identity,
                                                                  direct_term);
 
     VectorR3 r_ = {0, 0, 0};
-    r_ *= fd.lambda_0;
+    VectorR3 r = {x, 0, z};
+    r *= fd.lambda_0;
 
-    arma::vec x_vals = arma::logspace(-1, 3, 20) * fd.lambda_0;
-    arma::vec z_vals = arma::logspace(-1, 3, 20) * fd.lambda_0;
+    cmplx ref = gf::scalar::free_space::G_0(vacuum, r, r_);
 
-    for (auto &x : x_vals)
-    {
-        for (auto &z : z_vals)
-        {
-            VectorR3 r = {x, 0, z};
-            cmplx ref = gf::scalar::free_space::G_0(vacuum, r, r_);
+    cmplx num = si.eval_si_along_sip(r, r_);
 
-            // Multiple runs for timer.
-            cmplx num = si.eval_si_along_sip(r, r_);
+    real rel_err_db = calc_rel_err_db(num, ref);
 
-            real rel_err_db = calc_rel_err_db(num, ref);
-
-            BOOST_CHECK(rel_err_db < -100);
-        }
-    }
+    BOOST_CHECK(rel_err_db < -100);
 }
-#endif
-
-#if 0
-BOOST_DATA_TEST_CASE(generic_spectral_half_space_reciprocity,
-                     boost::unit_test::data::make(mode_vals) *
-                     boost::unit_test::data::xrange(5), // Multiple runs.
-                     mode, n_run)
-{
-    // Note: generic spectral GF is "like" V_i and I_v
-    //       -> check using reciprocity relation (38) in Michalski2005.
-
-    using std::complex_literals::operator""i;
-    (void)n_run; // Hush unused variable warning.
-
-    FrequencyDomain fd(1e9);
-    Medium ground(fd, 3.0 - 0.02i, 1.0);
-//    Medium ground(fd, 1.0, 3.0 - 0.02i);
-    HalfSpace hs(fd, ground);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<real> dist_z(1e-6 * fd.lambda_0,
-                                                20.0 * fd.lambda_0);
-    std::uniform_real_distribution<real> dist_k_rho_re(0.0, 3.0 * fd.k_0);
-    std::uniform_real_distribution<real> dist_k_rho_im(0.0, 0.2 * fd.k_0);
-
-    // Make sure to cross the interface.
-    real z = -dist_z(gen);
-    real z_ = dist_z(gen);
-
-    cmplx k_rho(dist_k_rho_re(gen), dist_k_rho_im(gen));
-
-    bool direct_term = true;
-
-    using gf::scalar::layered_media::generic_spectral;
-    cmplx val1 = generic_spectral(hs, z, z_, k_rho, mode, direct_term);
-    cmplx val2 = generic_spectral(hs, z_, z, k_rho, mode, direct_term);
-
-    real tol = 1e-6;	// In percent.
-    BOOST_CHECK_CLOSE(val1.real(), val2.real(), tol);
-    BOOST_CHECK_CLOSE(val1.imag(), val2.imag(), tol);
-}
-#endif
 
 BOOST_AUTO_TEST_SUITE_END()
