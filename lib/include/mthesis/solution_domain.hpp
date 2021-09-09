@@ -27,7 +27,7 @@ struct Medium
     const cmplx k;
     const cmplx eta;
 
-    Medium(const FrequencyDomain &fd, cmplx eps_r, cmplx mu_r);
+    Medium(const FrequencyDomain &fd, cmplx eps_r, cmplx mu_r = 1.0);
 };
 
 cmplx cmplx_permittivity(const FrequencyDomain &fd, real eps_r, real sigma);

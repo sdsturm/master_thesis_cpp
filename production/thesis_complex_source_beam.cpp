@@ -18,18 +18,23 @@ int main()
     arma::vec x_vals = arma::linspace(-5, 5, N_pts) * fd.lambda_0;
     arma::vec z_vals = arma::linspace(-5, 5, N_pts) * fd.lambda_0;
 
-    VectorC3 r_ = {(0.0 + 0.1i) * fd.lambda_0, 0, 0};
+    VectorC3 r_1_ = {0.01i * fd.lambda_0, 0, 0};
+    VectorC3 r_2_ = {0.1i * fd.lambda_0, 0, 0};
+    VectorC3 r_3_ = {1.0i * fd.lambda_0, 0, 0};
 
-    printf("x_by_lambda_0 z_by_lambda_0 g_re g_im\n");
+    printf("x_by_lambda_0 z_by_lambda_0 g_1_re g_2_re g_3_re\n");
     for (const auto &x : x_vals) {
         for (const auto &z : z_vals) {
             VectorR3 r = {x, 0, z};
-            cmplx val = gf::scalar::free_space::G_0(medium, r, r_);
-            printf("%.8f %.8f %.8e %.8e\n",
+            cmplx g_1 = gf::scalar::free_space::G_0(medium, r, r_1_);
+            cmplx g_2 = gf::scalar::free_space::G_0(medium, r, r_2_);
+            cmplx g_3 = gf::scalar::free_space::G_0(medium, r, r_3_);
+            printf("%.8f %.8f %.8e %.8e %.8e\n",
                    x / fd.lambda_0,
                    z / fd.lambda_0,
-                   val.real(),
-                   val.imag());
+                   g_1.real(),
+                   g_2.real(),
+                   g_3.real());
         }
         printf("\n");
     }
