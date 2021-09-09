@@ -56,6 +56,8 @@ public:
 
     cmplx get_spatial_gf(real z, real z_, real rho) const;
 
+    cmplx get_spatial_gf(const VectorR3 &r, const VectorR3 &r_) const;
+
 protected:
     const SommerfeldIntegral &si;
     real k_0;

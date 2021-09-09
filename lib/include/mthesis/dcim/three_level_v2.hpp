@@ -1,5 +1,5 @@
-#ifndef MTHESIS_DCIM_THREE_LEVELV3_HPP
-#define MTHESIS_DCIM_THREE_LEVELV3_HPP
+#ifndef MTHESIS_DCIM_THREE_LEVEL_V2_HPP
+#define MTHESIS_DCIM_THREE_LEVEL_V2_HPP
 
 #include <mthesis/dcim/dcim_base.hpp>
 
@@ -32,4 +32,4 @@ CeVec calc_coeffs_3(const CeVec &ce_in, real T_3) const;
 
 } // namespace mthesis::dcim
 
-#endif // MTHESIS_DCIM_THREE_LEVELV3_HPP
+#endif // MTHESIS_DCIM_THREE_LEVEL_V2_HPP

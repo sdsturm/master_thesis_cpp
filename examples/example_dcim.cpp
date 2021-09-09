@@ -6,11 +6,12 @@
 
 using namespace mthesis;
 
-VectorR3 rand_point(real dist)
+VectorR3 rand_point(const FrequencyDomain &fd)
 {
     std::random_device dev;
     std::mt19937 gen(dev());
-    std::uniform_real_distribution<double> dist_pos(0.0, dist);
+    std::uniform_real_distribution<double> dist_pos(0.0,
+                                                    20.0 * fd.lambda_0);
 
     VectorR3 r = {dist_pos(gen), dist_pos(gen), dist_pos(gen)};
 
@@ -26,9 +27,9 @@ int main()
     auto lm = HalfSpace(fd, ground);
     auto mode = EmMode::TM;
 
-     auto r = rand_point(5 * fd.lambda_0);
-     VectorR3 r_ = {0, 0, 0};
-//     auto r_ = rand_point(5 * fd.lambda_0);
+    VectorR3 r_ = {0, 0, 0};
+
+    auto r = rand_point(fd);
 
     std::cout << "r = \n" << r << "\n";
     std::cout << "r_ = \n" << r_ << "\n";
@@ -39,16 +40,22 @@ int main()
     auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
                                                                  direct_term);
 
-    auto lmc = LayeredMediumCoords(r, r_);
     auto val_ref = si.eval_si_along_sip(r, r_);
 
-    dcim::ThreeLevelV2 my_dcim(si);
-    auto ce_vecs_levels = my_dcim.get_exponentials(lmc.z, lmc.z_);
-    auto val_dcim = my_dcim.get_spatial_gf(ce_vecs_levels, lmc.rho);
+    dcim::ThreeLevelV1 dcim_3lv1(si);
+    auto val_dcim_3lv1 = dcim_3lv1.get_spatial_gf(r, r_);
 
-    std::cout << "reference: " << val_ref << "\n";
-    std::cout << "dcim:      " << val_dcim << "\n";
-    std::cout << "Error:     " << calc_rel_err_db(val_dcim, val_ref) << " dB\n";
+    dcim::ThreeLevelV2 dcim_3lv2(si);
+    auto val_dcim_3lv2 = dcim_3lv2.get_spatial_gf(r, r_);
+
+
+    std::cout << "Numerical integration: " << val_ref << "\n";
+    std::cout << "DCIM three-level V1:   " << val_dcim_3lv1 << "\n";
+    std::cout << "DCIM three-level V2:   " << val_dcim_3lv2 << "\n";
+    std::cout << "Error V1:              " <<
+                 calc_rel_err_db(val_dcim_3lv1, val_ref) << " dB\n";
+    std::cout << "Error V2:              " <<
+                 calc_rel_err_db(val_dcim_3lv2, val_ref) << " dB\n";
 
     return 0;
 }

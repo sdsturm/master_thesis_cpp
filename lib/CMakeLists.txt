@@ -21,7 +21,8 @@ add_library(${PROJECT_NAME} SHARED
 
     ./src/dcim/gpof.cpp
     ./src/dcim/dcim_base.cpp
-    ./src/dcim/three_level_v3.cpp
+    ./src/dcim/three_level_v1.cpp
+    ./src/dcim/three_level_v2.cpp
 
     ./src/fmm/helpers.cpp
     ./src/fmm/free_space.cpp

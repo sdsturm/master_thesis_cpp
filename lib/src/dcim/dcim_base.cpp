@@ -127,6 +127,12 @@ cmplx DCIM::get_spatial_gf(real z, real z_, real rho) const
     return get_spatial_gf(ce_vecs_levels, rho);
 }
 
+cmplx DCIM::get_spatial_gf(const VectorR3 &r, const VectorR3 &r_) const
+{
+    LayeredMediumCoords coords(r, r_);
+    return get_spatial_gf(coords.z, coords.z_, coords.rho);
+}
+
 
 
 // Hide implementation details in nested namespace utils.
