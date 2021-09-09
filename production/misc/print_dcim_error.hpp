@@ -31,6 +31,8 @@ inline void print_dcim_error(const arma::vec &rho_vals_by_lambda_0,
 
     auto dcim_3lv2 = dcim::ThreeLevelV2(si);
 
+    real rel_err_db_max = -INFINITY;
+    real rho_max_err, z_max_err;
     printf("rho/lambda_0 z/lambda_0 rel_err_db\n");
     for (const auto &z : z_vals) {
         auto ce_vecs_levels = dcim_3lv2.get_exponentials(z, z_);
@@ -40,6 +42,12 @@ inline void print_dcim_error(const arma::vec &rho_vals_by_lambda_0,
 
             auto rel_err_db = calc_rel_err_db(val_dcim_3lv2, val_ref);
 
+            if (rel_err_db > rel_err_db_max) {
+                rel_err_db_max = rel_err_db;
+                rho_max_err = rho;
+                z_max_err = z;
+            }
+
             printf("%.6f %.6f %.6f\n",
                    rho / fd.lambda_0,
                    z / fd.lambda_0,
@@ -47,6 +55,9 @@ inline void print_dcim_error(const arma::vec &rho_vals_by_lambda_0,
         }
         printf("\n");
     }
+
+//    printf("Maximum error %.2f dB at rho = %.4e*lambda_0, z = %.4e*lambda_0\n",
+//           rel_err_db_max, rho_max_err / fd.lambda_0, z_max_err / fd.lambda_0);
 }
 
 }
