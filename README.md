@@ -11,7 +11,7 @@ system package manager.
 
 ## Dependencies
 
-See `CMakeLists.txt` files at top level `./` and in `./lib` and `./submodules`.
+See `CMakeLists.txt` files at the various levels of the project.
 
 Note: [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream.git)
 needs the [gnuplot](http://www.gnuplot.info/) application to be found by the
