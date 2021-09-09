@@ -18,7 +18,7 @@ int main()
     arma::vec x_vals = arma::linspace(-5, 5, N_pts) * fd.lambda_0;
     arma::vec z_vals = arma::linspace(-5, 5, N_pts) * fd.lambda_0;
 
-    VectorC3 r_ = {(0.0 + 1.0i) * fd.lambda_0, 0, 0};
+    VectorC3 r_ = {(0.0 + 0.1i) * fd.lambda_0, 0, 0};
 
     printf("x_by_lambda_0 z_by_lambda_0 g_re g_im\n");
     for (const auto &x : x_vals) {

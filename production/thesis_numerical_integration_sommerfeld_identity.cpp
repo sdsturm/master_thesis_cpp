@@ -67,10 +67,10 @@ int main(int argc, char** argv)
 
     // Check where to write output.
     FILE *out_target;
-    if (2 == argc && std::filesystem::exists(argv[1]))
+    if (2 == argc && std::filesystem::is_directory(argv[1]))
     {
         auto file_fullpath = std::filesystem::path(argv[1]);
-        file_fullpath /= "production_num_int_sommerfeld_identity.dat";
+        file_fullpath /= "thesis_numerical_integration_sommerfeld_identity.dat";
         out_target = fopen(file_fullpath.c_str(), "w");
     }
     else
