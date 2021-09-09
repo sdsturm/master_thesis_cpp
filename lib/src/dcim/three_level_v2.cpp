@@ -61,7 +61,7 @@ real ThreeLevelV2::calc_T_2(real k_rho_max_2, real T_3) const
 real ThreeLevelV2::calc_T_1(real k_rho_max_1, real T_2, real T_3) const
 {
     real a = T_2 / (1 + T_3);
-    return std::sqrt(std::pow(k_rho_max_1 / k_0, 2) - 1) / a;
+    return std::sqrt(std::pow(k_rho_max_1 / k_0, 2) - 1.0) - a;
 }
 
 SamplingPath ThreeLevelV2::calc_sp_3(real T_3, int N_3) const
@@ -109,7 +109,7 @@ SamplingPath ThreeLevelV2::calc_sp_1(real T_1,
 
     auto calc_k_z = [&](real t)
     {
-        return -1.0i * k_0 * (T_2 / (T_3 + 1) + t);
+        return -1.0i * k_0 * (T_2 / (T_3 + 1.0) + t);
     };
 
     auto d_t = utils::get_d_t(T_1, N_1);

@@ -23,7 +23,7 @@ int main()
     using std::complex_literals::operator""i;
 
     auto fd = FrequencyDomain(GSL_CONST_MKSA_SPEED_OF_LIGHT / 1.0);
-    auto ground = Medium(fd, 3.0, 1.0);
+    auto ground = Medium(fd, 3.0 - 0.2i, 1.0);
     auto lm = HalfSpace(fd, ground);
     auto mode = EmMode::TM;
 
