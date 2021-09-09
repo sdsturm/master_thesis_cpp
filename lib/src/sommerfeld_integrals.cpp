@@ -75,7 +75,7 @@ cmplx SommerfeldIntegral::eval_si_along_sip(real rho, real z, real z_,
         return 0.0;
     }
 
-    auto a = get_a();
+    auto a = calc_pe_start();
 
     auto head = eval_head_ellipsis(rho, z, z_, a);
     auto tail = eval_tail_on_sip(rho, z, z_, a, pe_params);
@@ -103,7 +103,7 @@ const LayeredMedium &SommerfeldIntegral::get_lm() const
     return lm;
 }
 
-real SommerfeldIntegral::get_a() const
+real SommerfeldIntegral::calc_pe_start() const
 {
     std::vector<real> k_re(lm.media.size());
     for (size_t n = 0; n < lm.media.size(); n++) {

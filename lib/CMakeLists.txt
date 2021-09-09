@@ -20,7 +20,7 @@ add_library(${PROJECT_NAME} SHARED
     ./src/gf/dyadic.cpp
 
     ./src/dcim/gpof.cpp
-    ./src/dcim/utils.cpp
+    ./src/dcim/dcim_base.cpp
     ./src/dcim/three_level_v3.cpp
 
     ./src/fmm/helpers.cpp

@@ -1,32 +1,35 @@
 #ifndef MTHESIS_DCIM_THREE_LEVELV3_HPP
 #define MTHESIS_DCIM_THREE_LEVELV3_HPP
 
-#include <mthesis/dcim/utils.hpp>
+#include <mthesis/dcim/dcim_base.hpp>
 
-namespace mthesis::dcim::threelevelv2 {
+namespace mthesis::dcim {
 
-real calc_T_03(real k_0, real k_rho_max_3);
+class ThreeLevelV2 : public DCIM
+{
+public:
+    ThreeLevelV2(const SommerfeldIntegral &si);
 
-real calc_T_02(real k_0, real k_rho_max_2, real T_03);
+private:
+real calc_T_3(real k_rho_max_3) const;
 
-real calc_T_01(real k_0, real k_rho_max_1, real T_02, real T_03);
+real calc_T_2(real k_rho_max_2, real T_3) const;
 
-utils::SamplingPath calc_C_3(real k_0, real T_03, int N);
+real calc_T_1(real k_rho_max_1, real T_2, real T_3) const;
 
-utils::SamplingPath calc_C_2(real k_0, real T_02, real T_03, int N);
+SamplingPath calc_sp_3(real T_3, int N_3) const;
 
-utils::SamplingPath calc_C_1(real k_0, real T_01, real T_02, real T_03, int N);
+SamplingPath calc_sp_2(real T_2, real T_3, int N_2) const;
 
-ce_vec calc_coeffs_1(const ce_vec &ce_in, real k_0, real T_02, real T_03);
+SamplingPath calc_sp_1(real T_1, real T_2, real T_3, int N_1) const;
 
-ce_vec calc_coeffs_2(const ce_vec &ce_in, real k_0, real T_02, real T_03);
+CeVec calc_coeffs_1(const CeVec &ce_in, real T_2, real T_3) const;
 
-ce_vec calc_coeffs_3(const ce_vec &ce_in, real k_0, real T_03);
+CeVec calc_coeffs_2(const CeVec &ce_in, real T_2, real T_3) const;
 
-std::vector<ce_vec> three_level_v2(const SommerfeldIntegral &si,
-                                   real z,
-                                   real z_);
+CeVec calc_coeffs_3(const CeVec &ce_in, real T_3) const;
+};
 
-} // namespace mthesis::dcim::threelevelv2
+} // namespace mthesis::dcim
 
-#endif
+#endif // MTHESIS_DCIM_THREE_LEVELV3_HPP

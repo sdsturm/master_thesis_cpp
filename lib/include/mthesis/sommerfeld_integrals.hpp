@@ -48,7 +48,7 @@ public:
     const LayeredMedium &get_lm() const;
 
 private:
-    real get_a() const;
+    real calc_pe_start() const;
 
     real calc_indention(real rho, real a) const;
 

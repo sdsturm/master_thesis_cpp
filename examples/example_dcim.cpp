@@ -42,8 +42,9 @@ int main()
     auto lmc = LayeredMediumCoords(r, r_);
     auto val_ref = si.eval_si_along_sip(r, r_);
 
-    auto ce_levels = dcim::threelevelv2::three_level_v2(si, lmc.z, lmc.z_);
-    auto val_dcim = dcim::get_spatial_gf(ce_levels, lmc.rho, fd.k_0);
+    dcim::ThreeLevelV2 my_dcim(si);
+    auto ce_vecs_levels = my_dcim.get_exponentials(lmc.z, lmc.z_);
+    auto val_dcim = my_dcim.get_spatial_gf(ce_vecs_levels, lmc.rho);
 
     std::cout << "reference: " << val_ref << "\n";
     std::cout << "dcim:      " << val_dcim << "\n";
