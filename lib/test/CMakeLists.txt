@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
     test_tlgf.cpp
     test_legendre_p_recurrence.cpp
     test_gpof.cpp
+    test_dcim.cpp
     test_fmm_free_space.cpp
     test_sommerfeld_integrals.cpp
     test_sgf.cpp
