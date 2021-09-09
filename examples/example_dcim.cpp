@@ -31,8 +31,8 @@ int main()
 
     auto r = rand_point(fd);
 
-    std::cout << "r = \n" << r << "\n";
     std::cout << "r_ = \n" << r_ << "\n";
+    std::cout << "r = \n" << r << "\n";
 
     bool direct_term = false;
     real nu = 0;
@@ -42,19 +42,24 @@ int main()
 
     auto val_ref = si.eval_si_along_sip(r, r_);
 
+    dcim::TwoLevel dcim_2l(si);
+    auto val_dcim_2l = dcim_2l.get_spatial_gf(r, r_);
+
     dcim::ThreeLevelV1 dcim_3lv1(si);
     auto val_dcim_3lv1 = dcim_3lv1.get_spatial_gf(r, r_);
 
     dcim::ThreeLevelV2 dcim_3lv2(si);
     auto val_dcim_3lv2 = dcim_3lv2.get_spatial_gf(r, r_);
 
-
     std::cout << "Numerical integration: " << val_ref << "\n";
+    std::cout << "DCIM two-level:        " << val_dcim_2l << "\n";
     std::cout << "DCIM three-level V1:   " << val_dcim_3lv1 << "\n";
     std::cout << "DCIM three-level V2:   " << val_dcim_3lv2 << "\n";
-    std::cout << "Error V1:              " <<
+    std::cout << "Error two-level:       " <<
+                 calc_rel_err_db(val_dcim_2l, val_ref) << " dB\n";
+    std::cout << "Error three-level V1:  " <<
                  calc_rel_err_db(val_dcim_3lv1, val_ref) << " dB\n";
-    std::cout << "Error V2:              " <<
+    std::cout << "Error three-level V2:  " <<
                  calc_rel_err_db(val_dcim_3lv2, val_ref) << " dB\n";
 
     return 0;
