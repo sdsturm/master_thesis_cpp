@@ -1,3 +1,12 @@
+# Libraries needed by gnuplot-iostream
+find_package(Boost REQUIRED COMPONENTS
+    iostreams	# For gnuplot-iostream.
+    system	# For gnuplot-iostream.
+    filesystem  # For gnuplot-iostream.
+    )
+set(GNUPLOT_IOSTREAM_LINK_LIBS Boost::iostreams Boost::system Boost::filesystem)
+
+
 add_executable(example_gpof_synth_signal example_gpof_synth_signal.cpp)
 target_link_libraries(example_gpof_synth_signal
     mthesis-lib

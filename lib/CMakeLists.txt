@@ -40,9 +40,10 @@ add_library(${PROJECT_NAME} SHARED
 # Indispensible libraries.
 find_package(Boost REQUIRED) # mthesis-lib usis only header-only parts.
 find_package(GSL REQUIRED)
-find_package(Armadillo REQUIRED)
+find_package(Armadillo REQUIRED) # See documentation for dependencies.
 
 target_link_libraries(${PROJECT_NAME}
+    armadillo
     GSL::gsl GSL::gslcblas
     complex_bessel
     )
@@ -51,16 +52,6 @@ target_link_libraries(${PROJECT_NAME}
 find_package(OpenMP)
 if (OpenMP_CXX_FOUND)
     target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
-endif()
-
-# Linear algebra packages used by Armadillo.
-set(BLA_VENDOR OpenBLAS) # Repacement for armadillo runtime library.
-find_package(BLAS)
-if (BLAS_FOUND) # If openBLAS is available, link armadillo against that.
-    target_compile_definitions(${PROJECT_NAME} PUBLIC ARMA_DONT_USE_WRAPPER)
-    target_link_libraries(${PROJECT_NAME} openblas)
-else() # Otherwise link against armadillo runtime library.
-    target_link_libraries(${PROJECT_NAME} armadillo)
 endif()
 
 ################################################################################
