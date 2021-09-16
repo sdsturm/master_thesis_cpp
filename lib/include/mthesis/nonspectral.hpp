@@ -10,9 +10,7 @@ cmplx get_sommerfeld_pole(const LayeredMedium &lm, EmMode mode);
 
 cmplx normalized_hankel_fun(real n, cmplx z);
 
-cmplx faddeeva(cmplx z);
-
-cmplx func_C8(cmplx p);
+cmplx fun_C8(cmplx p);
 
 cmplx calc_I_q(const LayeredMedium &lm,
                cmplx k_p,

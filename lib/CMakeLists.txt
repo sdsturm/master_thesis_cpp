@@ -14,6 +14,7 @@ add_library(${PROJECT_NAME} SHARED
     ./src/tlgf.cpp
 
     ./src/partition_extrapolation.cpp
+    ./../submodules/faddeeva/Faddeeva.cc  # Submodule.
     ./src/nonspectral.cpp
     ./src/sommerfeld_integrals.cpp
 
