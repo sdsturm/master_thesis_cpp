@@ -1,5 +1,6 @@
 #include <mthesis/nonspectral.hpp>
 
+#include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <complex_bessel.h>
 #include "./../../submodules/faddeeva/Faddeeva.hh"
 
@@ -20,6 +21,26 @@ cmplx get_sommerfeld_pole(const LayeredMedium &lm, EmMode mode)
     cmplx k_p = lm.media.back().k * sqrt(lm.media.front().eps_r /
                                          (1.0 + lm.media.front().eps_r));
     return k_p;
+}
+
+cmplx calc_s_p(const LayeredMedium &lm, cmplx k_p)
+{
+    using std::complex_literals::operator""i;
+    return sqrt(1.0i * (k_p - lm.media.back().k));
+}
+
+cmplx get_residue(std::function<cmplx (cmplx)> f, cmplx k_p)
+{
+    constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
+
+    // Curve and derivative for 0 <= t <= 1.
+    real r = 0.5 * abs(k_p.imag()); 	// Just a try.
+    auto gamma = [=](real t) { return k_p + r * exp(2.0i * M_PI * t); };
+    auto gamma_ = [=](real t) { return 2.0i * M_PI * r * exp(2.0i * M_PI * t); };
+
+    auto integrand = [=](real t) { return f(gamma(t)) * gamma_(t); };
+    cmplx R_p = quad.integrate(integrand, 0.0, 1.0);
+    return R_p;
 }
 
 cmplx normalized_hankel_fun(real n, cmplx z)
@@ -54,6 +75,20 @@ cmplx calc_I_q(const LayeredMedium &lm, cmplx k_p, real rho)
     cmplx I_q = sqrt(M_PI / rho) / 2.0 * fun_C8(p) ;
 
     return I_q;
+}
+
+cmplx calc_B_p(const LayeredMedium &lm,
+               real n,
+               std::function<cmplx (cmplx)> f,
+               cmplx k_p,
+               real rho)
+{
+    using std::complex_literals::operator""i;
+    auto R_p = get_residue(f, k_p);
+    auto s_p = calc_s_p(lm, k_p);
+    cmplx B_p = 1.0i * R_p / (2.0 * s_p) * sqrt(k_p) *
+            normalized_hankel_fun(n, k_p * rho);
+    return B_p;
 }
 
 } // namespace mthesis::nonspectral
