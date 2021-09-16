@@ -30,7 +30,8 @@ cmplx generic_spectral_gf(const LayeredMedium &lm,
                           real z,
                           real z_,
                           EmMode mode,
-                          bool direct_term)
+                          bool direct_term,
+                          RiemannSheet sheet)
 {
     using std::complex_literals::operator""i;
 
@@ -46,11 +47,11 @@ cmplx generic_spectral_gf(const LayeredMedium &lm,
 
     switch (mode) {
     case (EmMode::TM):
-        val = tlgf::I_v(lm, k_rho, z, z_, mode, direct_term);
+        val = tlgf::I_v(lm, k_rho, z, z_, mode, direct_term, sheet);
         val /= 1.0i * lm.fd.omega * lm.media[n].eps;
         break;
     case (EmMode::TE):
-        val = tlgf::V_i(lm, k_rho, z, z_, mode, direct_term);
+        val = tlgf::V_i(lm, k_rho, z, z_, mode, direct_term, sheet);
         val /= 1.0i * lm.fd.omega * lm.media[n].mu;
         break;
     }

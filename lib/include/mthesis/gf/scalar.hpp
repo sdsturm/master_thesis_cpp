@@ -23,7 +23,8 @@ cmplx generic_spectral_gf(const LayeredMedium &lm,
                           real z,
                           real z_,
                           EmMode mode,
-                          bool direct_term = true);
+                          bool direct_term = true,
+                          RiemannSheet sheet = RiemannSheet::I);
 
 // Return a SommerfeldIntegral object which can be evaluated in spatial domain.
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,

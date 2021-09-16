@@ -7,10 +7,11 @@ cmplx V_i(const LayeredMedium &lm,
           real z,
           real z_,
           EmMode type,
-          bool direct_term)
+          bool direct_term,
+          RiemannSheet sheet)
 {
     bool dual_solution = false;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution);
+    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
     return utils::V_i_base(lm, z, z_, d, direct_term);
 }
 
@@ -19,10 +20,11 @@ cmplx I_i(const LayeredMedium &lm,
           real z,
           real z_,
           EmMode type,
-          bool direct_term)
+          bool direct_term,
+          RiemannSheet sheet)
 {
     bool dual_solution = false;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution);
+    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
     return utils::I_i_base(lm, z, z_, d, direct_term);
 }
 
@@ -31,10 +33,11 @@ cmplx I_v(const LayeredMedium &lm,
           real z,
           real z_,
           EmMode type,
-          bool direct_term)
+          bool direct_term,
+          RiemannSheet sheet)
 {
     bool dual_solution = true;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution);
+    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
     return utils::V_i_base(lm, z, z_, d, direct_term);
 }
 
@@ -43,10 +46,11 @@ cmplx V_v(const LayeredMedium &lm,
           real z,
           real z_,
           EmMode type,
-          bool direct_term)
+          bool direct_term,
+          RiemannSheet sheet)
 {
     bool dual_solution = true;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution);
+    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
     return utils::I_i_base(lm, z, z_, d, direct_term);
 }
 

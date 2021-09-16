@@ -10,36 +10,38 @@
 
 namespace mthesis::tlgf {
 
-enum class RiemannSheet {I, II, III, IV};
-
 // Equivalent transmission line network Green's functions.
 cmplx V_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
           EmMode type,
-          bool direct_term = true);
+          bool direct_term = true,
+          RiemannSheet sheet = RiemannSheet::I);
 
 cmplx I_i(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
           EmMode type,
-          bool direct_term = true);
+          bool direct_term = true,
+          RiemannSheet sheet = RiemannSheet::I);
 
 cmplx I_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
           EmMode type,
-          bool direct_term = true);
+          bool direct_term = true,
+          RiemannSheet sheet = RiemannSheet::I);
 
 cmplx V_v(const LayeredMedium &lm,
           cmplx k_rho,
           real z,
           real z_,
           EmMode type,
-          bool direct_term = true);
+          bool direct_term = true,
+          RiemannSheet sheet = RiemannSheet::I);
 
 // Hide implementation details in nested namespace utils.
 namespace utils {
@@ -84,7 +86,7 @@ struct Internals
               cmplx k_rho,
               EmMode mode,
               bool dual_solution,
-              RiemannSheet riemann_sheet = RiemannSheet::I);
+              RiemannSheet riemann_sheet);
 };
 
 // TLGF for z inside source layer.

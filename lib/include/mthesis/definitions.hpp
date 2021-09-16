@@ -17,6 +17,8 @@ using VectorR3 = arma::vec3;
 using VectorC3 = arma::cx_vec3;
 using DyadC3 = arma::cx_mat33;
 
+enum class RiemannSheet {I, II, III, IV};
+
 struct CmplxExp
 {
     const cmplx amp;

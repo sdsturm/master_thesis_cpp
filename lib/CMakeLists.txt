@@ -14,6 +14,7 @@ add_library(${PROJECT_NAME} SHARED
     ./src/tlgf.cpp
 
     ./src/partition_extrapolation.cpp
+    ./src/nonspectral.cpp
     ./src/sommerfeld_integrals.cpp
 
     ./src/gf/scalar.cpp
