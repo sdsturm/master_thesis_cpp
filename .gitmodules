@@ -4,3 +4,6 @@
 [submodule "submodules/gnuplot-iostream"]
 	path = submodules/gnuplot-iostream
 	url = https://github.com/dstahlke/gnuplot-iostream.git
+[submodule "submodules/faddeeva"]
+	path = submodules/faddeeva
+	url = https://github.com/cdown/faddeeva.git
