@@ -12,8 +12,6 @@ namespace mthesis {
 class SommerfeldIntegral
 {
 public:
-    using spectral_gf = std::function<cmplx(real z, real z_, cmplx k_rho)>;
-
     SommerfeldIntegral(spectral_gf f, real nu, const LayeredMedium &lm);
 
     cmplx eval_si_along_sip(real rho, real z, real z_,
