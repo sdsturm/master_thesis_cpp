@@ -3,11 +3,12 @@
 
 #include <mthesis/definitions.hpp>
 #include <mthesis/solution_domain.hpp>
-#include <mthesis/si/partition_extrapolation.hpp>
 
 #include <functional>
 
 namespace mthesis {
+
+using SpectralGF = std::function<cmplx(real z, real z_, cmplx k_rho)>;
 
 struct SommerfeldIntegral
 {

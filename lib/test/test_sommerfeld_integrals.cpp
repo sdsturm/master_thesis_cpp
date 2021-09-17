@@ -4,7 +4,7 @@
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/data/monomorphic.hpp>
 
-#include <mthesis/si/sommerfeld_integral.hpp>
+#include <mthesis/si/partition_extrapolation.hpp>
 
 #include <boost/math/special_functions/bessel.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>

@@ -1,5 +1,4 @@
 #include <mthesis/si/sommerfeld_integral.hpp>
-#include <mthesis/si/partition_extrapolation.hpp>
 
 #include <boost/math/special_functions/bessel.hpp>
 #include <complex_bessel.h>

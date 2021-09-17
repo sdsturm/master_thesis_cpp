@@ -19,8 +19,6 @@ using DyadC3 = arma::cx_mat33;
 
 enum class RiemannSheet {I, II, III, IV};
 
-using SpectralGF = std::function<cmplx(real z, real z_, cmplx k_rho)>;
-
 struct CmplxExp
 {
     CmplxExp(cmplx amplitude, cmplx exponent) : amp(amplitude), exp(exponent) {}

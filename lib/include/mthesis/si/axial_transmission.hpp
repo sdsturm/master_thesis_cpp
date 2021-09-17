@@ -2,6 +2,7 @@
 #define MTHESIS_SI_AXIAL_TRANSMISSION_HPP
 
 #include <mthesis/si/sommerfeld_integral.hpp>
+#include <mthesis/si/partition_extrapolation.hpp>
 
 namespace mthesis::si::axial_transmission {
 
