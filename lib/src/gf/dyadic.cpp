@@ -140,48 +140,48 @@ namespace layered_media {
 
 DyadC3 G_EJ(const LayeredMedium &lm, const VectorR3 &r, const VectorR3 &r_)
 {
-    LMCoords coords(r, r_);
+    LMCoords c(r, r_);
 
-    auto si_vals = utils::calc_G_EJ_si_vals(lm, coords);
-    auto f_ = utils::calc_electric_factor(lm, coords.z_);
-    auto f = utils::calc_electric_factor(lm, coords.z);
+    auto si_vals = utils::calc_G_EJ_si_vals(lm, c);
+    auto f_ = utils::calc_electric_factor(lm, c.z_);
+    auto f = utils::calc_electric_factor(lm, c.z);
 
-    return utils::G_EJ_HM_common(si_vals, coords, f, f_);
+    return utils::G_EJ_HM_common(si_vals, c, f, f_);
 }
 
 DyadC3 G_HM(const LayeredMedium &lm, const VectorR3 &r, const VectorR3 &r_)
 {
-    LMCoords coords(r, r_);
+    LMCoords c(r, r_);
 
-    auto si_vals = utils::calc_G_HM_si_vals(lm, coords);
-    auto f_ = utils::calc_magnetic_factor(lm, coords.z_);
-    auto f = utils::calc_magnetic_factor(lm, coords.z);
+    auto si_vals = utils::calc_G_HM_si_vals(lm, c);
+    auto f_ = utils::calc_magnetic_factor(lm, c.z_);
+    auto f = utils::calc_magnetic_factor(lm, c.z);
 
-    return utils::G_EJ_HM_common(si_vals, coords, f, f_);
+    return utils::G_EJ_HM_common(si_vals, c, f, f_);
 }
 
 
 DyadC3 G_HJ(const LayeredMedium &lm, const VectorR3 &r, const VectorR3 &r_)
 {
-    LMCoords coords(r, r_);
+    LMCoords c(r, r_);
 
-    auto si_vals = utils::calc_G_HJ_si_vals(lm, coords);
+    auto si_vals = utils::calc_G_HJ_si_vals(lm, c);
 
-    auto factor_e = utils::calc_electric_factor(lm, coords.z_);
-    auto factor_h = utils::calc_magnetic_factor(lm, coords.z);
+    auto factor_e = utils::calc_electric_factor(lm, c.z_);
+    auto factor_h = utils::calc_magnetic_factor(lm, c.z);
 
     DyadC3 G;
 
-    G(0, 0) = utils::G_HJ_xx(si_vals, coords);
-    G(1, 0) = utils::G_HJ_yx(si_vals, coords);
-    G(2, 0) = utils::G_HJ_zx(si_vals, coords, factor_h);
+    G(0, 0) = utils::G_HJ_xx(si_vals, c);
+    G(1, 0) = utils::G_HJ_yx(si_vals, c);
+    G(2, 0) = utils::G_HJ_zx(si_vals, c, factor_h);
 
-    G(0, 1) = utils::G_HJ_xy(si_vals, coords);
+    G(0, 1) = utils::G_HJ_xy(si_vals, c);
     G(1, 1) = -G(0, 0);
-    G(2, 1) = utils::G_HJ_zy(si_vals, coords, factor_h);
+    G(2, 1) = utils::G_HJ_zy(si_vals, c, factor_h);
 
-    G(0, 2) = utils::G_HJ_xz(si_vals, coords, factor_e);
-    G(1, 2) = utils::G_HJ_yz(si_vals, coords, factor_e);
+    G(0, 2) = utils::G_HJ_xz(si_vals, c, factor_e);
+    G(1, 2) = utils::G_HJ_yz(si_vals, c, factor_e);
     G(2, 2) = 0;
 
     return G;
@@ -220,8 +220,7 @@ cmplx calc_magnetic_factor(const LayeredMedium &lm, real z)
     return 1.0 / (1.0i * lm.fd.k_0 * get_eta_0() * lm.media[m].mu_r);
 }
 
-std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
-                                     const LMCoords &coords)
+std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 {
     using namespace mthesis::tlgf;
 
@@ -266,14 +265,13 @@ std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
     using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(6);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], c.rho, c.z, c.z_);
     }
 
     return si_vals;
 }
 
-std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm,
-                                     const LMCoords &coords)
+std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm, const LMCoords &c)
 {
     using namespace mthesis::tlgf;
 
@@ -318,85 +316,76 @@ std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm,
     using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(6);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], c.rho, c.z, c.z_);
     }
 
     return si_vals;
 }
 
-cmplx G_EJ_HM_xx(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords)
+cmplx G_EJ_HM_xx(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
-    cmplx val = -pow(cos(coords.phi), 2) * si_vals[0] -
-            pow(sin(coords.phi), 2) * si_vals[1];
+    cmplx val = -pow(cos(c.phi), 2) * si_vals[0] -
+            pow(sin(c.phi), 2) * si_vals[1];
 
-    if (coords.rho > 0.0) {
-        val += cos(2.0 * coords.phi) / coords.rho * si_vals[2];
+    if (c.rho > 0.0) {
+        val += cos(2.0 * c.phi) / c.rho * si_vals[2];
     }
     return val;
 }
 
-cmplx G_EJ_HM_xz(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords,
+cmplx G_EJ_HM_xz(const std::vector<cmplx> &si_vals, const LMCoords &c,
                  cmplx f_)
 {
-    return f_ * cos(coords.phi) * si_vals[3];
+    return f_ * cos(c.phi) * si_vals[3];
 }
 
-cmplx G_EJ_HM_yx(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords)
+cmplx G_EJ_HM_yx(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
     cmplx val = -(si_vals[0] - si_vals[1]) / 2.0;
 
-    if (coords.rho > 0.0) {
-        val += si_vals[2] / coords.rho;
+    if (c.rho > 0.0) {
+        val += si_vals[2] / c.rho;
     }
 
-    return sin(2.0 * coords.phi) * val;
+    return sin(2.0 * c.phi) * val;
 }
 
-cmplx G_EJ_HM_yy(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords)
+cmplx G_EJ_HM_yy(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
-    cmplx val = -pow(sin(coords.phi), 2) * si_vals[0] -
-            pow(cos(coords.phi), 2) * si_vals[1];
+    cmplx val = -pow(sin(c.phi), 2) * si_vals[0] -
+            pow(cos(c.phi), 2) * si_vals[1];
 
-    if (coords.rho > 0) {
-        val -= cos(2.0 * coords.phi) / coords.rho * si_vals[2];
+    if (c.rho > 0) {
+        val -= cos(2.0 * c.phi) / c.rho * si_vals[2];
     }
 
     return val;
 }
 
-cmplx G_EJ_HM_yz(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords,
+cmplx G_EJ_HM_yz(const std::vector<cmplx> &si_vals, const LMCoords &c,
                  cmplx f_)
 {
-    return f_ * sin(coords.phi) * si_vals[3];
+    return f_ * sin(c.phi) * si_vals[3];
 }
 
-cmplx G_EJ_HM_zx(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords,
+cmplx G_EJ_HM_zx(const std::vector<cmplx> &si_vals, const LMCoords &c,
                  cmplx f)
 {
-    return f * cos(coords.phi) * si_vals[4];
+    return f * cos(c.phi) * si_vals[4];
 }
 
-cmplx G_EJ_HM_zy(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords,
+cmplx G_EJ_HM_zy(const std::vector<cmplx> &si_vals, const LMCoords &c,
                  cmplx f)
 {
-    return f * sin(coords.phi) * si_vals[4];
+    return f * sin(c.phi) * si_vals[4];
 }
 
-cmplx G_EJ_HM_zz(const std::vector<cmplx> &si_vals,
-                 const LMCoords &coords,
-                 cmplx f,
-                 cmplx f_)
+cmplx G_EJ_HM_zz(const std::vector<cmplx> &si_vals, const LMCoords &c,
+                 cmplx f, cmplx f_)
 {
     cmplx val = f_ * f * si_vals[5];
 
-    if (coords.rho == 0.0 && (coords.z - coords.z_) == 0.0) {
+    if (c.rho == 0.0 && (c.z - c.z_) == 0.0) {
         // A delta-function outside integral seems quite strange...
         val -= f * std::numeric_limits<real>::infinity();
     }
@@ -404,30 +393,27 @@ cmplx G_EJ_HM_zz(const std::vector<cmplx> &si_vals,
     return val;
 }
 
-DyadC3 G_EJ_HM_common(const std::vector<cmplx> &si_vals,
-                      const LMCoords &coords,
-                      cmplx f,
-                      cmplx f_)
+DyadC3 G_EJ_HM_common(const std::vector<cmplx> &si_vals, const LMCoords &c,
+                      cmplx f, cmplx f_)
 {
     DyadC3 G;
 
-    G(0, 0) = G_EJ_HM_xx(si_vals, coords);
-    G(1, 0) = G_EJ_HM_yx(si_vals, coords);
-    G(2, 0) = G_EJ_HM_zx(si_vals, coords, f);
+    G(0, 0) = G_EJ_HM_xx(si_vals, c);
+    G(1, 0) = G_EJ_HM_yx(si_vals, c);
+    G(2, 0) = G_EJ_HM_zx(si_vals, c, f);
 
     G(0, 1) = G(1, 0);
-    G(1, 1) = G_EJ_HM_yy(si_vals, coords);
-    G(2, 1) = G_EJ_HM_zy(si_vals, coords, f);
+    G(1, 1) = G_EJ_HM_yy(si_vals, c);
+    G(2, 1) = G_EJ_HM_zy(si_vals, c, f);
 
-    G(0, 2) = G_EJ_HM_xz(si_vals, coords, f_);
-    G(1, 2) = G_EJ_HM_yz(si_vals, coords, f_);
-    G(2, 2) = G_EJ_HM_zz(si_vals, coords, f, f_);
+    G(0, 2) = G_EJ_HM_xz(si_vals, c, f_);
+    G(1, 2) = G_EJ_HM_yz(si_vals, c, f_);
+    G(2, 2) = G_EJ_HM_zz(si_vals, c, f, f_);
 
     return G;
 }
 
-std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
-                                     const LMCoords &coords)
+std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 {
     using namespace mthesis::tlgf;
 
@@ -466,76 +452,69 @@ std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
     using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(5);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], c.rho, c.z, c.z_);
     }
 
     return si_vals;
 }
 
-cmplx G_HJ_xx(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords)
+cmplx G_HJ_xx(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
     cmplx val = -(si_vals[0] - si_vals[1]) / 2.0;
 
-    if (coords.rho > 0.0) {
-        val += si_vals[2] / coords.rho;
+    if (c.rho > 0.0) {
+        val += si_vals[2] / c.rho;
     }
 
-    return sin(2.0 * coords.phi) * val;
+    return sin(2.0 * c.phi) * val;
 }
 
-cmplx G_HJ_xy(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords)
+cmplx G_HJ_xy(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
-    cmplx val = pow(cos(coords.phi), 2) * si_vals[0] +
-            pow(sin(coords.phi), 2) * si_vals[1];
+    cmplx val = pow(cos(c.phi), 2) * si_vals[0] +
+            pow(sin(c.phi), 2) * si_vals[1];
 
-    if (coords.rho > 0.0) {
-        val -= cos(2.0 * coords.phi) / coords.rho * si_vals[2];
-    }
-
-    return val;
-}
-
-cmplx G_HJ_xz(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords,
-              cmplx factor_e_)
-{
-    return -factor_e_ * sin(coords.phi) * si_vals[3];
-}
-
-cmplx G_HJ_yx(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords)
-{
-    cmplx val = -pow(sin(coords.phi), 2) * si_vals[0] -
-            pow(cos(coords.phi), 2) * si_vals[1];
-
-    if (coords.rho > 0.0) {
-        val -= cos(2.0 * coords.phi) / coords.rho * si_vals[2];
+    if (c.rho > 0.0) {
+        val -= cos(2.0 * c.phi) / c.rho * si_vals[2];
     }
 
     return val;
 }
 
-cmplx G_HJ_yz(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords,
+cmplx G_HJ_xz(const std::vector<cmplx> &si_vals, const LMCoords &c,
               cmplx factor_e_)
 {
-    return factor_e_ * cos(coords.phi) * si_vals[3];
+    return -factor_e_ * sin(c.phi) * si_vals[3];
 }
 
-cmplx G_HJ_zx(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords,
-              cmplx factor_h)
+cmplx G_HJ_yx(const std::vector<cmplx> &si_vals, const LMCoords &c)
 {
-    return factor_h * sin(coords.phi) * si_vals[4];
+    cmplx val = -pow(sin(c.phi), 2) * si_vals[0] -
+            pow(cos(c.phi), 2) * si_vals[1];
+
+    if (c.rho > 0.0) {
+        val -= cos(2.0 * c.phi) / c.rho * si_vals[2];
+    }
+
+    return val;
 }
 
-cmplx G_HJ_zy(const std::vector<cmplx> &si_vals,
-              const LMCoords &coords,
+cmplx G_HJ_yz(const std::vector<cmplx> &si_vals, const LMCoords &c,
+              cmplx factor_e_)
+{
+    return factor_e_ * cos(c.phi) * si_vals[3];
+}
+
+cmplx G_HJ_zx(const std::vector<cmplx> &si_vals, const LMCoords &c,
               cmplx factor_h)
 {
-    return -factor_h * cos(coords.phi) * si_vals[4];
+    return factor_h * sin(c.phi) * si_vals[4];
+}
+
+cmplx G_HJ_zy(const std::vector<cmplx> &si_vals, const LMCoords &c,
+              cmplx factor_h)
+{
+    return -factor_h * cos(c.phi) * si_vals[4];
 }
 
 } // namespace utils
