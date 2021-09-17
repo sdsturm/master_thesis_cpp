@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-namespace mthesis::pe {
+namespace mthesis::si::pe {
 
 void Params::set_max_intervals(int max_intervals)
 {
@@ -319,4 +319,4 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
 
 } // namespace utils
 
-} // namespace mthesis::pe
+} // namespace mthesis::si::pe

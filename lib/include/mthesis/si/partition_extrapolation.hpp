@@ -3,7 +3,7 @@
 
 #include <mthesis/definitions.hpp>
 
-namespace mthesis::pe {
+namespace mthesis::si::pe {
 
 class Params
 {
@@ -77,8 +77,8 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
                            double zeta,
                            Params params);
 
-} // namespace mthesis::pe::utils
+} // utils
 
-} // namespace mthesis::pe
+} // namespace mthesis::si::pe
 
 #endif
