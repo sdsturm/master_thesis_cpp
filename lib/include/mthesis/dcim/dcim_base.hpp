@@ -3,7 +3,7 @@
 
 #include <mthesis/definitions.hpp>
 #include <mthesis/solution_domain.hpp>
-#include <mthesis/sommerfeld_integrals.hpp>
+#include <mthesis/si/sommerfeld_integral.hpp>
 
 #include <functional>
 

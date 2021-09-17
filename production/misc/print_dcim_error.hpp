@@ -33,11 +33,12 @@ inline void print_dcim_error(const arma::vec &rho_vals_by_lambda_0,
 
     real rel_err_db_max = -INFINITY;
     real rho_max_err, z_max_err;
+    using mthesis::si::axial_transmission::eval_si_along_sip;
     printf("rho/lambda_0 z/lambda_0 rel_err_db\n");
     for (const auto &z : z_vals) {
         auto ce_vecs_levels = dcim_3lv2.get_exponentials(z, z_);
         for (const auto &rho : rho_vals) {
-            auto val_ref = si.eval_si_along_sip(rho, z, z_);
+            auto val_ref = eval_si_along_sip(si, rho, z, z_);
             auto val_dcim_3lv2 = dcim_3lv2.get_spatial_gf(ce_vecs_levels, rho);
 
             auto rel_err_db = calc_rel_err_db(val_dcim_3lv2, val_ref);

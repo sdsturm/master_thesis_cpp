@@ -33,6 +33,7 @@ int main(int argc, char** argv)
     std::vector<real> time_s(N);
     boost::timer::auto_cpu_timer timer;
     size_t n = 0;
+    using mthesis::si::axial_transmission::eval_si_along_sip;
     for (auto &x : x_vals)
     {
         for (auto &z : z_vals)
@@ -45,10 +46,10 @@ int main(int argc, char** argv)
             timer.start();
             for (int i = 0; i < N_runs - 1; i++)
             {
-                si.eval_si_along_sip(r, r_);
+                eval_si_along_sip(si, r, r_);
             }
             // One final time for the result.
-            auto num = si.eval_si_along_sip(r, r_);
+            auto num = eval_si_along_sip(si, r, r_);
             timer.stop();
 
             rel_err_db[n] = calc_rel_err_db(num, ref);

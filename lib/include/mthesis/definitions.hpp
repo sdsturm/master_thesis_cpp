@@ -42,8 +42,7 @@ struct LayeredMediumCoords
           phi(std::atan2(R[1], R[0])),
           z(r[2]),
           z_(r_[2])
-    {
-    }
+    {}
 };
 
 inline cmplx cmplx_length(const VectorC3 &r)

@@ -1,7 +1,6 @@
 #include <mthesis/gf/scalar.hpp>
 
 #include <mthesis/tlgf.hpp>
-#include <mthesis/sommerfeld_integrals.hpp>
 
 namespace mthesis::gf::scalar {
 

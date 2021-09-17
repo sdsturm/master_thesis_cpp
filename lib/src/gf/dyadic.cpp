@@ -1,6 +1,7 @@
 #include <mthesis/gf/dyadic.hpp>
 #include <mthesis/tlgf.hpp>
-#include <mthesis/sommerfeld_integrals.hpp>
+#include <mthesis/si/sommerfeld_integral.hpp>
+#include <mthesis/si/axial_transmission.hpp>
 
 #include <gsl/gsl_const_mksa.h>
 
@@ -262,9 +263,10 @@ std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
     si.push_back(SommerfeldIntegral(f4, 1, lm));
     si.push_back(SommerfeldIntegral(f5, 0, lm));
 
+    using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(6);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
     }
 
     return si_vals;
@@ -313,9 +315,10 @@ std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm,
     si.push_back(SommerfeldIntegral(f4, 1, lm));
     si.push_back(SommerfeldIntegral(f5, 0, lm));
 
+    using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(6);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
     }
 
     return si_vals;
@@ -460,9 +463,10 @@ std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
     si.push_back(SommerfeldIntegral(f3, 1, lm));
     si.push_back(SommerfeldIntegral(f4, 1, lm));
 
+    using mthesis::si::axial_transmission::eval_si_along_sip;
     std::vector<cmplx> si_vals(5);
     for (size_t n = 0; n < si.size(); n++) {
-        si_vals[n] = si[n].eval_si_along_sip(coords.rho, coords.z, coords.z_);
+        si_vals[n] = eval_si_along_sip(si[n], coords.rho, coords.z, coords.z_);
     }
 
     return si_vals;

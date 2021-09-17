@@ -40,7 +40,8 @@ int main()
     auto si = gf::scalar::layered_media::get_sommerfeld_integral(lm, nu, mode,
                                                                  direct_term);
 
-    auto val_ref = si.eval_si_along_sip(r, r_);
+    using mthesis::si::axial_transmission::eval_si_along_sip;
+    auto val_ref = eval_si_along_sip(si, r, r_);
 
     dcim::TwoLevel dcim_2l(si);
     auto val_dcim_2l = dcim_2l.get_spatial_gf(r, r_);

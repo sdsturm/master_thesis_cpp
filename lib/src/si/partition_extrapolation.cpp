@@ -1,4 +1,4 @@
-#include <mthesis/partition_extrapolation.hpp>
+#include <mthesis/si/partition_extrapolation.hpp>
 
 #include <boost/math/special_functions/bessel.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>

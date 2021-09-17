@@ -13,10 +13,11 @@ add_library(${PROJECT_NAME} SHARED
     ./src/solution_domain.cpp
     ./src/tlgf.cpp
 
-    ./src/partition_extrapolation.cpp
-    ./../submodules/faddeeva/Faddeeva.cc  # Submodule.
-    ./src/nonspectral.cpp
-    ./src/sommerfeld_integrals.cpp
+    ./src/si/partition_extrapolation.cpp
+    ./src/si/sommerfeld_integral.cpp
+    ./src/si/axial_transmission.cpp
+    ./src/si/nonspectral.cpp
+    ./../submodules/faddeeva/Faddeeva.cc  # Submodule for nonspectral.cpp.
 
     ./src/gf/scalar.cpp
     ./src/gf/dyadic.cpp

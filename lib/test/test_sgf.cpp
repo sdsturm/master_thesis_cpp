@@ -101,7 +101,8 @@ BOOST_DATA_TEST_CASE(sommerfeld_identity,
 
     cmplx ref = gf::scalar::free_space::G_0(vacuum, r, r_);
 
-    cmplx num = si.eval_si_along_sip(r, r_);
+    using mthesis::si::axial_transmission::eval_si_along_sip;
+    cmplx num = eval_si_along_sip(si, r, r_);
 
     real rel_err_db = calc_rel_err_db(num, ref);
 

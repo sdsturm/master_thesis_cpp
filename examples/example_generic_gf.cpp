@@ -35,7 +35,9 @@ int main()
         for (auto &z : z_vals)
         {
             VectorR3 r = {x, 0, z};
-            auto g_lm = si.eval_si_along_sip(r, r_);
+
+            using mthesis::si::axial_transmission::eval_si_along_sip;
+            auto g_lm = eval_si_along_sip(si, r, r_);
 
             printf("%.8f  %.8f  %.8f  \n", x, z, g_lm.real());
         }

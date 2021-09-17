@@ -41,7 +41,8 @@ BOOST_DATA_TEST_CASE(three_level_v1_near_range,
     auto si = gf::scalar::layered_media::get_sommerfeld_integral(
                 hs, nu, mode, direct_term);
 
-    auto val_ref = si.eval_si_along_sip(rho, z, z_);
+    using mthesis::si::axial_transmission::eval_si_along_sip;
+    auto val_ref = eval_si_along_sip(si, rho, z, z_);
 
     auto dcim_3lv1 = dcim::ThreeLevelV2(si);
     auto val_dcim_3lv1 = dcim_3lv1.get_spatial_gf(z, z_, rho);
@@ -74,7 +75,8 @@ BOOST_DATA_TEST_CASE(three_level_v2_near_range,
     auto si = gf::scalar::layered_media::get_sommerfeld_integral(
                 hs, nu, mode, direct_term);
 
-    auto val_ref = si.eval_si_along_sip(rho, z, z_);
+    using mthesis::si::axial_transmission::eval_si_along_sip;
+    auto val_ref = eval_si_along_sip(si, rho, z, z_);
 
     auto dcim_3lv2 = dcim::ThreeLevelV2(si);
     auto val_dcim_3lv2 = dcim_3lv2.get_spatial_gf(z, z_, rho);
