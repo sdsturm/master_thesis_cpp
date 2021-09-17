@@ -23,43 +23,24 @@ using SpectralGF = std::function<cmplx(real z, real z_, cmplx k_rho)>;
 
 struct CmplxExp
 {
+    CmplxExp(cmplx amplitude, cmplx exponent) : amp(amplitude), exp(exponent) {}
+
     const cmplx amp;
     const cmplx exp;
-    CmplxExp(cmplx amplitude, cmplx exponent) : amp(amplitude), exp(exponent) {}
 };
 
 struct LayeredMediumCoords
 {
+    LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_);
+
     const VectorR3 R;
     const real rho;
     const real phi;
     const real z;
     const real z_;
-
-    LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_)
-        : R(r - r_),
-          rho(std::sqrt(std::pow(R[0], 2) + std::pow(R[1], 2))),
-          phi(std::atan2(R[1], R[0])),
-          z(r[2]),
-          z_(r_[2])
-    {}
 };
 
-inline cmplx cmplx_length(const VectorC3 &r)
-{
-    cmplx val;
-    for (const auto &component : r) {
-        val += std::pow(component, 2.0);
-    }
-    val = std::sqrt(val);
-
-    // Choose branch with non-negative real part, see Hansen2013.
-    if (val.real() < 0.0) {
-        val *= -1.0;
-    }
-
-    return val;
-}
+cmplx cmplx_length(const VectorC3 &r);
 
 template <typename T1, typename T2>
 real calc_rel_err(T1 num, T2 ref)

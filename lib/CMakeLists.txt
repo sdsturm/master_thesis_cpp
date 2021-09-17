@@ -10,6 +10,7 @@ add_compile_options(-pedantic)
 # add_compile_options(-Werror)
 
 add_library(${PROJECT_NAME} SHARED
+    ./src/definitions.cpp
     ./src/solution_domain.cpp
     ./src/tlgf.cpp
 
