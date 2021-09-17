@@ -32,8 +32,8 @@ SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
 {
     auto f = [=](real z, real z_, cmplx k_rho)
     {
-        tlgf::TLGFParams p(lm, mode, direct_term, s);
-        return tlgf::generic_sgf(k_rho, z, z_, p);
+        tlgf::TLGFParams p(lm, mode, direct_term);
+        return tlgf::generic_sgf(k_rho, z, z_, p, s);
     };
 
     return SommerfeldIntegral(f, nu, lm);

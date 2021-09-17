@@ -4,50 +4,73 @@ namespace mthesis::tlgf {
 
 TLGFParams::TLGFParams(const LayeredMedium &lm,
                        EmMode mode,
-                       bool direct_term,
-                       RiemannSheet sheet)
-    : lm(lm), mode(mode), direct_term(direct_term), sheet(sheet)
+                       bool direct_term)
+    : lm(lm), mode(mode), direct_term(direct_term)
 {}
 
-cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p)
+cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
 {
     bool dual_solution = false;
     utils::LayerCoords c(p.lm, z, z_);
-    utils::Internals d(p, k_rho, dual_solution);
+    utils::Internals d(p, k_rho, dual_solution, sheet);
     return utils::V_i_base(p, c, d);
+}
+
+cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p)
+{
+    RiemannSheet proper_sheet = RiemannSheet::I;
+    return V_i(k_rho, z, z_, p, proper_sheet);
+}
+
+cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
+{
+    bool dual_solution = false;
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution, sheet);
+    return utils::I_i_base(p, c, d);
 }
 
 cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    bool dual_solution = false;
+    RiemannSheet proper_sheet = RiemannSheet::I;
+    return I_i(k_rho, z, z_, p, proper_sheet);
+}
+
+cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
+{
+    bool dual_solution = true;
     utils::LayerCoords c(p.lm, z, z_);
-    utils::Internals d(p, k_rho, dual_solution);
-    return utils::I_i_base(p, c, d);
+    utils::Internals d(p, k_rho, dual_solution, sheet);
+    return utils::V_i_base(p, c, d);
 }
 
 cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
+    RiemannSheet proper_sheet = RiemannSheet::I;
+    return I_v(k_rho, z, z_, p, proper_sheet);
+}
+
+cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
+{
     bool dual_solution = true;
     utils::LayerCoords c(p.lm, z, z_);
-    utils::Internals d(p, k_rho, dual_solution);
-    return utils::V_i_base(p, c, d);
+    utils::Internals d(p, k_rho, dual_solution, sheet);
+    return utils::I_i_base(p, c, d);
 }
 
 cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    bool dual_solution = true;
-    utils::LayerCoords c(p.lm, z, z_);
-    utils::Internals d(p, k_rho, dual_solution);
-    return utils::I_i_base(p, c, d);
+    RiemannSheet proper_sheet = RiemannSheet::I;
+    return V_v(k_rho, z, z_, p, proper_sheet);
 }
 
-cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
+cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
 {
     using std::complex_literals::operator""i;
 
     bool dual_solution = false;
     utils::LayerCoords c(p.lm, z, z_);
-    utils::Internals d(p, k_rho, dual_solution);
+    utils::Internals d(p, k_rho, dual_solution, sheet);
 
     // Note: this function is not reciprocal if z and z_ lie in layers with
     // 	     different material paramters.
@@ -56,12 +79,19 @@ cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
     return utils::V_i_base_wo_prefac(p, c, d) / (1.0i * d.k_z[c.n]);
 }
 
-// Hide implementation details in nested namespace utils.
+cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
+{
+    RiemannSheet proper_sheet = RiemannSheet::I;
+    return generic_sgf(k_rho, z, z_, p, proper_sheet);
+}
+
+// *****************************************************************************
+
 namespace utils {
 
-void calc_k_z_select_sheet(std::vector<cmplx> &k_z, const TLGFParams &p)
+void calc_k_z_select_sheet(std::vector<cmplx> &k_z, RiemannSheet sheet)
 {
-    switch (p.sheet) {
+    switch (sheet) {
     case RiemannSheet::I:
         // Top layer.
         if (k_z.back().imag() > 0.0)
@@ -97,7 +127,9 @@ void calc_k_z_select_sheet(std::vector<cmplx> &k_z, const TLGFParams &p)
     }
 }
 
-std::vector<cmplx> calc_k_z(const TLGFParams &p, cmplx k_rho)
+std::vector<cmplx> calc_k_z(const TLGFParams &p,
+                            cmplx k_rho,
+                            RiemannSheet sheet)
 {
     std::vector<cmplx> k_z(p.lm.media.size());
     cmplx k_rho_square = std::pow(k_rho, 2.0);
@@ -106,7 +138,7 @@ std::vector<cmplx> calc_k_z(const TLGFParams &p, cmplx k_rho)
         k_z[n] = std::sqrt(std::pow(p.lm.media[n].k, 2.0) - k_rho_square);
     }
 
-    calc_k_z_select_sheet(k_z, p);
+    calc_k_z_select_sheet(k_z, sheet);
 
     return k_z;
 }
@@ -222,8 +254,11 @@ std::vector<cmplx> calc_Gamma_d(const TLGFParams &p,
     return Gamma_d;
 }
 
-Internals::Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution)
-    : k_z(calc_k_z(p, k_rho)),
+Internals::Internals(const TLGFParams &p,
+                     cmplx k_rho,
+                     bool dual_solution,
+                     RiemannSheet sheet)
+    : k_z(calc_k_z(p, k_rho, sheet)),
       Z(dual_solution ? calc_Y(p, k_z) : calc_Z(p, k_z)),
       theta(calc_theta(p, k_z)),
       Gamma_u(calc_Gamma_u(p , Z, theta)),

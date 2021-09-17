@@ -14,33 +14,40 @@ struct TLGFParams
 {
     TLGFParams(const LayeredMedium &lm,
                EmMode mode,
-               bool direct_term = true,
-               RiemannSheet sheet = RiemannSheet::I);
+               bool direct_term = true);
 
     const LayeredMedium &lm;
     const EmMode mode;
     const bool direct_term;
-    RiemannSheet sheet;
 };
 
 // Equivalent transmission line network Green's functions.
+cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
 cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
+cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
 cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
+cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
 cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
+cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
 cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
+// Generalzied Sommerfeld identity.
+cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
 cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p);
 
-// Hide implementation details in nested namespace utils.
+// *****************************************************************************
+
 namespace utils {
 
 // Basic quantities like k_z, impedance, reflection coefficients, ...
-void calc_k_z_select_sheet(std::vector<cmplx> &k_z, const TLGFParams &p);
+void calc_k_z_select_sheet(std::vector<cmplx> &k_z, RiemannSheet sheet);
 
-std::vector<cmplx> calc_k_z(const TLGFParams &p, cmplx k_rho);
+std::vector<cmplx> calc_k_z(const TLGFParams &p,
+                            cmplx k_rho,
+                            RiemannSheet sheet);
 
 std::vector<cmplx> calc_Z(const TLGFParams &p, const std::vector<cmplx> &k_z);
 
@@ -61,7 +68,10 @@ std::vector<cmplx> calc_Gamma_d(const TLGFParams &p,
 
 struct Internals
 {
-    Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution);
+    Internals(const TLGFParams &p,
+              cmplx k_rho,
+              bool dual_solution,
+              RiemannSheet sheet);
 
     std::vector<cmplx> k_z;
     std::vector<cmplx> Z;
