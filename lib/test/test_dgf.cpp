@@ -78,7 +78,7 @@ BOOST_DATA_TEST_CASE(free_space_reference,
     VectorR3 r_ = {dist_pos(gen), dist_pos(gen), dist_pos(gen)};
 
     DyadC3 d1, d2;
-    real tol = 1e-4; // In percent.
+    real tol = 5e-4; // In percent.
 
     d1 = gf::dyadic::free_space::G_EJ(medium, r, r_);
     d2 = gf::dyadic::layered_media::G_EJ(lm, r, r_);
