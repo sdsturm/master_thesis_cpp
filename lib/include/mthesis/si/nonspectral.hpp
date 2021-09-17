@@ -29,7 +29,10 @@ cmplx calc_k_p(const LayeredMedium &lm);
 
 cmplx calc_s_p(const LayeredMedium &lm, cmplx k_p);
 
+#if 0
 cmplx calc_R_p_quad(const SommerfeldIntegral &si, const LMCoords &c, cmplx k_p);
+#endif
+
 cmplx calc_R_p_closed_form(const LayeredMedium &lm, const LMCoords &c);
 
 cmplx calc_numerical_distance(const LayeredMedium &lm, cmplx k_p, real rho);

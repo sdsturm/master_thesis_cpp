@@ -27,13 +27,12 @@ namespace layered_media {
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
                                            real nu,
                                            EmMode mode,
-                                           bool direct_term,
-                                           RiemannSheet s)
+                                           bool direct_term)
 {
-    auto f = [=](real z, real z_, cmplx k_rho)
+    auto f = [=](cmplx k_rho, real z, real z_, RiemannSheet sheet)
     {
         tlgf::TLGFParams p(lm, mode, direct_term);
-        return tlgf::generic_sgf(k_rho, z, z_, p, s);
+        return tlgf::generic_sgf(k_rho, z, z_, p, sheet);
     };
 
     return SommerfeldIntegral(f, nu, lm);

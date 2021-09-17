@@ -21,8 +21,7 @@ namespace layered_media {
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
                                            real nu,
                                            EmMode mode,
-                                           bool direct_term,
-                                           RiemannSheet s = RiemannSheet::I);
+                                           bool direct_term);
 
 } // namespace layered_media
 

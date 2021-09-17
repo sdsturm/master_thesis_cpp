@@ -23,20 +23,15 @@ struct TLGFParams
 
 // Equivalent transmission line network Green's functions.
 cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
-cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
 cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
-cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
 cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
-cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
 cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
-cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
 // Generalzied Sommerfeld identity.
 cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet);
-cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p);
 
 // *****************************************************************************
 

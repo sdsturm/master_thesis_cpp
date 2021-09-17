@@ -68,7 +68,10 @@ std::vector<CeVec> DCIM::get_exponentials(real z, real z_) const
 {
     // Main algorithm.
 
-    auto G = [=](cmplx k_rho) { return si.f(z, z_, k_rho); };
+    auto G = [=](cmplx k_rho)
+    {
+        return si.eval_spectral_gf(k_rho, z, z_, RiemannSheet::I);
+    };
 
     int n_levels = sampling_paths.size();
     std::vector<CeVec> ce_vecs_levels(n_levels);

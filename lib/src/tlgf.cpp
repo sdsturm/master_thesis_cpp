@@ -16,24 +16,12 @@ cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
     return utils::V_i_base(p, c, d);
 }
 
-cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p)
-{
-    RiemannSheet proper_sheet = RiemannSheet::I;
-    return V_i(k_rho, z, z_, p, proper_sheet);
-}
-
 cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
 {
     bool dual_solution = false;
     utils::LayerCoords c(p.lm, z, z_);
     utils::Internals d(p, k_rho, dual_solution, sheet);
     return utils::I_i_base(p, c, d);
-}
-
-cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p)
-{
-    RiemannSheet proper_sheet = RiemannSheet::I;
-    return I_i(k_rho, z, z_, p, proper_sheet);
 }
 
 cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
@@ -44,24 +32,12 @@ cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
     return utils::V_i_base(p, c, d);
 }
 
-cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p)
-{
-    RiemannSheet proper_sheet = RiemannSheet::I;
-    return I_v(k_rho, z, z_, p, proper_sheet);
-}
-
 cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
 {
     bool dual_solution = true;
     utils::LayerCoords c(p.lm, z, z_);
     utils::Internals d(p, k_rho, dual_solution, sheet);
     return utils::I_i_base(p, c, d);
-}
-
-cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p)
-{
-    RiemannSheet proper_sheet = RiemannSheet::I;
-    return V_v(k_rho, z, z_, p, proper_sheet);
 }
 
 cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet)
@@ -77,12 +53,6 @@ cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p, RiemannSheet sheet
     //       For the case m == n (z and z_ in the same layer) this function
     //       fulfills reciprocity.
     return utils::V_i_base_wo_prefac(p, c, d) / (1.0i * d.k_z[c.n]);
-}
-
-cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
-{
-    RiemannSheet proper_sheet = RiemannSheet::I;
-    return generic_sgf(k_rho, z, z_, p, proper_sheet);
 }
 
 // *****************************************************************************

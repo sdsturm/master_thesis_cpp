@@ -8,15 +8,29 @@
 
 namespace mthesis {
 
-using SpectralGF = std::function<cmplx(real z, real z_, cmplx k_rho)>;
-
 struct SommerfeldIntegral
 {
+    using SpectralGF =
+    std::function<cmplx (cmplx k_rho, real z, real z_, RiemannSheet sheet)>;
+
     SommerfeldIntegral(SpectralGF f, real nu, const LayeredMedium &lm);
 
-    cmplx eval_spectral_gf(real z, real z_, cmplx k_rho) const;
-    cmplx eval_integrand_sip(real rho, real z, real z_, real k_rho) const;
-    cmplx eval_integrand_sip(real rho, real z, real z_, cmplx k_rho) const;
+    cmplx eval_spectral_gf(cmplx k_rho,
+                           real z,
+                          real z_,
+                           RiemannSheet sheet) const;
+
+    cmplx eval_integrand_sip(real k_rho,
+                             real rho,
+                             real z,
+                             real z_,
+                             RiemannSheet sheet) const;
+
+    cmplx eval_integrand_sip(cmplx k_rho,
+                             real rho,
+                             real z,
+                             real z_,
+                             RiemannSheet sheet) const;
 
     const SpectralGF f;
     const real nu;

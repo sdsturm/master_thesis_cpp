@@ -70,6 +70,11 @@ cmplx eval_head_ellipsis(const SommerfeldIntegral &si,
     real r = a / 2.0;
     real w = calc_indention(rho, a);
 
+    auto f = [=](cmplx k_rho)
+    {
+        return si.eval_integrand_sip(k_rho, rho, z, z_, RiemannSheet::I);
+    };
+
     auto f_along_path = [&](real t)
     {
         // For 0 <= t <= 1.
@@ -78,7 +83,7 @@ cmplx eval_head_ellipsis(const SommerfeldIntegral &si,
         auto cos_val = std::cos(arg);
         cmplx gamma = r * (1.0 + cos_val) + 1.0i * w * sin_val;
         cmplx gamma_ = r * M_PI * sin_val - 1.0i * w * M_PI * cos_val;
-        return si.eval_integrand_sip(rho, z, z_, gamma) * gamma_;
+        return f(gamma) * gamma_;
     };
 
     constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
@@ -96,7 +101,7 @@ cmplx eval_tail_on_sip(const SommerfeldIntegral &si,
 {
     auto integrand = [=](real k_rho)
     {
-        return si.eval_integrand_sip(rho, z, z_, k_rho);
+        return si.eval_integrand_sip(k_rho, rho, z, z_, RiemannSheet::I);
     };
 
     cmplx val;

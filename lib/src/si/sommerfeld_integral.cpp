@@ -12,21 +12,33 @@ SommerfeldIntegral::SommerfeldIntegral(SpectralGF f, real nu,
       lm(lm)
 {}
 
-cmplx SommerfeldIntegral::eval_spectral_gf(real z, real z_, cmplx k_rho) const
+cmplx SommerfeldIntegral::eval_spectral_gf(cmplx k_rho,
+                                           real z,
+                                           real z_,
+                                           RiemannSheet sheet) const
 {
-    return f(z, z_, k_rho);
+    return f(k_rho, z, z_, sheet);
 }
 
-cmplx SommerfeldIntegral::eval_integrand_sip(real rho, real z, real z_,
-                                             real k_rho) const
+cmplx SommerfeldIntegral::eval_integrand_sip(real k_rho,
+                                             real rho,
+                                             real z,
+                                             real z_,
+                                             RiemannSheet sheet) const
 {
-    return f(z, z_, k_rho) * k_rho * boost::math::cyl_bessel_j(nu, rho * k_rho);
+    return eval_spectral_gf(k_rho, z, z_, sheet) * k_rho *
+            boost::math::cyl_bessel_j(nu, rho * k_rho);
 }
 
-cmplx SommerfeldIntegral::eval_integrand_sip(real rho, real z, real z_,
-                                             cmplx k_rho) const
+cmplx SommerfeldIntegral::eval_integrand_sip(cmplx k_rho,
+                                             real rho,
+                                             real z,
+                                             real z_,
+                                             RiemannSheet sheet) const
 {
-    return f(z, z_, k_rho) * k_rho * sp_bessel::besselJ(nu, rho * k_rho);
+    return eval_spectral_gf(k_rho, z, z_, sheet) * k_rho *
+            sp_bessel::besselJ(nu, rho * k_rho);
+
 }
 
 } // namespace mthesis

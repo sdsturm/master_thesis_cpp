@@ -25,11 +25,14 @@ int main()
     real Z_0 = std::sqrt(GSL_CONST_MKSA_VACUUM_PERMEABILITY /
                          GSL_CONST_MKSA_VACUUM_PERMITTIVITY);
 
+    RiemannSheet proper_sheet = RiemannSheet::I;
     using namespace mthesis::tlgf;
     printf("z_by_lambda_0 V_re V_im I_re I_im Z_rel_re Z_rel_im\n");
     for (const auto &z : z_vals) {
-        cmplx V = V_i(k_rho, z, z_, TLGFParams(lm, type, direct_term));
-        cmplx I = I_i(k_rho, z, z_, TLGFParams(lm, type, direct_term));
+        cmplx V = V_i(k_rho, z, z_, TLGFParams(lm, type, direct_term),
+                      proper_sheet);
+        cmplx I = I_i(k_rho, z, z_, TLGFParams(lm, type, direct_term),
+                      proper_sheet);
         cmplx Z_rel = V / I / Z_0;
         printf("%.6f %.6e %.6e %.6e %.6e %.6e %.6e\n",
                z / fd.lambda_0,

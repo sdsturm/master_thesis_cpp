@@ -69,9 +69,12 @@ BOOST_DATA_TEST_CASE(generic_spectral_gf_reciprocity_in_half_space_same_layer,
 
     bool direct_term = true;
 
+    RiemannSheet proper_sheet = RiemannSheet::I;
     using namespace mthesis::tlgf;
-    cmplx val_1 = generic_sgf(k_rho, z, z_, TLGFParams(lm, mode, direct_term));
-    cmplx val_2 = generic_sgf(k_rho, z_, z, TLGFParams(lm, mode, direct_term));
+    cmplx val_1 = generic_sgf(k_rho, z, z_, TLGFParams(lm, mode, direct_term),
+                              proper_sheet);
+    cmplx val_2 = generic_sgf(k_rho, z_, z, TLGFParams(lm, mode, direct_term),
+                              proper_sheet);
 
     real tol_in_percent = 1e-6;
     BOOST_CHECK_CLOSE(val_1.real(), val_2.real(), tol_in_percent);

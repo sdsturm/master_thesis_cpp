@@ -55,8 +55,8 @@ cmplx calc_folded_sgf(const SommerfeldIntegral &si,
     }
 
     // TODO: incorporate Riemann sheet.
-    cmplx f_left = si.eval_spectral_gf(c.z, c.z_, k_rho);
-    cmplx f_right = si.eval_spectral_gf(c.z, c.z_, k_rho);
+    cmplx f_left = si.eval_spectral_gf(k_rho, c.z, c.z_, sheet_left);
+    cmplx f_right = si.eval_spectral_gf(k_rho, c.z, c.z_, sheet_right);
 
     return f_left - f_right;
 }
@@ -94,6 +94,7 @@ cmplx calc_s_p(const LayeredMedium &lm, cmplx k_p)
     return s_p;
 }
 
+#if 0
 cmplx calc_R_p_quad(const SommerfeldIntegral &si, const LMCoords &c, cmplx k_p)
 {
     using std::complex_literals::operator""i;
@@ -111,6 +112,7 @@ cmplx calc_R_p_quad(const SommerfeldIntegral &si, const LMCoords &c, cmplx k_p)
     cmplx R_p = quad.integrate(f, 0.0, 1.0);
     return R_p;
 }
+#endif
 
 cmplx calc_R_p_closed_form(const LayeredMedium &lm, const LMCoords &c)
 {
@@ -190,10 +192,8 @@ cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
     const cmplx k_1 = si.lm.media.back().k;
     cmplx k_p = calc_k_p(si.lm);
     cmplx s_p = calc_s_p(si.lm, k_p);
-    cmplx R_p_check = calc_R_p_closed_form(si.lm, c);
-    cmplx R_p = calc_R_p_quad(si, c, k_p);
-
-    assert(abs(R_p - R_p_check) < 1e-10);
+    cmplx R_p= calc_R_p_closed_form(si.lm, c);
+//    cmplx R_p = calc_R_p_quad(si, c, k_p);
 
     cmplx p = calc_numerical_distance(si.lm, k_p, c.rho);
     cmplx B_p = calc_B_p(k_p, s_p, R_p, si.nu, c.rho);
