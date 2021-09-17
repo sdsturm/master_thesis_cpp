@@ -11,54 +11,49 @@ TLGFParams::TLGFParams(const LayeredMedium &lm,
 
 cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = p.lm.identify_layer(z);
-    auto n = p.lm.identify_layer(z_);
     bool dual_solution = false;
-    auto d = utils::Internals(p, k_rho, dual_solution);
-    return utils::V_i_base(p.lm, z, z_, m, n, d, p.direct_term);
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution);
+    return utils::V_i_base(p, c, d);
 }
 
 cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = p.lm.identify_layer(z);
-    auto n = p.lm.identify_layer(z_);
     bool dual_solution = false;
-    auto d = utils::Internals(p, k_rho, dual_solution);
-    return utils::I_i_base(p.lm, z, z_, m, n, d, p.direct_term);
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution);
+    return utils::I_i_base(p, c, d);
 }
 
 cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = p.lm.identify_layer(z);
-    auto n = p.lm.identify_layer(z_);
     bool dual_solution = true;
-    auto d = utils::Internals(p, k_rho, dual_solution);
-    return utils::V_i_base(p.lm, z, z_, m, n, d, p.direct_term);
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution);
+    return utils::V_i_base(p, c, d);
 }
 
 cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = p.lm.identify_layer(z);
-    auto n = p.lm.identify_layer(z_);
     bool dual_solution = true;
-    auto d = utils::Internals(p, k_rho, dual_solution);
-    return utils::I_i_base(p.lm, z, z_, m, n, d, p.direct_term);
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution);
+    return utils::I_i_base(p, c, d);
 }
 
 cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
 {
     using std::complex_literals::operator""i;
-    auto m = p.lm.identify_layer(z);
-    auto n = p.lm.identify_layer(z_);
+
     bool dual_solution = false;
-    auto d = utils::Internals(p, k_rho, dual_solution);
+    utils::LayerCoords c(p.lm, z, z_);
+    utils::Internals d(p, k_rho, dual_solution);
 
     // Note: this function is not reciprocal if z and z_ lie in layers with
     // 	     different material paramters.
     //       For the case m == n (z and z_ in the same layer) this function
     //       fulfills reciprocity.
-    return utils::V_i_base_wo_prefac(p.lm, z, z_, m, n, d, p.direct_term) /
-            (1.0i * d.k_z[n]);
+    return utils::V_i_base_wo_prefac(p, c, d) / (1.0i * d.k_z[c.n]);
 }
 
 // Hide implementation details in nested namespace utils.
@@ -235,38 +230,39 @@ Internals::Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution)
       Gamma_d(calc_Gamma_d(p, Z, theta))
 {}
 
-std::vector<cmplx> calc_R(const Internals &d, int n)
+LayerCoords::LayerCoords(const LayeredMedium &lm, real z, real z_)
+    : z(z), z_(z_), m(lm.identify_layer(z)), n(lm.identify_layer(z_))
+{}
+
+std::vector<cmplx> calc_R(const Internals &d, const LayerCoords &c)
 {
     std::vector<cmplx> R(4);
 
-    R[0] = d.Gamma_d[n];
-    R[1] = d.Gamma_u[n];
-    R[2] = d.Gamma_u[n] * d.Gamma_d[n];
+    R[0] = d.Gamma_d[c.n];
+    R[1] = d.Gamma_u[c.n];
+    R[2] = d.Gamma_u[c.n] * d.Gamma_d[c.n];
     R[3] = R[2];
 
     return R;
 }
 
-std::vector<cmplx> calc_zeta(const LayeredMedium &lm,
-                             real z,
-                             real z_,
-                             int n)
+std::vector<cmplx> calc_zeta(const TLGFParams &p, const LayerCoords &c, real z)
 {
     std::vector<cmplx> zeta(4);
 
-    real t = z + z_;
+    real t = z + c.z_;
 
-    if (std::isfinite(lm.z[n])) {
-        zeta[0] = t - 2 * lm.z[n];
+    if (std::isfinite(p.lm.z[c.n])) {
+        zeta[0] = t - 2 * p.lm.z[c.n];
     }
 
-    if (std::isfinite(lm.z[n + 1])) {
-        zeta[1] = 2 * lm.z[n + 1] - t;
+    if (std::isfinite(p.lm.z[c.n + 1])) {
+        zeta[1] = 2 * p.lm.z[c.n + 1] - t;
     }
 
-    if (std::isfinite(lm.d[n])) {
-        real t1 = 2 * lm.d[n];
-        real t2 = z - z_;
+    if (std::isfinite(p.lm.d[c.n])) {
+        real t1 = 2 * p.lm.d[c.n];
+        real t2 = z - c.z_;
         zeta[2] = t1 + t2;
         zeta[3] = t1 - t2;
     }
@@ -274,73 +270,65 @@ std::vector<cmplx> calc_zeta(const LayeredMedium &lm,
     return zeta;
 }
 
-cmplx calc_D(const LayeredMedium &lm,
-             int n,
-             const Internals &d)
+cmplx calc_D(const TLGFParams &p, const LayerCoords &c, const Internals &d)
 {
     using std::complex_literals::operator""i;
 
     cmplx D = 1.0;
-    if (std::isfinite(lm.d[n])) {
-        D -= d.Gamma_u[n] * d.Gamma_d[n] * exp(-2.0i * d.theta[n]);
+    if (std::isfinite(p.lm.d[c.n])) {
+        D -= d.Gamma_u[c.n] * d.Gamma_d[c.n] * exp(-2.0i * d.theta[c.n]);
     }
 
     return D;
 }
 
-cmplx V_i_src_wo_prefac(const LayeredMedium &lm,
+cmplx V_i_src_wo_prefac(const TLGFParams &p,
+                        const LayerCoords &c,
                         real z,
-                        real z_,
-                        int n,
-                        const Internals &d,
-                        bool direct_term)
+                        const Internals &d)
 {
     using std::complex_literals::operator""i;
-    auto R = calc_R(d, n);
-    auto zeta = calc_zeta(lm, z, z_, n);
-    auto D = calc_D(lm, n, d);
+    auto R = calc_R(d, c);
+    auto zeta = calc_zeta(p, c, z);
+    auto D = calc_D(p, c, d);
 
     cmplx t1;
-    if (direct_term) {
-        t1 = std::exp(-1.0i * d.k_z[n] * std::abs(z - z_));
+    if (p.direct_term) {
+        t1 = std::exp(-1.0i * d.k_z[c.n] * std::abs(z - c.z_));
     } else {
         t1 = 0;
     }
 
     cmplx t2 = 0;
     for (int s = 0; s < 4; s++) {
-        t2 += R[s] * std::exp(-1.0i * d.k_z[n] * zeta[s]);
+        t2 += R[s] * std::exp(-1.0i * d.k_z[c.n] * zeta[s]);
     }
     t2 /= D;
 
     return (t1 + t2) / 2.0;
 }
 
-cmplx V_i_src(const LayeredMedium &lm,
+cmplx V_i_src(const TLGFParams &p,
+              const LayerCoords &c,
               real z,
-              real z_,
-              int n,
-              const Internals &d,
-              bool direct_term)
+              const Internals &d)
 {
-    return d.Z[n] * V_i_src_wo_prefac(lm, z, z_, n, d, direct_term);
+    return d.Z[c.n] * V_i_src_wo_prefac(p, c, z, d);
 }
 
-cmplx I_i_src(const LayeredMedium &lm,
+cmplx I_i_src(const TLGFParams &p,
+              const LayerCoords &c,
               real z,
-              real z_,
-              int n,
-              const Internals &d,
-              bool direct_term)
+              const Internals &d)
 {
     using std::complex_literals::operator""i;
-    auto R = calc_R(d, n);
-    auto zeta = calc_zeta(lm, z, z_, n);
-    auto D = calc_D(lm, n, d);
+    auto R = calc_R(d, c);
+    auto zeta = calc_zeta(p, c, z);
+    auto D = calc_D(p, c, d);
 
     cmplx t1;
-    if (direct_term) {
-        real dist = z - z_;
+    if (p.direct_term) {
+        real dist = z - c.z_;
         real sign;
         if (dist > 0.0) {
             sign = 1;
@@ -353,7 +341,7 @@ cmplx I_i_src(const LayeredMedium &lm,
            //            integral.
             sign = 0;
         }
-        t1 = sign * std::exp(-1.0i * d.k_z[n] * std::abs(dist));
+        t1 = sign * std::exp(-1.0i * d.k_z[c.n] * std::abs(dist));
     } else {
         t1 = 0;
     }
@@ -361,7 +349,7 @@ cmplx I_i_src(const LayeredMedium &lm,
     cmplx t2 = 0.0;
     for (int a = 0; a < 4; a++) {
         int s = a + 1;
-        t2 += std::pow(-1, s) * R[a] * std::exp(-1.0i * d.k_z[n] * zeta[a]);
+        t2 += std::pow(-1, s) * R[a] * std::exp(-1.0i * d.k_z[c.n] * zeta[a]);
     }
     t2 /= D;
 
@@ -378,139 +366,121 @@ cmplx calc_tau_ud(int n,
             (1.0 + Gamma_ud[n] * std::exp(-2.0i * theta[n]));
 }
 
-cmplx calc_tau_prod_d(int m, int n, const Internals &d)
+cmplx calc_tau_prod_d(const LayerCoords &c, const Internals &d)
 {
     cmplx val = 1.0;
-    for (int k = m + 1; k <= n - 1; k++) {
+    for (int k = c.m + 1; k <= c.n - 1; k++) {
         val *= calc_tau_ud(k, d.Gamma_d, d.theta);
     }
 
     return val;
 }
 
-cmplx calc_tau_prod_u(int m, int n, const Internals &d)
+cmplx calc_tau_prod_u(const LayerCoords &c, const Internals &d)
 {
     cmplx val = 1.0;
-    for (int k = n + 1; k <= m - 1; k++) {
+    for (int k = c.n + 1; k <= c.m - 1; k++) {
         val *= calc_tau_ud(k, d.Gamma_u, d.theta);
     }
 
     return val;
 }
 
-cmplx factor_eq_126(const LayeredMedium &lm,
-                    real z,
-                    int m,
+cmplx factor_eq_126(const TLGFParams &p,
+                    const LayerCoords &c,
                     std::function<cmplx(cmplx, cmplx)> pm_operator,
                     const Internals &d)
 {
     using std::complex_literals::operator""i;
 
-    cmplx t1 = std::exp(-1.0i * d.k_z[m] * (lm.z[m + 1] - z));
+    cmplx t1 = std::exp(-1.0i * d.k_z[c.m] * (p.lm.z[c.m + 1] - c.z));
 
-    if (std::isfinite(lm.d[m])) {
-        cmplx t2 = 1.0 + d.Gamma_d[m] * std::exp(-2.0i * d.theta[m]);
-        cmplx t3 = d.Gamma_d[m] * std::exp(-2.0i * d.k_z[m] * (z - lm.z[m]));
+    if (std::isfinite(p.lm.d[c.m])) {
+        cmplx t2 = 1.0 + d.Gamma_d[c.m] * std::exp(-2.0i * d.theta[c.m]);
+        cmplx t3 = d.Gamma_d[c.m] *
+                std::exp(-2.0i * d.k_z[c.m] * (c.z - p.lm.z[c.m]));
         return t1 / t2 * pm_operator(1, t3);
     } else {
         return t1;
     }
 }
 
-cmplx factor_eq_117(const LayeredMedium &lm,
-                    real z,
-                    int m,
+cmplx factor_eq_117(const TLGFParams &p,
+                    const LayerCoords &c,
                     std::function<cmplx(cmplx, cmplx)> pm_operator,
                     const Internals &d)
 {
     using std::complex_literals::operator""i;
-    cmplx t1 = std::exp(-1.0i * d.k_z[m] * (z - lm.z[m]));
+    cmplx t1 = std::exp(-1.0i * d.k_z[c.m] * (c.z - p.lm.z[c.m]));
 
-    if (std::isfinite(lm.d[m])) {
-        cmplx t2 = 1.0 + d.Gamma_u[m] * std::exp(-2.0i * d.theta[m]);
-        cmplx t3 = d.Gamma_u[m] * std::exp(-2.0i * d.k_z[m] * (lm.z[m + 1] - z));
+    if (std::isfinite(p.lm.d[c.m])) {
+        cmplx t2 = 1.0 + d.Gamma_u[c.m] * std::exp(-2.0i * d.theta[c.m]);
+        cmplx t3 = d.Gamma_u[c.m] *
+                std::exp(-2.0i * d.k_z[c.m] * (p.lm.z[c.m + 1] - c.z));
         return t1 / t2 * pm_operator(1, t3);
     } else {
         return t1;
     }
 }
 
-cmplx T_d(const LayeredMedium &lm,
-          real z,
-          int m,
-          int n,
+cmplx T_d(const TLGFParams &p,
+          const LayerCoords &c,
           std::function<cmplx(cmplx, cmplx)> pm_operator,
           const Internals &d)
 {
-    return calc_tau_prod_d(m, n, d) *
-            factor_eq_126(lm, z, m, pm_operator, d);
+    return calc_tau_prod_d(c, d) * factor_eq_126(p, c, pm_operator, d);
 }
 
-cmplx T_u(const LayeredMedium &lm,
-          real z,
-          int m,
-          int n,
+cmplx T_u(const TLGFParams &p,
+          const LayerCoords &c,
           std::function<cmplx(cmplx, cmplx)> pm_operator,
           const Internals &d)
 {
-    return calc_tau_prod_u(m, n, d) *
-            factor_eq_117(lm, z, m, pm_operator, d);
+    return calc_tau_prod_u(c, d) * factor_eq_117(p, c, pm_operator, d);
 }
 
-cmplx V_i_base_wo_prefac(const LayeredMedium &lm,
-                         real z,
-                         real z_,
-                         int m,
-                         int n,
-                         const Internals &d,
-                         bool direct_term)
+cmplx V_i_base_wo_prefac(const TLGFParams &p,
+                         const LayerCoords &c,
+                         const Internals &d)
 {
     auto pm_operator = [](cmplx a, cmplx b) { return a + b; };
 
     cmplx val;
-    if (m == n) {
-        val = V_i_src_wo_prefac(lm, z, z_, n, d, direct_term);
-    } else if (m < n) {
-        val = V_i_src_wo_prefac(lm, lm.z[n], z_, n, d, direct_term) *
-                T_d(lm, z, m, n, pm_operator, d);
-    } else if (m > n) {
-        val = V_i_src_wo_prefac(lm, lm.z[n + 1], z_, n, d, direct_term) *
-                T_u(lm, z, m, n, pm_operator, d);
+    if (c.m == c.n) {
+        val = V_i_src_wo_prefac(p, c, c.z, d);
+    } else if (c.m < c.n) {
+        val = V_i_src_wo_prefac(p, c, p.lm.z[c.n], d) *
+                T_d(p, c, pm_operator, d);
+    } else if (c.m > c.n) {
+        val = V_i_src_wo_prefac(p, c, p.lm.z[c.n + 1], d) *
+                T_u(p, c, pm_operator, d);
     }
 
     return val;
 }
 
-cmplx V_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               int m,
-               int n,
-               const Internals &d,
-               bool direct_term)
+cmplx V_i_base(const TLGFParams &p,
+               const LayerCoords &c,
+               const Internals &d)
 {
-    return d.Z[n] * V_i_base_wo_prefac(lm, z, z_, m, n, d, direct_term);
+    return d.Z[c.n] * V_i_base_wo_prefac(p, c, d);
 }
 
-cmplx I_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               int m,
-               int n,
-               const Internals &d,
-               bool direct_term)
+cmplx I_i_base(const TLGFParams &p,
+               const LayerCoords &c,
+               const Internals &d)
 {
     auto pm_operator = [](cmplx a, cmplx b) { return a - b; };
 
     cmplx val;
-    if (m == n) {
-        val = I_i_src(lm, z, z_, n, d, direct_term);
-    } else if (m < n) {
-        val = V_i_src(lm, lm.z[n], z_, n, d, direct_term) *
-                T_d(lm, z, m, n, pm_operator, d) / (-d.Z[m]);
-    } else if (m > n) {
-        val = V_i_src(lm, lm.z[n + 1], z_, n, d, direct_term) *
-                T_u(lm, z, m, n, pm_operator, d) / d.Z[m];
+    if (c.m == c.n) {
+        val = I_i_src(p, c, c.z, d);
+    } else if (c.m < c.n) {
+        val = V_i_src(p, c, p.lm.z[c.n], d) *
+                T_d(p, c, pm_operator, d) / (-d.Z[c.m]);
+    } else if (c.m > c.n) {
+        val = V_i_src(p, c, p.lm.z[c.n + 1], d) *
+                T_u(p, c, pm_operator, d) / d.Z[c.m];
     }
 
     return val;

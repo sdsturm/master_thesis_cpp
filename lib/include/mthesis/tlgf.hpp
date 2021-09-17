@@ -61,102 +61,88 @@ std::vector<cmplx> calc_Gamma_d(const TLGFParams &p,
 
 struct Internals
 {
+    Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution);
+
     std::vector<cmplx> k_z;
     std::vector<cmplx> Z;
     std::vector<cmplx> theta;
     std::vector<cmplx> Gamma_u;
     std::vector<cmplx> Gamma_d;
+};
 
-    Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution);
+struct LayerCoords
+{
+    LayerCoords(const LayeredMedium &lm, real z, real z_);
+
+    real z;
+    real z_;
+    int m;
+    int n;
 };
 
 // TLGF for z inside source layer.
-std::vector<cmplx> calc_R(const Internals &d, int n);
+std::vector<cmplx> calc_R(const Internals &d, const LayerCoords &c);
 
-std::vector<cmplx> calc_zeta(const LayeredMedium &lm, real z, real z_, int n);
+std::vector<cmplx> calc_zeta(const TLGFParams &p, const LayerCoords &c, real z);
 
-cmplx calc_D(const LayeredMedium &lm, int n, const Internals &d);
+cmplx calc_D(const TLGFParams &p, const LayerCoords &c, const Internals &d);
 
-cmplx V_i_src_wo_prefac(const LayeredMedium &lm,
+cmplx V_i_src_wo_prefac(const TLGFParams &p,
+                        const LayerCoords &c,
                         real z,
-                        real z_,
-                        int n,
-                        const Internals &d,
-                        bool direct_term);
+                        const Internals &d);
 
-cmplx V_i_src(const LayeredMedium &lm,
+cmplx V_i_src(const TLGFParams &p,
+              const LayerCoords &c,
               real z,
-              real z_,
-              int n,
-              const Internals &d,
-              bool direct_term);
+              const Internals &d);
 
-cmplx I_i_src(const LayeredMedium &lm,
+cmplx I_i_src(const TLGFParams &p,
+              const LayerCoords &c,
               real z,
-              real z_,
-              int n,
-              const Internals &d,
-              bool direct_term);
+              const Internals &d);
 
 // Transmission through the structure if n != m.
 cmplx calc_tau_ud(int n,
                   const std::vector<cmplx> &Gamma_ud,
                   const std::vector<cmplx> &theta);
 
-cmplx calc_tau_prod_d(int m, int n, const Internals &d);
+cmplx calc_tau_prod_d(const LayerCoords &c, const Internals &d);
 
-cmplx calc_tau_prod_u(int m, int n, const Internals &d);
+cmplx calc_tau_prod_u(const LayerCoords &c, const Internals &d);
 
-cmplx factor_eq_126(const LayeredMedium &lm,
-                    real z,
-                    int m,
+cmplx factor_eq_126(const TLGFParams &p,
+                    const LayerCoords &c,
                     std::function<cmplx(cmplx, cmplx)> pm_operator,
                     const Internals &d);
 
-cmplx factor_eq_117(const LayeredMedium &lm,
-                    real z,
-                    int m,
+cmplx factor_eq_117(const TLGFParams &p,
+                    const LayerCoords &c,
                     std::function<cmplx(cmplx, cmplx)> pm_operator,
                     const Internals &d);
 
-cmplx T_d(const LayeredMedium &lm,
-          real z,
-          int m,
-          int n,
+cmplx T_d(const TLGFParams &p,
+          const LayerCoords &c,
           std::function<cmplx(cmplx, cmplx)> pm_operator,
           const Internals &d);
 
-cmplx T_u(const LayeredMedium &lm,
-          real z,
-          int m,
-          int n,
+cmplx T_u(const TLGFParams &p,
+          const LayerCoords &c,
           std::function<cmplx(cmplx, cmplx)> pm_operator,
           const Internals &d);
 
 // General TLGF.
-cmplx V_i_base_wo_prefac(const LayeredMedium &lm,
-                         real z,
-                         real z_,
-                         int m,
-                         int n,
-                         const Internals &d,
-                         bool direct_term);
+cmplx V_i_base_wo_prefac(const TLGFParams &p,
+                         const LayerCoords &c,
+                         const Internals &d);
 
-cmplx V_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               int m,
-               int n,
-               const Internals &d,
-               bool direct_term);
+cmplx V_i_base(const TLGFParams &p,
+               const LayerCoords &c,
+               const Internals &d);
 
-cmplx I_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               int m,
-               int n,
-               const Internals &d,
-               bool direct_term);
+cmplx I_i_base(const TLGFParams &p,
+               const LayerCoords &c,
+               const Internals &d);
 
 } // namespace utils
 

@@ -55,7 +55,11 @@ int main(int argc, char** argv)
             rel_err_db[n] = calc_rel_err_db(num, ref);
             time_s[n] = std::stod(timer.format(9, "%u"));
 
-            printf("Processing point %4ld of %4ld\n", n + 1, N);
+            printf("Processing point %4ld of %4ld, err = %.2f db\n",
+                   n + 1,
+                   N,
+                   rel_err_db[n]);
+
             n++;
         }
     }
