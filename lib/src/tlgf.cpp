@@ -2,95 +2,71 @@
 
 namespace mthesis::tlgf {
 
-cmplx V_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term,
-          RiemannSheet sheet)
+TLGFParams::TLGFParams(const LayeredMedium &lm,
+                       EmMode mode,
+                       bool direct_term,
+                       RiemannSheet sheet)
+    : lm(lm), mode(mode), direct_term(direct_term), sheet(sheet)
+{}
+
+cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
+    auto m = p.lm.identify_layer(z);
+    auto n = p.lm.identify_layer(z_);
     bool dual_solution = false;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::V_i_base(lm, z, z_, m, n, d, direct_term);
+    auto d = utils::Internals(p, k_rho, dual_solution);
+    return utils::V_i_base(p.lm, z, z_, m, n, d, p.direct_term);
 }
 
-cmplx I_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term,
-          RiemannSheet sheet)
+cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
+    auto m = p.lm.identify_layer(z);
+    auto n = p.lm.identify_layer(z_);
     bool dual_solution = false;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::I_i_base(lm, z, z_, m, n, d, direct_term);
+    auto d = utils::Internals(p, k_rho, dual_solution);
+    return utils::I_i_base(p.lm, z, z_, m, n, d, p.direct_term);
 }
 
-cmplx I_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term,
-          RiemannSheet sheet)
+cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
+    auto m = p.lm.identify_layer(z);
+    auto n = p.lm.identify_layer(z_);
     bool dual_solution = true;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::V_i_base(lm, z, z_, m, n, d, direct_term);
+    auto d = utils::Internals(p, k_rho, dual_solution);
+    return utils::V_i_base(p.lm, z, z_, m, n, d, p.direct_term);
 }
 
-cmplx V_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term,
-          RiemannSheet sheet)
+cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p)
 {
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
+    auto m = p.lm.identify_layer(z);
+    auto n = p.lm.identify_layer(z_);
     bool dual_solution = true;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::I_i_base(lm, z, z_, m, n, d, direct_term);
+    auto d = utils::Internals(p, k_rho, dual_solution);
+    return utils::I_i_base(p.lm, z, z_, m, n, d, p.direct_term);
 }
 
-cmplx generic_sgf(const LayeredMedium &lm,
-                  cmplx k_rho,
-                  real z,
-                  real z_,
-                  EmMode type,
-                  bool direct_term,
-                  RiemannSheet sheet)
+cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p)
 {
     using std::complex_literals::operator""i;
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
+    auto m = p.lm.identify_layer(z);
+    auto n = p.lm.identify_layer(z_);
     bool dual_solution = false;
-    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
+    auto d = utils::Internals(p, k_rho, dual_solution);
 
     // Note: this function is not reciprocal if z and z_ lie in layers with
     // 	     different material paramters.
     //       For the case m == n (z and z_ in the same layer) this function
     //       fulfills reciprocity.
-    return utils::V_i_base_wo_prefac(lm, z, z_, m, n, d, direct_term) /
+    return utils::V_i_base_wo_prefac(p.lm, z, z_, m, n, d, p.direct_term) /
             (1.0i * d.k_z[n]);
 }
 
 // Hide implementation details in nested namespace utils.
 namespace utils {
 
-void calc_k_z_select_sheet(std::vector<cmplx> &k_z,
-                           RiemannSheet sheet)
+void calc_k_z_select_sheet(std::vector<cmplx> &k_z, const TLGFParams &p)
 {
-    switch (sheet) {
+    switch (p.sheet) {
     case RiemannSheet::I:
         // Top layer.
         if (k_z.back().imag() > 0.0)
@@ -126,37 +102,33 @@ void calc_k_z_select_sheet(std::vector<cmplx> &k_z,
     }
 }
 
-std::vector<cmplx> calc_k_z(const LayeredMedium &lm,
-                            cmplx k_rho,
-                            RiemannSheet sheet)
+std::vector<cmplx> calc_k_z(const TLGFParams &p, cmplx k_rho)
 {
-    std::vector<cmplx> k_z(lm.media.size());
+    std::vector<cmplx> k_z(p.lm.media.size());
     cmplx k_rho_square = std::pow(k_rho, 2.0);
 
-    for (size_t n = 0; n < lm.media.size(); n++) {
-        k_z[n] = std::sqrt(std::pow(lm.media[n].k, 2.0) - k_rho_square);
+    for (size_t n = 0; n < p.lm.media.size(); n++) {
+        k_z[n] = std::sqrt(std::pow(p.lm.media[n].k, 2.0) - k_rho_square);
     }
 
-    calc_k_z_select_sheet(k_z, sheet);
+    calc_k_z_select_sheet(k_z, p);
 
     return k_z;
 }
 
-std::vector<cmplx> calc_Z(const LayeredMedium &lm,
-                          const std::vector<cmplx> &k_z,
-                          EmMode type)
+std::vector<cmplx> calc_Z(const TLGFParams &p, const std::vector<cmplx> &k_z)
 {
-    std::vector<cmplx> Z(lm.media.size());
+    std::vector<cmplx> Z(p.lm.media.size());
 
-    switch (type) {
+    switch (p.mode) {
     case EmMode::TM:
-        for (size_t n = 0; n < lm.media.size(); n++) {
-            Z[n] = k_z[n] / (lm.fd.omega * lm.media[n].eps);
+        for (size_t n = 0; n < p.lm.media.size(); n++) {
+            Z[n] = k_z[n] / (p.lm.fd.omega * p.lm.media[n].eps);
         }
         break;
     case EmMode::TE:
-        for (size_t n = 0; n < lm.media.size(); n++) {
-            Z[n] = (lm.fd.omega * lm.media[n].mu) / k_z[n];
+        for (size_t n = 0; n < p.lm.media.size(); n++) {
+            Z[n] = (p.lm.fd.omega * p.lm.media[n].mu) / k_z[n];
         }
         break;
     }
@@ -164,11 +136,9 @@ std::vector<cmplx> calc_Z(const LayeredMedium &lm,
     return Z;
 }
 
-std::vector<cmplx> calc_Y(const LayeredMedium &lm,
-                          const std::vector<cmplx> &k_z,
-                          EmMode type)
+std::vector<cmplx> calc_Y(const TLGFParams &p, const std::vector<cmplx> &k_z)
 {
-    auto Y = calc_Z(lm, k_z, type);
+    auto Y = calc_Z(p, k_z);
     for (auto &elem : Y) {
         elem = 1.0 / elem;
     }
@@ -176,13 +146,13 @@ std::vector<cmplx> calc_Y(const LayeredMedium &lm,
     return Y;
 }
 
-std::vector<cmplx> calc_theta(const LayeredMedium &lm,
+std::vector<cmplx> calc_theta(const TLGFParams &p,
                               const std::vector<cmplx> &k_z)
 {
-    std::vector<cmplx> theta(lm.media.size());
+    std::vector<cmplx> theta(p.lm.media.size());
 
-    for (size_t n = 0; n < lm.media.size(); n++) {
-        theta[n] = k_z[n] * lm.d[n];
+    for (size_t n = 0; n < p.lm.media.size(); n++) {
+        theta[n] = k_z[n] * p.lm.d[n];
     }
 
     return theta;
@@ -193,13 +163,13 @@ cmplx calc_Gamma_fresnel(const std::vector<cmplx> &Z, int i, int j)
     return (Z[i] - Z[j]) / (Z[i] + Z[j]);
 }
 
-std::vector<cmplx> calc_Gamma_u(const LayeredMedium &lm,
+std::vector<cmplx> calc_Gamma_u(const TLGFParams &p,
                                 const std::vector<cmplx> &Z,
                                 const std::vector<cmplx> &theta)
 {
-    std::vector<cmplx> Gamma_u(lm.media.size());
+    std::vector<cmplx> Gamma_u(p.lm.media.size());
 
-    switch (lm.top_bc) {
+    switch (p.lm.top_bc) {
     case BC::open:
         Gamma_u.back() = 0.0;
         break;
@@ -212,9 +182,9 @@ std::vector<cmplx> calc_Gamma_u(const LayeredMedium &lm,
     }
 
     using std::complex_literals::operator""i;
-    for (int n = lm.media.size() - 2; n >= 0; n--) {
+    for (int n = p.lm.media.size() - 2; n >= 0; n--) {
         auto t1 = calc_Gamma_fresnel(Z, n + 1, n);
-        if (std::isfinite(lm.d[n + 1])) {
+        if (std::isfinite(p.lm.d[n + 1])) {
             cmplx t2 = Gamma_u[n + 1] * std::exp(-2.0i * theta[n + 1]);
             Gamma_u[n] = (t1 + t2) / (1.0 + t1 * t2);
         } else {
@@ -225,13 +195,13 @@ std::vector<cmplx> calc_Gamma_u(const LayeredMedium &lm,
     return Gamma_u;
 }
 
-std::vector<cmplx> calc_Gamma_d(const LayeredMedium &lm,
+std::vector<cmplx> calc_Gamma_d(const TLGFParams &p,
                                 const std::vector<cmplx> &Z,
                                 const std::vector<cmplx> &theta)
 {
-    std::vector<cmplx> Gamma_d(lm.media.size());
+    std::vector<cmplx> Gamma_d(p.lm.media.size());
 
-    switch (lm.bottom_bc) {
+    switch (p.lm.bottom_bc) {
     case BC::open:
         Gamma_d.front() = 0.0;
         break;
@@ -244,9 +214,9 @@ std::vector<cmplx> calc_Gamma_d(const LayeredMedium &lm,
     }
 
     using std::complex_literals::operator""i;
-    for (size_t n = 1; n < lm.media.size(); n++) {
+    for (size_t n = 1; n < p.lm.media.size(); n++) {
         auto t1 = calc_Gamma_fresnel(Z, n - 1, n);
-        if (std::isfinite(lm.d[n - 1])) {
+        if (std::isfinite(p.lm.d[n - 1])) {
             cmplx t2 = Gamma_d[n - 1] * std::exp(-2.0i * theta[n - 1]);
             Gamma_d[n] = (t1 + t2) / (1.0 + t1 * t2);
         } else {
@@ -257,16 +227,12 @@ std::vector<cmplx> calc_Gamma_d(const LayeredMedium &lm,
     return Gamma_d;
 }
 
-Internals::Internals(const LayeredMedium &lm,
-                     cmplx k_rho,
-                     EmMode mode,
-                     bool dual_solution,
-                     RiemannSheet riemann_sheet)
-    : k_z(calc_k_z(lm, k_rho, riemann_sheet)),
-      Z(dual_solution ? calc_Y(lm, k_z, mode) : calc_Z(lm, k_z, mode)),
-      theta(calc_theta(lm, k_z)),
-      Gamma_u(calc_Gamma_u(lm, Z, theta)),
-      Gamma_d(calc_Gamma_d(lm, Z, theta))
+Internals::Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution)
+    : k_z(calc_k_z(p, k_rho)),
+      Z(dual_solution ? calc_Y(p, k_z) : calc_Z(p, k_z)),
+      theta(calc_theta(p, k_z)),
+      Gamma_u(calc_Gamma_u(p , Z, theta)),
+      Gamma_d(calc_Gamma_d(p, Z, theta))
 {}
 
 std::vector<cmplx> calc_R(const Internals &d, int n)
@@ -550,6 +516,8 @@ cmplx I_i_base(const LayeredMedium &lm,
     return val;
 }
 
-} // namespace utils
+}
+
+// namespace utils
 
 } // namespace mthesis::tlgf

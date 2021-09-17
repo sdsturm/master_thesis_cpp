@@ -226,12 +226,12 @@ std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f0 = [=](real z, real z_, cmplx k_rho)
     {
-        return V_i(lm, k_rho, z, z_, EmMode::TM);
+        return V_i(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f1 = [=](real z, real z_, cmplx k_rho)
     {
-        return V_i(lm, k_rho, z, z_, EmMode::TE);
+        return V_i(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     auto f2 = [=](real z, real z_, cmplx k_rho)
@@ -241,17 +241,17 @@ std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f3 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * V_v(lm, k_rho, z, z_, EmMode::TM);
+        return k_rho * V_v(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f4 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * I_i(lm, k_rho, z, z_, EmMode::TM);
+        return k_rho * I_i(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f5 = [=](real z, real z_, cmplx k_rho)
     {
-        return pow(k_rho, 2) * I_v(lm, k_rho, z, z_, EmMode::TM);
+        return pow(k_rho, 2) * I_v(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     std::vector<SommerfeldIntegral> si;
@@ -277,12 +277,12 @@ std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f0 = [=](real z, real z_, cmplx k_rho)
     {
-        return I_v(lm, k_rho, z, z_, EmMode::TE);
+        return I_v(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     auto f1 = [=](real z, real z_, cmplx k_rho)
     {
-        return I_v(lm, k_rho, z, z_, EmMode::TM);
+        return I_v(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f2 = [=](real z, real z_, cmplx k_rho)
@@ -292,17 +292,17 @@ std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f3 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * I_i(lm, k_rho, z, z_, EmMode::TE);
+        return k_rho * I_i(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     auto f4 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * V_v(lm, k_rho, z, z_, EmMode::TE);
+        return k_rho * V_v(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     auto f5 = [=](real z, real z_, cmplx k_rho)
     {
-        return pow(k_rho, 2) * V_i(lm, k_rho, z, z_, EmMode::TE);
+        return pow(k_rho, 2) * V_i(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     std::vector<SommerfeldIntegral> si;
@@ -419,12 +419,12 @@ std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f0 = [=](real z, real z_, cmplx k_rho)
     {
-        return I_i(lm, k_rho, z, z_, EmMode::TE);
+        return I_i(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     auto f1 = [=](real z, real z_, cmplx k_rho)
     {
-        return I_i(lm, k_rho, z, z_, EmMode::TM);
+        return I_i(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f2 = [=](real z, real z_, cmplx k_rho)
@@ -434,12 +434,12 @@ std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm, const LMCoords &c)
 
     auto f3 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * I_v(lm, k_rho, z, z_, EmMode::TM);
+        return k_rho * I_v(k_rho, z, z_, TLGFParams(lm, EmMode::TM));
     };
 
     auto f4 = [=](real z, real z_, cmplx k_rho)
     {
-        return k_rho * V_i(lm, k_rho, z, z_, EmMode::TE);
+        return k_rho * V_i(k_rho, z, z_, TLGFParams(lm, EmMode::TE));
     };
 
     std::vector<SommerfeldIntegral> si;

@@ -31,10 +31,11 @@ int main()
     const real Z_0 = sqrt(GSL_CONST_MKSA_VACUUM_PERMEABILITY /
                           GSL_CONST_MKSA_VACUUM_PERMITTIVITY);
 
+    using namespace mthesis::tlgf;
     for (arma::uword n = 0; n < z.n_elem; n++)
     {
-        V(n) = tlgf::V_i(lm, k_rho, z(n), z_, type);
-        I(n) = tlgf::I_i(lm, k_rho, z(n), z_, type);
+        V(n) = V_i(k_rho, z(n), z_, TLGFParams(lm, type));
+        I(n) = I_i(k_rho, z(n), z_, TLGFParams(lm, type));
         Z_by_Z_0(n) = V(n) / I(n) / Z_0;
     }
 

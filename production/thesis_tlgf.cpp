@@ -25,10 +25,11 @@ int main()
     real Z_0 = std::sqrt(GSL_CONST_MKSA_VACUUM_PERMEABILITY /
                          GSL_CONST_MKSA_VACUUM_PERMITTIVITY);
 
+    using namespace mthesis::tlgf;
     printf("z_by_lambda_0 V_re V_im I_re I_im Z_rel_re Z_rel_im\n");
     for (const auto &z : z_vals) {
-        cmplx V = tlgf::V_i(lm, k_rho, z, z_, type, direct_term);
-        cmplx I = tlgf::I_i(lm, k_rho, z, z_, type, direct_term);
+        cmplx V = V_i(k_rho, z, z_, TLGFParams(lm, type, direct_term));
+        cmplx I = I_i(k_rho, z, z_, TLGFParams(lm, type, direct_term));
         cmplx Z_rel = V / I / Z_0;
         printf("%.6f %.6e %.6e %.6e %.6e %.6e %.6e\n",
                z / fd.lambda_0,

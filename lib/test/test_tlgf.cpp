@@ -66,20 +66,20 @@ void reciprocity_check(const LayeredMedium &lm,
         BOOST_CHECK_CLOSE(val_1.imag(), val_2.imag(), tol_in_percent);
     };
 
-    val_1 = V_i(lm, k_rho, z, z_, type);
-    val_2 = V_i(lm, k_rho, z_, z, type);
+    val_1 = V_i(k_rho, z, z_, TLGFParams(lm, type));
+    val_2 = V_i(k_rho, z_, z, TLGFParams(lm, type));
     check(val_1, val_2);
 
-    val_1 = I_v(lm, k_rho, z, z_, type);
-    val_2 = I_v(lm, k_rho, z_, z, type);
+    val_1 = I_v(k_rho, z, z_, TLGFParams(lm, type));
+    val_2 = I_v(k_rho, z_, z, TLGFParams(lm, type));
     check(val_1, val_2);
 
-    val_1 = V_v(lm, k_rho, z, z_, type);
-    val_2 = -I_i(lm, k_rho, z_, z, type);
+    val_1 = V_v(k_rho, z, z_, TLGFParams(lm, type));
+    val_2 = -I_i(k_rho, z_, z, TLGFParams(lm, type));
     check(val_1, val_2);
 
-    val_1 = I_i(lm, k_rho, z, z_, type);
-    val_2 = -V_v(lm, k_rho, z_, z, type);
+    val_1 = I_i(k_rho, z, z_, TLGFParams(lm, type));
+    val_2 = -V_v(k_rho, z_, z, TLGFParams(lm, type));
     check(val_1, val_2);
 }
 
@@ -183,8 +183,8 @@ BOOST_DATA_TEST_CASE(impedance_current_source,
 
     using namespace mthesis::tlgf;
     for (const auto &z : z_vals) {
-        cmplx V = V_i(lm, k_rho, z, z_, mode);
-        cmplx I = I_i(lm, k_rho, z, z_, mode);
+        cmplx V = V_i(k_rho, z, z_, TLGFParams(lm, mode));
+        cmplx I = I_i(k_rho, z, z_, TLGFParams(lm, mode));
         cmplx Z = V / I;
         if (z < *(lm.z.begin() + 1)) {
             BOOST_CHECK_CLOSE(Z.real(), -Z_0, 1e-4);
@@ -219,8 +219,8 @@ BOOST_DATA_TEST_CASE(impedance_voltage_source,
 
     using namespace mthesis::tlgf;
     for (const auto &z : z_vals) {
-        cmplx V = V_v(lm, k_rho, z, z_, mode);
-        cmplx I = I_v(lm, k_rho, z, z_, mode);
+        cmplx V = V_v(k_rho, z, z_, TLGFParams(lm, mode));
+        cmplx I = I_v(k_rho, z, z_, TLGFParams(lm, mode));
         cmplx Z = V / I;
         if (z < *(lm.z.begin() + 1)) {
             BOOST_CHECK_CLOSE(Z.real(), -Z_0, 1e-4);

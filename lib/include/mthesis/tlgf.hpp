@@ -10,75 +10,52 @@
 
 namespace mthesis::tlgf {
 
+struct TLGFParams
+{
+    TLGFParams(const LayeredMedium &lm,
+               EmMode mode,
+               bool direct_term = true,
+               RiemannSheet sheet = RiemannSheet::I);
+
+    const LayeredMedium &lm;
+    const EmMode mode;
+    const bool direct_term;
+    RiemannSheet sheet;
+};
+
 // Equivalent transmission line network Green's functions.
-cmplx V_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term = true,
-          RiemannSheet sheet = RiemannSheet::I);
+cmplx V_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
-cmplx I_i(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term = true,
-          RiemannSheet sheet = RiemannSheet::I);
+cmplx I_i(cmplx k_rho, real z, real z_, TLGFParams p);
 
-cmplx I_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term = true,
-          RiemannSheet sheet = RiemannSheet::I);
+cmplx I_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
-cmplx V_v(const LayeredMedium &lm,
-          cmplx k_rho,
-          real z,
-          real z_,
-          EmMode type,
-          bool direct_term = true,
-          RiemannSheet sheet = RiemannSheet::I);
+cmplx V_v(cmplx k_rho, real z, real z_, TLGFParams p);
 
-cmplx generic_sgf(const LayeredMedium &lm,
-                  cmplx k_rho,
-                  real z,
-                  real z_,
-                  EmMode type,
-                  bool direct_term = true,
-                  RiemannSheet sheet = RiemannSheet::I);
+cmplx generic_sgf(cmplx k_rho, real z, real z_, TLGFParams p);
 
 // Hide implementation details in nested namespace utils.
 namespace utils {
 
 // Basic quantities like k_z, impedance, reflection coefficients, ...
-void calc_k_z_select_sheet(std::vector<cmplx> &k_z, RiemannSheet sheet);
+void calc_k_z_select_sheet(std::vector<cmplx> &k_z, const TLGFParams &p);
 
-std::vector<cmplx> calc_k_z(const LayeredMedium &lm,
-                            cmplx k_rho,
-                            RiemannSheet sheet);
+std::vector<cmplx> calc_k_z(const TLGFParams &p, cmplx k_rho);
 
-std::vector<cmplx> calc_Z(const LayeredMedium &lm,
-                          const std::vector<cmplx> &k_z,
-                          EmMode type);
+std::vector<cmplx> calc_Z(const TLGFParams &p, const std::vector<cmplx> &k_z);
 
-std::vector<cmplx> calc_Y(const LayeredMedium &lm,
-                          const std::vector<cmplx> &k_z,
-                          EmMode type);
+std::vector<cmplx> calc_Y(const TLGFParams &p, const std::vector<cmplx> &k_z);
 
-std::vector<cmplx> calc_theta(const LayeredMedium &lm,
+std::vector<cmplx> calc_theta(const TLGFParams &p,
                               const std::vector<cmplx> &k_z);
 
 cmplx calc_Gamma_fresnel(const std::vector<cmplx> &Z, int i, int j);
 
-std::vector<cmplx> calc_Gamma_u(const LayeredMedium &lm,
+std::vector<cmplx> calc_Gamma_u(const TLGFParams &p,
                                 const std::vector<cmplx> &Z,
                                 const std::vector<cmplx> &theta);
 
-std::vector<cmplx> calc_Gamma_d(const LayeredMedium &lm,
+std::vector<cmplx> calc_Gamma_d(const TLGFParams &p,
                                 const std::vector<cmplx> &Z,
                                 const std::vector<cmplx> &theta);
 
@@ -90,11 +67,7 @@ struct Internals
     std::vector<cmplx> Gamma_u;
     std::vector<cmplx> Gamma_d;
 
-    Internals(const LayeredMedium &lm,
-              cmplx k_rho,
-              EmMode mode,
-              bool dual_solution,
-              RiemannSheet riemann_sheet);
+    Internals(const TLGFParams &p, cmplx k_rho, bool dual_solution);
 };
 
 // TLGF for z inside source layer.
