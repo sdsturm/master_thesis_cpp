@@ -26,7 +26,7 @@ cmplx eval_nonspectral(const SommerfeldIntegral &si,
     return val;
 }
 
-// *****************************************************************************
+// =============================================================================
 
 namespace utils {
 
@@ -71,7 +71,7 @@ cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c)
             normalized_hankel(si.nu, k_rho * c.rho);
 }
 
-// *****************************************************************************
+// =============================================================================
 
 namespace tm {
 
@@ -162,8 +162,8 @@ cmplx calc_B_p(cmplx k_p, cmplx s_p, cmplx R_p, real n, real rho)
     return B_p;
 }
 
-cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c,
-                    cmplx s, cmplx s_p, cmplx B_p)
+cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c, cmplx s,
+                    cmplx s_p, cmplx B_p)
 {
     cmplx t1 = calc_F_eq81(s, si, c);
     cmplx t2 = 2.0 * B_p * s / (pow(s, 2) - pow(s_p, 2));
@@ -189,7 +189,7 @@ cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
 {
     using std::complex_literals::operator""i;
 
-    const cmplx k_1 = si.lm.media.back().k;
+    const cmplx &k_1 = si.lm.media.back().k;
     cmplx k_p = calc_k_p(si.lm);
     cmplx s_p = calc_s_p(si.lm, k_p);
     cmplx R_p= calc_R_p_closed_form(si.lm, c);
@@ -209,16 +209,47 @@ cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
 
 } // namespace tm
 
-// *****************************************************************************
+// =============================================================================
 
 namespace te {
 
+cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c, cmplx s)
+{
+    cmplx t1 = calc_F_eq81(s, si, c);
+    cmplx t3 = exp(-pow(s, 2) * c.rho) * s;
+
+    return t1 * t3;
 }
 
-// namespace te
+cmplx calc_I_p(const SommerfeldIntegral &si, const LMCoords &c)
+{
+    auto f = [=](real s)
+    {
+        return integrand_I_p(si, c, s);
+    };
 
+    constexpr boost::math::quadrature::gauss_kronrod<real, 61> quad;
+
+    return quad.integrate(f, 0, std::numeric_limits<real>::infinity());
 }
 
-// namespace utils
+cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
+{
+    using std::complex_literals::operator""i;
+
+    const cmplx &k_1 = si.lm.media.back().k;
+
+    cmplx I_p = calc_I_p(si, c);
+
+    cmplx val = 2.0 * pow(1.0i, si.nu + 1.0) * sqrt(2.0i) *
+            (sqrt(c.rho / M_PI) * I_p) *
+            exp(-1.0i * k_1 * c.rho) / c.rho;
+
+    return val;
+}
+
+} // namespace te
+
+} // namespace utils
 
 } // namespace mthesis::si::nonspectral
