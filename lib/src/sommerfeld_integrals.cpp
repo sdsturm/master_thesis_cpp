@@ -10,51 +10,12 @@
 
 namespace mthesis {
 
-SiParams::SiParams(real alpha, real zeta, bool identify_singularities)
-    : alpha(alpha), zeta(zeta), identify_singularities(identify_singularities)
-{
-    assert( (std::isnan(alpha) && std::isnan(zeta)) ||
-            (std::isfinite(alpha) && std::isfinite(zeta)) );
-
-    if (std::isfinite(zeta)) {
-        assert(zeta >= 0.0);
-    }
-}
-
-SiParams::SiParams()
-    : SiParams(std::numeric_limits<real>::quiet_NaN(),
-               std::numeric_limits<real>::quiet_NaN(),
-               false)
-{}
-
-SommerfeldIntegral::SommerfeldIntegral(spectral_gf f,
-                                       real nu,
-                                       const LayeredMedium &lm,
-                                       SiParams params)
+SommerfeldIntegral::SommerfeldIntegral(spectral_gf f, real nu,
+                                       const LayeredMedium &lm)
     : f(f),
       nu(nu),
-      lm(lm),
-      params(params),
-      bp(),		// not determined by default
-      swp()		// not determined by default
-{
-    assert(nu >= 0.0);
-    if (std::isfinite(params.alpha) && std::isfinite(params.zeta)) {
-        assert(params.zeta >= 0.0);
-    }
-
-    if (params.identify_singularities) {
-        this->bp = get_branch_points(lm);
-
-        assert(false);	// Not implemented yet.
-        this->swp = identify_swp();
-    }
-}
-
-cmplx SommerfeldIntegral::eval_spectral_gf(real z, real z_, cmplx k_rho) const
-{
-    return f(z, z_, k_rho);
-}
+      lm(lm)
+{}
 
 cmplx SommerfeldIntegral::eval_integrand_sip(real rho, real z, real z_,
                                              real k_rho) const
@@ -90,17 +51,6 @@ cmplx SommerfeldIntegral::eval_si_along_sip(const VectorR3 &r,
     auto coords = LayeredMediumCoords(r, r_);
 
     return eval_si_along_sip(coords.rho, coords.z, coords.z_, pe_params);
-}
-
-cmplx SommerfeldIntegral::eval_integrand_eip(real rho, real z, real z_,
-                                             cmplx k_rho) const
-{
-    return f(z, z_, k_rho) * k_rho * sp_bessel::hankelH2(nu, rho * k_rho);
-}
-
-const LayeredMedium &SommerfeldIntegral::get_lm() const
-{
-    return lm;
 }
 
 real SommerfeldIntegral::calc_pe_start() const
@@ -169,14 +119,7 @@ cmplx SommerfeldIntegral::eval_tail_on_sip(real rho,
 
     cmplx val;
     if (rho > 0.0) {
-        if (std::isfinite(params.alpha) && std::isfinite(params.zeta)) {
-            return pe::mosig_michalski(integrand,
-                                       params.alpha, params.zeta,
-                                       nu, rho, a,
-                                       pe_params);
-        } else {
-            return pe::levin_sidi(integrand, nu, rho, a, pe_params);
-        }
+        return pe::levin_sidi(integrand, nu, rho, a, pe_params);
     } else if (rho == 0 && std::abs(z - z_) > 0.0) {
         constexpr real b = std::numeric_limits<real>::infinity();
         constexpr boost::math::quadrature::gauss_kronrod<real, 15> quad;
@@ -187,30 +130,6 @@ cmplx SommerfeldIntegral::eval_tail_on_sip(real rho,
     }
 
     return val;
-}
-
-std::vector<cmplx> get_branch_points(const LayeredMedium &lm)
-{
-    std::vector<cmplx> bp_locations;
-
-    if (std::isinf(lm.d.front())) {
-        bp_locations.push_back(lm.media.front().k);
-    }
-
-    if (std::isinf(lm.d.back())) {
-        bp_locations.push_back(lm.media.back().k);
-    }
-
-    return bp_locations;
-}
-
-std::vector<cmplx> identify_swp(/* TODO */)
-{
-    std::vector<cmplx> sip_locations;
-
-    // TODO: implement pole searching algorithm.
-
-    return sip_locations;
 }
 
 } // namespace mthesis

@@ -28,15 +28,14 @@ namespace layered_media {
 SommerfeldIntegral get_sommerfeld_integral(const LayeredMedium &lm,
                                            real nu,
                                            EmMode mode,
-                                           bool direct_term,
-                                           SiParams si_params)
+                                           bool direct_term)
 {
     auto f = [=](real z, real z_, cmplx k_rho)
     {
         return tlgf::generic_sgf(lm, k_rho, z, z_, mode, direct_term);
     };
 
-    return SommerfeldIntegral(f, nu, lm, si_params);
+    return SommerfeldIntegral(f, nu, lm);
 }
 
 } // namespace layered_media

@@ -45,19 +45,17 @@ CmplxImg::CmplxImg(cmplx amplitude, cmplx r) : amp(amplitude), r(r)
 
 DCIM::DCIM(const SommerfeldIntegral &si) : si(si)
 {
-    const auto &lm = si.get_lm();
-
     // Check that the upper layer is semi-infinite and has vacuum parameters.
-    assert(std::isinf(lm.d.back()));
-    assert(1.0 == lm.media.back().eps_r.real() &&
-           0.0 == lm.media.back().eps_r.imag());
-    assert(1.0 == lm.media.back().mu_r.real() &&
-           0.0 == lm.media.back().mu_r.imag());
+    assert(std::isinf(si.lm.d.back()));
+    assert(1.0 == si.lm.media.back().eps_r.real() &&
+           0.0 == si.lm.media.back().eps_r.imag());
+    assert(1.0 == si.lm.media.back().mu_r.real() &&
+           0.0 == si.lm.media.back().mu_r.imag());
 
-    k_0 = lm.fd.k_0;
+    k_0 = si.lm.fd.k_0;
 
     k_max = -std::numeric_limits<real>::infinity();
-    for (const auto &medium : lm.media) {
+    for (const auto &medium : si.lm.media) {
         if (medium.k.real() > k_max) {
             k_max = medium.k.real();
         }
@@ -70,7 +68,7 @@ std::vector<CeVec> DCIM::get_exponentials(real z, real z_) const
 {
     // Main algorithm.
 
-    auto G = [=](cmplx k_rho) { return si.eval_spectral_gf(z, z_, k_rho); };
+    auto G = [=](cmplx k_rho) { return si.f(z, z_, k_rho); };
 
     int n_levels = sampling_paths.size();
     std::vector<CeVec> ce_vecs_levels(n_levels);
