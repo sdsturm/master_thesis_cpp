@@ -8,7 +8,26 @@
 
 namespace mthesis::si::nonspectral {
 
-// Hide implementation details in nested namespace.
+cmplx eval_nonspectral(const SommerfeldIntegral &si,
+                       const LMCoords &c,
+                       EmMode mode)
+{
+    cmplx val;
+
+    switch (mode) {
+    case EmMode::TM:
+        val =  utils::tm::calc_I1_eq85(si, c);
+        break;
+    case EmMode::TE:
+        // TODO
+        break;
+    }
+
+    return val;
+}
+
+// *****************************************************************************
+
 namespace utils {
 
 cmplx normalized_hankel(real n, cmplx z)
@@ -18,19 +37,55 @@ cmplx normalized_hankel(real n, cmplx z)
             exp(1.0i * z) * sp_bessel::sph_hankelH2(n, z);
 }
 
-// Hide implementation details in nested namespace.
+cmplx calc_folded_sgf(const SommerfeldIntegral &si,
+                      const LMCoords &c,
+                      cmplx k_rho)
+{
+    const cmplx &k_1 = si.lm.media.back().k;
+    const cmplx &k_N = si.lm.media.front().k;
+    real k_rho_im_intersect = k_N.real() * k_N.imag() / k_1.real();
+
+    RiemannSheet sheet_left, sheet_right;
+    if (k_rho.imag() > k_rho_im_intersect) {
+        sheet_left = RiemannSheet::II;
+        sheet_right = RiemannSheet::IV;
+    } else {
+        sheet_left = RiemannSheet::I;
+        sheet_right = RiemannSheet::III;
+    }
+
+    // TODO: incorporate Riemann sheet.
+    cmplx f_left = si.eval_spectral_gf(c.z, c.z_, k_rho);
+    cmplx f_right = si.eval_spectral_gf(c.z, c.z_, k_rho);
+
+    return f_left - f_right;
+}
+
+cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c)
+{
+    using std::complex_literals::operator""i;
+
+    cmplx k_rho = si.lm.media.back().k - 1.0i * pow(s, 2);
+
+    return calc_folded_sgf(si, c, k_rho) * sqrt(k_rho) *
+            normalized_hankel(si.nu, k_rho * c.rho);
+}
+
+// *****************************************************************************
+
 namespace tm {
 
-cmplx get_k_p(const LayeredMedium &lm)
+cmplx calc_k_p(const LayeredMedium &lm)
 {
     assert(lm.is_sommerfeld_half_space());
+    assert(lm.media.back().k.real() <= lm.media.front().k.real());
 
     cmplx k_p = lm.media.back().k * sqrt(lm.media.front().eps_r /
                                              (1.0 + lm.media.front().eps_r));
     return k_p;
 }
 
-cmplx get_s_p(const LayeredMedium &lm, cmplx k_p)
+cmplx calc_s_p(const LayeredMedium &lm, cmplx k_p)
 {
     using std::complex_literals::operator""i;
 
@@ -39,7 +94,7 @@ cmplx get_s_p(const LayeredMedium &lm, cmplx k_p)
     return s_p;
 }
 
-cmplx calc_k_p_residue(const SommerfeldIntegral &si, real z, real z_, cmplx k_p)
+cmplx calc_R_p_quad(const SommerfeldIntegral &si, const LMCoords &c, cmplx k_p)
 {
     using std::complex_literals::operator""i;
     constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
@@ -50,10 +105,23 @@ cmplx calc_k_p_residue(const SommerfeldIntegral &si, real z, real z_, cmplx k_p)
     real r = 0.5 * abs(k_p.imag()); 	// Just a try.
     cmplx gamma =  k_p + r * exp(2.0i * M_PI * t);
     cmplx gamma_ =  2.0i * M_PI * r * exp(2.0i * M_PI * t);
-    return si.eval_spectral_gf(z, z_, gamma) * gamma_;
+    return si.eval_spectral_gf(c.z, c.z_, gamma) * gamma_;
     };
 
     cmplx R_p = quad.integrate(f, 0.0, 1.0);
+    return R_p;
+}
+
+cmplx calc_R_p_closed_form(const LayeredMedium &lm, const LMCoords &c)
+{
+    using std::complex_literals::operator""i;
+
+    const cmplx &eps_r = lm.media.front().eps_r;
+    const cmplx &k_1 = lm.media.back().k;
+
+    cmplx R_p = -1.0i * eps_r * sqrt(eps_r) / (pow(eps_r, 2) - 1.0) *
+            exp(1.0i * k_1 * abs(c.z - c.z_) / (eps_r + 1.0));
+
     return R_p;
 }
 
@@ -92,21 +160,65 @@ cmplx calc_B_p(cmplx k_p, cmplx s_p, cmplx R_p, real n, real rho)
     return B_p;
 }
 
-cmplx integrand_I_p(cmplx s, cmplx s_p, cmplx B_p, real rho)
+cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c,
+                    cmplx s, cmplx s_p, cmplx B_p)
 {
-    // TODO
-    return 0;
+    cmplx t1 = calc_F_eq81(s, si, c);
+    cmplx t2 = 2.0 * B_p * s / (pow(s, 2) - pow(s_p, 2));
+    cmplx t3 = exp(-pow(s, 2) * c.rho) * s;
+
+    return (t1 + t2) * t3;
+}
+
+cmplx calc_I_p(const SommerfeldIntegral &si, const LMCoords &c,
+               cmplx B_p, cmplx s_p)
+{
+    auto f = [=](real s)
+    {
+        return integrand_I_p(si, c, s, s_p, B_p);
+    };
+
+    constexpr boost::math::quadrature::gauss_kronrod<real, 61> quad;
+
+    return quad.integrate(f, 0, std::numeric_limits<real>::infinity());
+}
+
+cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
+{
+    using std::complex_literals::operator""i;
+
+    const cmplx k_1 = si.lm.media.back().k;
+    cmplx k_p = calc_k_p(si.lm);
+    cmplx s_p = calc_s_p(si.lm, k_p);
+    cmplx R_p_check = calc_R_p_closed_form(si.lm, c);
+    cmplx R_p = calc_R_p_quad(si, c, k_p);
+
+    assert(abs(R_p - R_p_check) < 1e-10);
+
+    cmplx p = calc_numerical_distance(si.lm, k_p, c.rho);
+    cmplx B_p = calc_B_p(k_p, s_p, R_p, si.nu, c.rho);
+
+    cmplx I_p = calc_I_p(si, c, B_p, s_p);
+
+    cmplx val = 2.0 * pow(1.0i, si.nu + 1.0) * sqrt(2.0i) *
+            (sqrt(c.rho / M_PI) * I_p - B_p * calc_F_C8(p)) *
+            exp(-1.0i * k_1 * c.rho) / c.rho;
+
+    return val;
 }
 
 } // namespace tm
 
-// Hide implementation details in nested namespace.
+// *****************************************************************************
+
 namespace te {
 
 }
 
 // namespace te
 
-} // namespace utils
+}
+
+// namespace utils
 
 } // namespace mthesis::si::nonspectral
