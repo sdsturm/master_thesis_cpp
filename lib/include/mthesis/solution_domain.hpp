@@ -62,6 +62,7 @@ struct LayeredMedium
                   BC top_bc);
 
     int identify_layer(real z) const;
+    bool is_sommerfeld_half_space() const;
 };
 
 struct FreeSpace : public LayeredMedium

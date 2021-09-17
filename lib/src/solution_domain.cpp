@@ -92,6 +92,19 @@ int LayeredMedium::identify_layer(real z) const
     throw std::runtime_error("LayeredMedium::identify_layer failed.");
 }
 
+bool LayeredMedium::is_sommerfeld_half_space() const
+{
+    // Check Sommerfeld half-space.
+    bool check =
+            media.size() == 2 &&
+            media.back().k.real() == fd.k_0 &&
+            0.0 == media.back().k.imag() &&
+            top_bc == BC::open &&
+            bottom_bc == BC::open;
+
+    return check;
+}
+
 FreeSpace::FreeSpace(const FrequencyDomain &fd)
     : LayeredMedium(fd,
                     std::vector<real>{-INFINITY, INFINITY},
