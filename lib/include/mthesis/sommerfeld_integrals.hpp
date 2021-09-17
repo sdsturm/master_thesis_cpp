@@ -12,7 +12,7 @@ namespace mthesis {
 class SommerfeldIntegral
 {
 public:
-    SommerfeldIntegral(spectral_gf f, real nu, const LayeredMedium &lm);
+    SommerfeldIntegral(SpectralGF f, real nu, const LayeredMedium &lm);
 
     cmplx eval_si_along_sip(real rho, real z, real z_,
                             pe::Params pe_params = pe::Params()) const;
@@ -34,7 +34,7 @@ private:
                            real a, const pe::Params &pe_params) const;
 
 public:
-    const spectral_gf f;
+    const SpectralGF f;
     const real nu;
     const LayeredMedium &lm;
 };

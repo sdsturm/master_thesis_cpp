@@ -19,7 +19,7 @@ using DyadC3 = arma::cx_mat33;
 
 enum class RiemannSheet {I, II, III, IV};
 
-using spectral_gf = std::function<cmplx(real z, real z_, cmplx k_rho)>;
+using SpectralGF = std::function<cmplx(real z, real z_, cmplx k_rho)>;
 
 struct CmplxExp
 {

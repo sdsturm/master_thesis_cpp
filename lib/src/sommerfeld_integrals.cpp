@@ -10,7 +10,7 @@
 
 namespace mthesis {
 
-SommerfeldIntegral::SommerfeldIntegral(spectral_gf f, real nu,
+SommerfeldIntegral::SommerfeldIntegral(SpectralGF f, real nu,
                                        const LayeredMedium &lm)
     : f(f),
       nu(nu),
