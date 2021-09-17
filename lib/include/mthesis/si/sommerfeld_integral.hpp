@@ -13,6 +13,7 @@ struct SommerfeldIntegral
 {
     SommerfeldIntegral(SpectralGF f, real nu, const LayeredMedium &lm);
 
+    cmplx eval_spectral_gf(real z, real z_, cmplx k_rho) const;
     cmplx eval_integrand_sip(real rho, real z, real z_, real k_rho) const;
     cmplx eval_integrand_sip(real rho, real z, real z_, cmplx k_rho) const;
 
