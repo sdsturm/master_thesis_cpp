@@ -57,77 +57,77 @@ cmplx calc_magnetic_factor(const LayeredMedium &lm, real z);
 
 // Note: G_EJ and G_HM follow the same schme and are duals of each other.
 std::vector<cmplx> calc_G_EJ_si_vals(const LayeredMedium &lm,
-                                     const LayeredMediumCoords &coords);
+                                     const LMCoords &coords);
 
 std::vector<cmplx> calc_G_HM_si_vals(const LayeredMedium &lm,
-                                     const LayeredMediumCoords &coords);
+                                     const LMCoords &coords);
 
 cmplx G_EJ_HM_xx(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords);
+                 const LMCoords &coords);
 
 // Note: E_EJ_HM_xy is equal to G_EJ_HM_yx.
 
 cmplx G_EJ_HM_xz(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
+                 const LMCoords &coords,
                  cmplx f_);
 
 cmplx G_EJ_HM_yx(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords);
+                 const LMCoords &coords);
 
 cmplx G_EJ_HM_yy(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords);
+                 const LMCoords &coords);
 
 cmplx G_EJ_HM_yz(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
+                 const LMCoords &coords,
                  cmplx f_);
 
 cmplx G_EJ_HM_zx(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
+                 const LMCoords &coords,
                  cmplx f);
 
 cmplx G_EJ_HM_zy(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
+                 const LMCoords &coords,
                  cmplx f);
 
 cmplx G_EJ_HM_zz(const std::vector<cmplx> &si_vals,
-                 const LayeredMediumCoords &coords,
+                 const LMCoords &coords,
                  cmplx f,
                  cmplx f_);
 
 DyadC3 G_EJ_HM_common(const std::vector<cmplx> &si_vals,
-                      const LayeredMediumCoords &coords,
+                      const LMCoords &coords,
                       cmplx f,
                       cmplx f_);
 
 // Note: G_HJ and G_EM can be obtained from each other by reciprocity.
 std::vector<cmplx> calc_G_HJ_si_vals(const LayeredMedium &lm,
-                                     const LayeredMediumCoords &coords);
+                                     const LMCoords &coords);
 
 cmplx G_HJ_xx(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords);
+              const LMCoords &coords);
 
 cmplx G_HJ_xy(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords);
+              const LMCoords &coords);
 
 cmplx G_HJ_xz(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords,
+              const LMCoords &coords,
               cmplx factor_e_);
 
 cmplx G_HJ_yx(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords);
+              const LMCoords &coords);
 
 // Note: G_HJ_yy is -G_HJ_xx.
 
 cmplx G_HJ_yz(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords,
+              const LMCoords &coords,
               cmplx factor_e_);
 
 cmplx G_HJ_zx(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords,
+              const LMCoords &coords,
               cmplx factor_h);
 
 cmplx G_HJ_zy(const std::vector<cmplx> &si_vals,
-              const LayeredMediumCoords &coords,
+              const LMCoords &coords,
               cmplx factor_h);
 
 // Note: G_HJ_zz is always zero.

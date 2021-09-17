@@ -27,7 +27,7 @@ cmplx eval_si_along_sip(const SommerfeldIntegral &si,
                         const VectorR3 &r_,
                         pe::Params pe_params)
 {
-    LayeredMediumCoords c(r, r_);
+    LMCoords c(r, r_);
     return eval_si_along_sip(si, c.rho, c.z, c.z_, pe_params);
 }
 

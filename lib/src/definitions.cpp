@@ -2,7 +2,7 @@
 
 namespace mthesis {
 
-LayeredMediumCoords::LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_)
+LMCoords::LMCoords(const VectorR3 &r, const VectorR3 &r_)
     : R(r - r_),
       rho(std::sqrt(std::pow(R[0], 2) + std::pow(R[1], 2))),
       phi(std::atan2(R[1], R[0])),

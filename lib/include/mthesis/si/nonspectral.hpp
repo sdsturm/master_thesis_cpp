@@ -10,7 +10,9 @@ namespace utils {
 
 cmplx normalized_hankel(real n, cmplx z);
 
-cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LayeredMediumCoords &c);
+cmplx calc_folded_sgf(const SommerfeldIntegral &si, const LMCoords &c);
+
+cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c);
 
 
 

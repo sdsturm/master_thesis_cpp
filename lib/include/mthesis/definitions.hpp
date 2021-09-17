@@ -29,9 +29,9 @@ struct CmplxExp
     const cmplx exp;
 };
 
-struct LayeredMediumCoords
+struct LMCoords
 {
-    LayeredMediumCoords(const VectorR3 &r, const VectorR3 &r_);
+    LMCoords(const VectorR3 &r, const VectorR3 &r_);
 
     const VectorR3 R;
     const real rho;
