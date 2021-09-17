@@ -10,9 +10,11 @@ cmplx V_i(const LayeredMedium &lm,
           bool direct_term,
           RiemannSheet sheet)
 {
+    auto m = lm.identify_layer(z);
+    auto n = lm.identify_layer(z_);
     bool dual_solution = false;
     auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::V_i_base(lm, z, z_, d, direct_term);
+    return utils::V_i_base(lm, z, z_, m, n, d, direct_term);
 }
 
 cmplx I_i(const LayeredMedium &lm,
@@ -23,9 +25,11 @@ cmplx I_i(const LayeredMedium &lm,
           bool direct_term,
           RiemannSheet sheet)
 {
+    auto m = lm.identify_layer(z);
+    auto n = lm.identify_layer(z_);
     bool dual_solution = false;
     auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::I_i_base(lm, z, z_, d, direct_term);
+    return utils::I_i_base(lm, z, z_, m, n, d, direct_term);
 }
 
 cmplx I_v(const LayeredMedium &lm,
@@ -36,9 +40,11 @@ cmplx I_v(const LayeredMedium &lm,
           bool direct_term,
           RiemannSheet sheet)
 {
+    auto m = lm.identify_layer(z);
+    auto n = lm.identify_layer(z_);
     bool dual_solution = true;
     auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::V_i_base(lm, z, z_, d, direct_term);
+    return utils::V_i_base(lm, z, z_, m, n, d, direct_term);
 }
 
 cmplx V_v(const LayeredMedium &lm,
@@ -49,9 +55,33 @@ cmplx V_v(const LayeredMedium &lm,
           bool direct_term,
           RiemannSheet sheet)
 {
+    auto m = lm.identify_layer(z);
+    auto n = lm.identify_layer(z_);
     bool dual_solution = true;
     auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
-    return utils::I_i_base(lm, z, z_, d, direct_term);
+    return utils::I_i_base(lm, z, z_, m, n, d, direct_term);
+}
+
+cmplx generic_sgf(const LayeredMedium &lm,
+                  cmplx k_rho,
+                  real z,
+                  real z_,
+                  EmMode type,
+                  bool direct_term,
+                  RiemannSheet sheet)
+{
+    using std::complex_literals::operator""i;
+    auto m = lm.identify_layer(z);
+    auto n = lm.identify_layer(z_);
+    bool dual_solution = false;
+    auto d = utils::Internals(lm, k_rho, type, dual_solution, sheet);
+
+    // Note: this function is not reciprocal if z and z_ lie in layers with
+    // 	     different material paramters.
+    //       For the case m == n (z and z_ in the same layer) this function
+    //       fulfills reciprocity.
+    return utils::V_i_base_wo_prefac(lm, z, z_, m, n, d, direct_term) /
+            (1.0i * d.k_z[n]);
 }
 
 // Hide implementation details in nested namespace utils.
@@ -292,12 +322,12 @@ cmplx calc_D(const LayeredMedium &lm,
     return D;
 }
 
-cmplx V_i_src(const LayeredMedium &lm,
-              real z,
-              real z_,
-              int n,
-              const Internals &d,
-              bool direct_term)
+cmplx V_i_src_wo_prefac(const LayeredMedium &lm,
+                        real z,
+                        real z_,
+                        int n,
+                        const Internals &d,
+                        bool direct_term)
 {
     using std::complex_literals::operator""i;
     auto R = calc_R(d, n);
@@ -317,7 +347,17 @@ cmplx V_i_src(const LayeredMedium &lm,
     }
     t2 /= D;
 
-    return d.Z[n] * (t1 + t2) / 2.0;
+    return (t1 + t2) / 2.0;
+}
+
+cmplx V_i_src(const LayeredMedium &lm,
+              real z,
+              real z_,
+              int n,
+              const Internals &d,
+              bool direct_term)
+{
+    return d.Z[n] * V_i_src_wo_prefac(lm, z, z_, n, d, direct_term);
 }
 
 cmplx I_i_src(const LayeredMedium &lm,
@@ -451,42 +491,49 @@ cmplx T_u(const LayeredMedium &lm,
             factor_eq_117(lm, z, m, pm_operator, d);
 }
 
-cmplx V_i_base(const LayeredMedium &lm,
-               real z,
-               real z_,
-               const Internals &d,
-               bool direct_term)
+cmplx V_i_base_wo_prefac(const LayeredMedium &lm,
+                         real z,
+                         real z_,
+                         int m,
+                         int n,
+                         const Internals &d,
+                         bool direct_term)
 {
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
-
     auto pm_operator = [](cmplx a, cmplx b) { return a + b; };
 
     cmplx val;
     if (m == n) {
-        val = V_i_src(lm, z, z_, n, d, direct_term);
+        val = V_i_src_wo_prefac(lm, z, z_, n, d, direct_term);
     } else if (m < n) {
-        val = V_i_src(lm, lm.z[n], z_, n, d, direct_term) *
+        val = V_i_src_wo_prefac(lm, lm.z[n], z_, n, d, direct_term) *
                 T_d(lm, z, m, n, pm_operator, d);
     } else if (m > n) {
-        val = V_i_src(lm, lm.z[n + 1], z_, n, d, direct_term) *
+        val = V_i_src_wo_prefac(lm, lm.z[n + 1], z_, n, d, direct_term) *
                 T_u(lm, z, m, n, pm_operator, d);
     }
 
     return val;
+}
 
+cmplx V_i_base(const LayeredMedium &lm,
+               real z,
+               real z_,
+               int m,
+               int n,
+               const Internals &d,
+               bool direct_term)
+{
+    return d.Z[n] * V_i_base_wo_prefac(lm, z, z_, m, n, d, direct_term);
 }
 
 cmplx I_i_base(const LayeredMedium &lm,
                real z,
                real z_,
+               int m,
+               int n,
                const Internals &d,
                bool direct_term)
 {
-
-    auto m = lm.identify_layer(z);
-    auto n = lm.identify_layer(z_);
-
     auto pm_operator = [](cmplx a, cmplx b) { return a - b; };
 
     cmplx val;

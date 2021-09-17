@@ -69,9 +69,8 @@ BOOST_DATA_TEST_CASE(generic_spectral_gf_reciprocity_in_half_space_same_layer,
 
     bool direct_term = true;
 
-    using gf::scalar::layered_media::generic_spectral_gf;
-    cmplx val_1 = generic_spectral_gf(lm, k_rho, z, z_, mode, direct_term);
-    cmplx val_2 = generic_spectral_gf(lm, k_rho, z_, z, mode, direct_term);
+    cmplx val_1 = tlgf::generic_sgf(lm, k_rho, z, z_, mode, direct_term);
+    cmplx val_2 = tlgf::generic_sgf(lm, k_rho, z_, z, mode, direct_term);
 
     real tol_in_percent = 1e-6;
     BOOST_CHECK_CLOSE(val_1.real(), val_2.real(), tol_in_percent);

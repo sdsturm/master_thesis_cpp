@@ -43,6 +43,14 @@ cmplx V_v(const LayeredMedium &lm,
           bool direct_term = true,
           RiemannSheet sheet = RiemannSheet::I);
 
+cmplx generic_sgf(const LayeredMedium &lm,
+                  cmplx k_rho,
+                  real z,
+                  real z_,
+                  EmMode type,
+                  bool direct_term = true,
+                  RiemannSheet sheet = RiemannSheet::I);
+
 // Hide implementation details in nested namespace utils.
 namespace utils {
 
@@ -96,6 +104,13 @@ std::vector<cmplx> calc_zeta(const LayeredMedium &lm, real z, real z_, int n);
 
 cmplx calc_D(const LayeredMedium &lm, int n, const Internals &d);
 
+cmplx V_i_src_wo_prefac(const LayeredMedium &lm,
+                        real z,
+                        real z_,
+                        int n,
+                        const Internals &d,
+                        bool direct_term);
+
 cmplx V_i_src(const LayeredMedium &lm,
               real z,
               real z_,
@@ -146,21 +161,27 @@ cmplx T_u(const LayeredMedium &lm,
           const Internals &d);
 
 // General TLGF.
-cmplx V_i_base_generic(const LayeredMedium &lm,
-                       real z,
-                       real z_,
-                       const Internals &d,
-                       bool direct_term);
+cmplx V_i_base_wo_prefac(const LayeredMedium &lm,
+                         real z,
+                         real z_,
+                         int m,
+                         int n,
+                         const Internals &d,
+                         bool direct_term);
 
 cmplx V_i_base(const LayeredMedium &lm,
                real z,
                real z_,
+               int m,
+               int n,
                const Internals &d,
                bool direct_term);
 
 cmplx I_i_base(const LayeredMedium &lm,
                real z,
                real z_,
+               int m,
+               int n,
                const Internals &d,
                bool direct_term);
 
