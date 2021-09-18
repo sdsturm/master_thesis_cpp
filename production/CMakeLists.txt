@@ -1,8 +1,5 @@
-add_executable(thesis_numerical_integration_sommerfeld_identity
-    thesis_numerical_integration_sommerfeld_identity.cpp)
-target_link_libraries(thesis_numerical_integration_sommerfeld_identity
-    mthesis-lib
-    Boost::timer)
+add_executable(thesis_somm_id_ref_time thesis_somm_id_ref_time.cpp)
+target_link_libraries(thesis_somm_id_ref_time mthesis-lib Boost::timer)
 
 add_executable(thesis_complex_source_beam thesis_complex_source_beam.cpp)
 target_link_libraries(thesis_complex_source_beam mthesis-lib)
@@ -23,6 +20,4 @@ add_executable(thesis_dcim_far_range thesis_dcim_far_range.cpp)
 target_link_libraries(thesis_dcim_far_range mthesis-lib)
 
 add_executable(thesis_fmm_standard_accuracy thesis_fmm_standard_accuracy.cpp)
-target_link_libraries(thesis_fmm_standard_accuracy
-    mthesis-lib
-    Boost::timer)
+target_link_libraries(thesis_fmm_standard_accuracy mthesis-lib Boost::timer)
