@@ -1,8 +1,8 @@
 add_executable(thesis_somm_id_ref_time thesis_somm_id_ref_time.cpp)
 target_link_libraries(thesis_somm_id_ref_time mthesis-lib Boost::timer)
 
-add_executable(thesis_complex_source_beam thesis_complex_source_beam.cpp)
-target_link_libraries(thesis_complex_source_beam mthesis-lib)
+add_executable(thesis_csb_examples thesis_csb_examples.cpp)
+target_link_libraries(thesis_csb_examples mthesis-lib)
 
 add_executable(thesis_tlgf thesis_tlgf.cpp)
 target_link_libraries(thesis_tlgf mthesis-lib)
