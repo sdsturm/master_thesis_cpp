@@ -11,11 +11,8 @@ target_link_libraries(thesis_generic_scalar_near_region mthesis-lib)
 add_executable(thesis_tlgf thesis_tlgf.cpp)
 target_link_libraries(thesis_tlgf mthesis-lib)
 
-add_executable(thesis_dgf_half_space_ved thesis_dgf_half_space_ved.cpp)
-target_link_libraries(thesis_dgf_half_space_ved mthesis-lib)
-
-add_executable(thesis_dgf_half_space_hed thesis_dgf_half_space_hed.cpp)
-target_link_libraries(thesis_dgf_half_space_hed mthesis-lib)
+add_executable(thesis_dgf_hs thesis_dgf_hs.cpp)
+target_link_libraries(thesis_dgf_hs mthesis-lib)
 
 add_executable(thesis_dcim_near_range thesis_dcim_near_range.cpp)
 target_link_libraries(thesis_dcim_near_range mthesis-lib)
