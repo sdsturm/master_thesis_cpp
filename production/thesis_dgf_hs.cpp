@@ -34,11 +34,14 @@ int main()
             VectorC3 E_VED = G_EJ * J_VED;
             VectorC3 E_HED = G_EJ * J_HED;
 
+            real abs_re_E_VED = arma::norm(arma::real(E_VED));
+            real abs_re_E_HED = arma::norm(arma::real(E_HED));
+
             printf("%.6e %.6e %.6e %.6e\n",
                    x / fd.lambda_0,
                    z / fd.lambda_0,
-                   arma::norm(arma::real(E_VED)),
-                   arma::norm(arma::real(E_HED)));
+                   abs_re_E_VED,
+                   abs_re_E_HED);
         }
         printf("\n");
     }
