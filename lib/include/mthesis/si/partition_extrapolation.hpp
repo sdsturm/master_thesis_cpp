@@ -5,22 +5,15 @@
 
 namespace mthesis::si::pe {
 
-class Params
+struct Params
 {
-private:
+    Params();
+
     unsigned max_intervals;
     double tol;
 
-public:
-    Params() : max_intervals(15), tol(1e-8) {}
-
-    void set_max_intervals(int max_intervals);
-    void set_tol(double tol);
-
-    unsigned get_max_intervals() const;
-    double get_tol() const;
+    void check_params() const;
 };
-
 
 cmplx levin_sidi(std::function<cmplx(real)> f,
                  real nu,

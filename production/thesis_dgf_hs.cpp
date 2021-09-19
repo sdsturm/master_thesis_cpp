@@ -2,7 +2,26 @@
 
 #include <armadillo>
 
-#include <cstdio>
+#include <iostream>
+#include <string>
+#include <cassert>
+
+std::string print_comp(unsigned i)
+{
+    switch (i) {
+    case 0:
+        return "x";
+        break;
+    case 1:
+        return "y";
+        break;
+    case 2:
+        return "z";
+        break;
+    default:
+        assert(false);
+    }
+}
 
 using namespace mthesis;
 
@@ -21,29 +40,38 @@ int main()
     VectorR3 J_VED = {0, 0, 1};
     VectorR3 J_HED = {1, 0, 0};
 
-    unsigned n_pts = 70;
+    unsigned n_pts = 60;
     arma::vec x_vals = arma::linspace(-5, 5, n_pts) * fd.lambda_0;
     arma::vec z_vals = arma::linspace(-3, 7, n_pts) * fd.lambda_0;
 
-    printf("x_by_lambda_0 z_by_lambda_0 abs_re_E_VED abs_re_E_HED\n");
+    // Print header.
+    std::cout << "x_by_lambda_0 z_by_lambda_0 ";
+    for (arma::uword r = 0; r < 3; r++) {
+        for (arma::uword c = 0; c < 3; c++) {
+            std::cout << "G_EJ_" << print_comp(r) << print_comp(c) << " ";
+            std::cout << "G_HJ_" << print_comp(r) << print_comp(c) << " ";
+        }
+    }
+    std::cout << "\n";
+
+    // Run computations and print result line.
     for (const auto &x : x_vals) {
         for (const auto &z : z_vals) {
             VectorR3 r = {x, 0, z};
 
             DyadC3 G_EJ = gf::dyadic::layered_media::G_EJ(hs, r, r_);
-            VectorC3 E_VED = G_EJ * J_VED;
-            VectorC3 E_HED = G_EJ * J_HED;
+            DyadC3 G_HJ = gf::dyadic::layered_media::G_HJ(hs, r, r_);
 
-            real abs_re_E_VED = arma::norm(arma::real(E_VED));
-            real abs_re_E_HED = arma::norm(arma::real(E_HED));
-
-            printf("%.6e %.6e %.6e %.6e\n",
-                   x / fd.lambda_0,
-                   z / fd.lambda_0,
-                   abs_re_E_VED,
-                   abs_re_E_HED);
+            std::cout << x / fd.lambda_0 << " " << z / fd.lambda_0 << " ";
+            for (arma::uword r = 0; r < 3; r++) {
+                for (arma::uword c = 0; c < 3; c++) {
+                    std::cout << G_EJ(r, c).real() << " ";
+                    std::cout << G_HJ(r, c).real() << " ";
+                }
+            }
+            std::cout << "\n";
         }
-        printf("\n");
+        std::cout << "\n";
     }
 
     return 0;

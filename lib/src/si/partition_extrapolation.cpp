@@ -2,31 +2,18 @@
 
 #include <boost/math/special_functions/bessel.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
+#include <boost/math/quadrature/gauss.hpp>
 
 #include <cassert>
 
 namespace mthesis::si::pe {
 
-void Params::set_max_intervals(int max_intervals)
+Params::Params() : max_intervals(15), tol(1e-8) {}
+
+void Params::check_params() const
 {
     assert(max_intervals > 0);
-    this->max_intervals = max_intervals;
-}
-
-void Params::set_tol(double tol)
-{
     assert(tol > 0.0);
-    this->tol = tol;
-}
-
-unsigned Params::get_max_intervals() const
-{
-    return max_intervals;
-}
-
-double Params::get_tol() const
-{
-    return tol;
 }
 
 cmplx levin_sidi(std::function<cmplx(real)> f,
@@ -156,7 +143,7 @@ double get_first_zero(double nu, double a, double rho)
     }
 
     // Use McMahon's expansion if not contained in table.
-    unsigned m = j_table.size();
+    unsigned m = j_table.size() + 1;
     while (std::isnan(j_found)) {
         auto j = mc_mahon(nu, m);
         if (j > bessel_arg) {
@@ -176,7 +163,10 @@ cmplx integrate_gap(std::function<cmplx(real)> f,
                     double a_pe_start)
 {
     constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
-    return quad.integrate(f, a, a_pe_start);
+
+    // Note: not restricting the accuracy may cause failures if function
+    //       is very close to zero.
+    return quad.integrate(f, a, a_pe_start, 5, 1e-12);
 }
 
 std::vector<double> get_xi(double a, double rho, unsigned max_intervals)
@@ -228,9 +218,11 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
                       double a,
                       Params params)
 {
-    constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
+    // Note: Michalski2016a recommends 16-order Gauss-Legendre quadrature
+    //	     between consecutive Bessel zeros (see pages 301 and 306).
+    constexpr boost::math::quadrature::gauss<double, 15> quad_gl;
 
-    auto xi = get_xi(a, rho, params.get_max_intervals());
+    auto xi = get_xi(a, rho, params.max_intervals);
     std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
 
     cmplx s = 0.0;
@@ -238,25 +230,23 @@ cmplx levin_sidi_core(std::function<cmplx(real)> f,
 
     int k_max = xi.size() - 2;
     for (int k = 0; k <= k_max; k++) {
-        cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
+        cmplx u = quad_gl.integrate(f, xi[k], xi[k + 1]);
         s += u;
-        if (std::abs(u) < 1e-100 && std::abs(s) < 1e-20) {
-            // Double check if function is identical to zero.
-            cmplx u_tot = quad.integrate(f, xi.front(), xi.back());
-            assert(std::abs(u_tot) < 1e-16);
+        // Detect vanishing function case as levin_sidi_extrap cannot handle
+        // the case omega_k = 0 and to avoid failure of the convergence checker.
+        if (std::abs(u) < 1e-20 && std::abs(s) < 1e-12) {
             return 0.0;
         }
         cmplx omega = u;
         cmplx val = levin_sidi_extrap(k, s, omega, xi, A, B);
-        if (k > 1 && check_converged(val, old, params.get_tol())) {
+        if (k > 1 && check_converged(val, old, params.tol)) {
             return val;
         }
         old[0] = old[1];
         old[1] = val;
     }
 
-    std::cerr << "Levin-Sidi PE quit without reaching convergence.\n";
-    return std::numeric_limits<real>::quiet_NaN();
+    assert(false);	// Not converged, should never be reached.
 }
 
 cmplx mosig_michalski_extrap(double mu,
@@ -284,7 +274,7 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
 {
     constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
 
-    auto xi = get_xi(a, rho, params.get_max_intervals());
+    auto xi = get_xi(a, rho, params.max_intervals);
     std::vector<cmplx> R(xi.size() - 1);
 
     auto Omega = [&](int k) {
@@ -306,15 +296,14 @@ cmplx mosig_michalski_core(std::function<cmplx(real)> f,
         cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
         s += u;
         cmplx val = mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
-        if (k > 1 && check_converged(val, old, params.get_tol())) {
+        if (k > 1 && check_converged(val, old, params.tol)) {
             return val;
         }
         old[0] = old[1];
         old[1] = val;
     }
 
-    std::cerr << "Mosig-Michalski PE quit without reaching convergence.\n";
-    return std::numeric_limits<real>::quiet_NaN();
+    assert(false);	// Not converged, should never be reached.
 }
 
 } // namespace utils

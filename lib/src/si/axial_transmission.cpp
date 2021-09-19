@@ -42,6 +42,7 @@ real calc_pe_start(const SommerfeldIntegral &si)
         }
     }
 
+    // Note: something like 3 * k_re_max slows down the algorithm significantly.
     real a = 1.2 * k_re_max;  // Empirical.
 
     return a;
