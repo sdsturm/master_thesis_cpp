@@ -21,4 +21,7 @@ add_executable(thesis_dcim_far_range thesis_dcim_far_range.cpp)
 target_link_libraries(thesis_dcim_far_range mthesis-lib)
 
 add_executable(thesis_fmm_standard_accuracy thesis_fmm_standard_accuracy.cpp)
-target_link_libraries(thesis_fmm_standard_accuracy mthesis-lib Boost::timer)
+target_link_libraries(thesis_fmm_standard_accuracy mthesis-lib)
+
+add_executable(thesis_gpof_synth_signal thesis_gpof_synth_signal.cpp)
+target_link_libraries(thesis_gpof_synth_signal mthesis-lib)

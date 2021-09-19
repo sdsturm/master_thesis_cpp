@@ -22,9 +22,6 @@ target_link_libraries(example_tlgf_sheet
     mthesis-lib
     ${GNUPLOT_IOSTREAM_LINK_LIBS})
 
-add_executable(example_generic_gf example_generic_gf.cpp)
-target_link_libraries(example_generic_gf mthesis-lib)
-
 add_executable(example_dcim example_dcim.cpp)
 target_link_libraries(example_dcim mthesis-lib)
 

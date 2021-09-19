@@ -18,7 +18,7 @@ namespace mthesis::dcim::gpof
         SynthExponentials(unsigned M, unsigned N, double oversampling)
             : N(N), t(N), y(N)
         {
-            constexpr double f_max = 30;
+            constexpr double f_max = 100;
             double f_s = f_max * oversampling;
             d_t = 1.0 / f_s;
 

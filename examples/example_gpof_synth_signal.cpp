@@ -13,9 +13,9 @@ using namespace mthesis::dcim;
 
 int main()
 {
-    unsigned M = 30;
-    unsigned N = 500;
-    double oversampling = 30;
+    unsigned M = 10;
+    unsigned N = 100;
+    double oversampling = 10;
 
     auto sig = gpof::SynthExponentials(M, N, oversampling);
 
