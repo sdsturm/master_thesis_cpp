@@ -1,24 +1,27 @@
+#ifndef MTHESIS_PRINT_GENERIC_SGF_HPP
+#define MTHESIS_PRINT_GENERIC_SGF_HPP
+
 #include <mthesis.hpp>
 
 #include <armadillo>
 
+#include <filesystem>
 #include <cstdio>
+#include <cassert>
 
-using namespace mthesis;
+namespace mthesis {
 
-int main()
+void print_generic_sgf(const FrequencyDomain &fd,
+                                   cmplx eps_r,
+                                   const arma::vec &x_vals,
+                                   const arma::vec &z_vals)
 {
-    // Dry ground example from p. 22 in Michalski2016b.
-    FrequencyDomain fd(10e6);
-    cmplx eps_r = cmplx_permittivity(fd, 3, 0.1e-3);
     Medium ground(fd, eps_r);
     HalfSpace lm(fd, ground);
     real nu = 0;
 
     VectorR3 r_ = {0, 0, 1.0 * fd.lambda_0};
 
-    arma::vec x_vals = arma::linspace(0, 10, 70) * fd.lambda_0;
-    arma::vec z_vals = arma::linspace(-3, 7, 70) * fd.lambda_0;
 
     using mthesis::gf::scalar::layered_media::get_sommerfeld_integral;
     auto si_tm_full = get_sommerfeld_integral(lm, nu, EmMode::TM, true);
@@ -46,6 +49,8 @@ int main()
         }
         printf("\n");
     }
-
-    return 0;
 }
+
+} // namespace mthesis
+
+#endif // MTHESIS_PRINT_GENERIC_SGF_HPP

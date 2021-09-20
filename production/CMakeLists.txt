@@ -1,24 +1,34 @@
 add_executable(thesis_somm_id_ref_time thesis_somm_id_ref_time.cpp)
 target_link_libraries(thesis_somm_id_ref_time mthesis-lib Boost::timer)
 
+
 add_executable(thesis_csb_examples thesis_csb_examples.cpp)
 target_link_libraries(thesis_csb_examples mthesis-lib)
 
-add_executable(thesis_generic_scalar_near_region
-    thesis_generic_scalar_near_region.cpp)
-target_link_libraries(thesis_generic_scalar_near_region mthesis-lib)
+
+add_executable(thesis_generic_sgf_dry_ground thesis_generic_sgf_dry_ground.cpp)
+target_link_libraries(thesis_generic_sgf_dry_ground mthesis-lib)
+
+
+add_executable(thesis_generic_sgf_seawater thesis_generic_sgf_seawater.cpp)
+target_link_libraries(thesis_generic_sgf_seawater mthesis-lib)
+
 
 add_executable(thesis_tlgf thesis_tlgf.cpp)
 target_link_libraries(thesis_tlgf mthesis-lib)
 
+
 add_executable(thesis_dgf_hs thesis_dgf_hs.cpp)
 target_link_libraries(thesis_dgf_hs mthesis-lib)
+
 
 add_executable(thesis_dcim thesis_dcim.cpp)
 target_link_libraries(thesis_dcim mthesis-lib Boost::timer)
 
+
 add_executable(thesis_fmm_standard_accuracy thesis_fmm_standard_accuracy.cpp)
 target_link_libraries(thesis_fmm_standard_accuracy mthesis-lib)
+
 
 add_executable(thesis_gpof_synth_signal thesis_gpof_synth_signal.cpp)
 target_link_libraries(thesis_gpof_synth_signal mthesis-lib)
