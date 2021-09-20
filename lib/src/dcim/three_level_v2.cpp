@@ -6,6 +6,7 @@ namespace mthesis::dcim {
 
 ThreeLevelV2::ThreeLevelV2(const SommerfeldIntegral &si) : DCIM(si)
 {
+#if 0
     // Set up sampling paths.
     real k_rho_max_3 = 0.8 * k_0; // empirical
     auto T_3 = calc_T_3(k_rho_max_3);
@@ -18,6 +19,20 @@ ThreeLevelV2::ThreeLevelV2(const SommerfeldIntegral &si) : DCIM(si)
     real k_rho_max_1 = 300 * k_max; // empirical
     auto T_1 = calc_T_1(k_rho_max_1, T_2, T_3);
     int N_1 = 100;
+#else
+    // Set up sampling paths.
+    real k_rho_max_3 = 0.8 * k_0; // empirical
+    auto T_3 = calc_T_3(k_rho_max_3);
+    int N_3 = 200;
+
+    real k_rho_max_2 = 1.2 * k_max; // empirical
+    auto T_2 = calc_T_2(k_rho_max_2, T_3);
+    int N_2 = 200;
+
+    real k_rho_max_1 = 400 * k_max; // empirical
+    auto T_1 = calc_T_1(k_rho_max_1, T_2, T_3);
+    int N_1 = 300;
+#endif
 
     sampling_paths.push_back(calc_sp_1(T_1, T_2, T_3, N_1));
     sampling_paths.push_back(calc_sp_2(T_2, T_3, N_2));
