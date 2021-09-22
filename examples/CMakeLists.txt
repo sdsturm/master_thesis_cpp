@@ -38,6 +38,12 @@ target_link_libraries(example_legendre_p_recurrence
 add_executable(example_gegenbauer_formula example_gegenbauer_formula.cpp)
 target_link_libraries(example_gegenbauer_formula mthesis-lib)
 
+add_executable(example_surface_E_z example_surface_E_z.cpp)
+target_link_libraries(example_surface_E_z
+    mthesis-lib
+    ${GNUPLOT_IOSTREAM_LINK_LIBS}
+    )
+
 
 
 
