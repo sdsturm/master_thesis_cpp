@@ -32,3 +32,11 @@ target_link_libraries(thesis_fmm_standard_accuracy mthesis-lib)
 
 add_executable(thesis_gpof_synth_signal thesis_gpof_synth_signal.cpp)
 target_link_libraries(thesis_gpof_synth_signal mthesis-lib)
+
+
+add_executable(thesis_surface_E_z_of_rho thesis_surface_E_z_of_rho.cpp)
+target_link_libraries(thesis_surface_E_z_of_rho mthesis-lib)
+
+
+add_executable(thesis_surface_E_z_of_f thesis_surface_E_z_of_f.cpp)
+target_link_libraries(thesis_surface_E_z_of_f mthesis-lib)
