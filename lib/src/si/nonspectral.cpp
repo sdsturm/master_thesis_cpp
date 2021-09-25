@@ -66,6 +66,7 @@ cmplx calc_folded_sgf(const SommerfeldIntegral &si,
     return f_left - f_right;
 }
 
+#if 0
 cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c)
 {
     using std::complex_literals::operator""i;
@@ -78,6 +79,7 @@ cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c)
 
     return t1 * t2 * t3;
 }
+#endif
 
 // =============================================================================
 
@@ -173,17 +175,21 @@ cmplx calc_B_p(cmplx k_p, cmplx s_p, cmplx R_p, real n, real rho)
 cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c, cmplx s,
                     cmplx s_p, cmplx B_p)
 {
-    cmplx t1 = calc_F_eq81(s, si, c);
-    if (std::isnan(abs(t1))) {
-        bool test = true;
-        assert(test);
-    }
-    t1 = calc_F_eq81(s, si, c);
+    using std::complex_literals::operator""i;
 
-    cmplx t2 = 2.0 * B_p * s / (pow(s, 2) - pow(s_p, 2));
-    cmplx t3 = exp(-pow(s, 2) * c.rho) * s;
+    const cmplx &k_1 = si.lm.media.back().k;
+    cmplx k_rho = k_1 - 1.0i * pow(s, 2);
+    cmplx t11 = calc_folded_sgf(si, c, k_rho);
+    cmplx t12 = sqrt(k_rho) * pow(1.0i, -si.nu) * sqrt(si.nu * k_rho * c.rho / 2.0i);
+    cmplx t13 = sp_bessel::hankelH2(si.nu, k_rho * c.rho);
+    cmplx t14 = exp(1.0i * k_1) * s;
+    cmplx t1 = t11 * t12 * t13 * t14;
 
-    return (t1 + t2) * t3;
+    cmplx t21 = 2.0 * B_p * s / (pow(s, 2) - pow(s_p, 2));
+    cmplx t22 = exp(-pow(s, 2) * c.rho) * s;
+    cmplx t2 = t21 * t22;
+
+    return t1 + t2;
 }
 
 cmplx calc_I_p(const SommerfeldIntegral &si, const LMCoords &c,
@@ -229,6 +235,7 @@ cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
 
 namespace te {
 
+#if 0
 cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c, cmplx s)
 {
     cmplx t1 = calc_F_eq81(s, si, c);
@@ -263,6 +270,7 @@ cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)
 
     return val;
 }
+#endif
 
 } // namespace te
 
