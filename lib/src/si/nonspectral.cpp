@@ -33,8 +33,13 @@ namespace utils {
 cmplx normalized_hankel(real n, cmplx z)
 {
     using std::complex_literals::operator""i;
-    return pow(-1.0i, n) * sqrt(M_PI * z / 2.0i) *
-            exp(1.0i * z) * sp_bessel::sph_hankelH2(n, z);
+
+    cmplx t1 = pow(-1.0i, n);
+    cmplx t2 = sqrt(M_PI * z / 2.0i);
+    cmplx t3 = exp(1.0i * z);
+    cmplx t4 = sp_bessel::sph_hankelH2(n, z);
+
+    return t1 * t2 * t3 * t4;
 }
 
 cmplx calc_folded_sgf(const SommerfeldIntegral &si,
@@ -67,8 +72,11 @@ cmplx calc_F_eq81(cmplx s, const SommerfeldIntegral &si, const LMCoords &c)
 
     cmplx k_rho = si.lm.media.back().k - 1.0i * pow(s, 2);
 
-    return calc_folded_sgf(si, c, k_rho) * sqrt(k_rho) *
-            normalized_hankel(si.nu, k_rho * c.rho);
+    cmplx t1 = calc_folded_sgf(si, c, k_rho);
+    cmplx t2 = sqrt(k_rho);
+    cmplx t3 = normalized_hankel(si.nu, k_rho * c.rho);
+
+    return t1 * t2 * t3;
 }
 
 // =============================================================================
@@ -166,6 +174,12 @@ cmplx integrand_I_p(const SommerfeldIntegral &si, const LMCoords &c, cmplx s,
                     cmplx s_p, cmplx B_p)
 {
     cmplx t1 = calc_F_eq81(s, si, c);
+    if (std::isnan(abs(t1))) {
+        bool test = true;
+        assert(test);
+    }
+    t1 = calc_F_eq81(s, si, c);
+
     cmplx t2 = 2.0 * B_p * s / (pow(s, 2) - pow(s_p, 2));
     cmplx t3 = exp(-pow(s, 2) * c.rho) * s;
 
