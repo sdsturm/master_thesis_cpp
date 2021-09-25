@@ -182,7 +182,9 @@ cmplx calc_I_p(const SommerfeldIntegral &si, const LMCoords &c,
 
     constexpr boost::math::quadrature::gauss_kronrod<real, 61> quad;
 
-    return quad.integrate(f, 0, std::numeric_limits<real>::infinity());
+    auto val = quad.integrate(f, 0, std::numeric_limits<real>::infinity());
+
+    return val;
 }
 
 cmplx calc_I1_eq85(const SommerfeldIntegral &si, const LMCoords &c)

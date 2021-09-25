@@ -95,14 +95,12 @@ int LayeredMedium::identify_layer(real z) const
 bool LayeredMedium::is_sommerfeld_half_space() const
 {
     // Check Sommerfeld half-space.
-    bool check =
-            media.size() == 2 &&
-            media.back().k.real() == fd.k_0 &&
-            0.0 == media.back().k.imag() &&
-            top_bc == BC::open &&
-            bottom_bc == BC::open;
+    bool check_1 = media.size() == 2;
+    bool check_2 = (abs(media.back().k.real() - fd.k_0) / fd.k_0) < 1e-10;
+    bool check_3 = 0.0 == media.back().k.imag();
+    bool check_4 = top_bc == BC::open && bottom_bc == BC::open;
 
-    return check;
+    return check_1 && check_2 && check_3 && check_4;
 }
 
 FreeSpace::FreeSpace(const FrequencyDomain &fd)
