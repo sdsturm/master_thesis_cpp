@@ -8,15 +8,15 @@ namespace mthesis::si::pe {
 struct Params
 {
     Params();
+    void check() const;
 
     unsigned max_intervals;
-    double tol;
-
-    void check_params() const;
+    real tol;
 };
 
+real get_first_zero(real nu, real a, real rho);
+
 cmplx levin_sidi(std::function<cmplx(real)> f,
-                 real nu,
                  real rho,
                  real a,
                  Params params);
@@ -24,7 +24,6 @@ cmplx levin_sidi(std::function<cmplx(real)> f,
 cmplx mosig_michalski(std::function<cmplx(real)> f,
                       real alpha,
                       real zeta,
-                      real nu,
                       real rho,
                       real a,
                       Params params);
@@ -32,43 +31,27 @@ cmplx mosig_michalski(std::function<cmplx(real)> f,
 // Hide helper functions in nested namespace utils.
 namespace utils {
 
-double mc_mahon(double nu, unsigned m);
+real mc_mahon(real nu, unsigned m);
 
-double get_first_zero(double nu, double a, double rho);
+std::vector<real> get_j_table(real nu);
 
-cmplx integrate_gap(std::function<cmplx(real)> f,
-                    double a,
-                    double a_pe_start);
+std::vector<real> get_xi(real a, real rho, unsigned max_intervals);
 
-std::vector<double> get_xi(double a, double rho, unsigned max_intervals);
-
-bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol);
+bool check_converged(cmplx val, const std::vector<cmplx> &old, real tol);
 
 cmplx levin_sidi_extrap(int k,
                         cmplx s_k,
                         cmplx omega_k,
-                        const std::vector<double> &xi,
+                        const std::vector<real> &xi,
                         std::vector<cmplx> &A,
                         std::vector<cmplx> &B);
 
-cmplx levin_sidi_core(std::function<cmplx(real)> f,
-                      double rho,
-                      double a,
-                      Params params);
-
-cmplx mosig_michalski_extrap(double mu,
+cmplx mosig_michalski_extrap(real mu,
                              int k,
                              cmplx s_k,
-                             double Omega_k,
-                             const std::vector<double> &xi,
+                             real Omega_k,
+                             const std::vector<real> &xi,
                              std::vector<cmplx> &R);
-
-cmplx mosig_michalski_core(std::function<cmplx(real)> f,
-                           double rho,
-                           double a,
-                           double alpha,
-                           double zeta,
-                           Params params);
 
 } // utils
 

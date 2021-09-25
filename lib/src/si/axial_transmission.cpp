@@ -14,10 +14,13 @@ cmplx eval_si_along_sip(const SommerfeldIntegral &si,
         return 0.0;
     }
 
-    auto a = utils::calc_pe_start(si);
+    real a_guess = utils::calc_pe_start_guess(si);
 
-    auto head = utils::eval_head_ellipsis(si, rho, z, z_, a);
-    auto tail = utils::eval_tail_on_sip(si, rho, z, z_, a, pe_params);
+    real a = pe::get_first_zero(si.nu, a_guess, rho);
+
+    cmplx head = utils::eval_head_ellipsis(si, rho, z, z_, a);
+
+    cmplx tail = utils::eval_tail_on_sip(si, rho, z, z_, a, pe_params);
 
     return (head + tail) / (2.0 * M_PI);
 }
@@ -33,7 +36,7 @@ cmplx eval_si_along_sip(const SommerfeldIntegral &si,
 
 namespace utils {
 
-real calc_pe_start(const SommerfeldIntegral &si)
+real calc_pe_start_guess(const SommerfeldIntegral &si)
 {
     real k_re_max = 0;
     for (const auto &medium : si.lm.media) {
@@ -107,7 +110,7 @@ cmplx eval_tail_on_sip(const SommerfeldIntegral &si,
 
     cmplx val;
     if (rho > 0.0) {
-        return pe::levin_sidi(integrand, si.nu, rho, a, pe_params);
+        return pe::levin_sidi(integrand, rho, a, pe_params);
     } else if (rho == 0 && std::abs(z - z_) > 0.0) {
         constexpr real b = std::numeric_limits<real>::infinity();
         constexpr boost::math::quadrature::gauss_kronrod<real, 15> quad;
@@ -120,8 +123,6 @@ cmplx eval_tail_on_sip(const SommerfeldIntegral &si,
     return val;
 }
 
-}
-
-// namespace utils
+} // namespace utils
 
 } // namespace mthesis::si::axial_transmission

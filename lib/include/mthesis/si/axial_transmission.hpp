@@ -19,7 +19,7 @@ cmplx eval_si_along_sip(const SommerfeldIntegral &si,
 
 namespace utils {
 
-real calc_pe_start(const SommerfeldIntegral &si);
+real calc_pe_start_guess(const SommerfeldIntegral &si);
 
 real calc_indention(real rho, real a);
 

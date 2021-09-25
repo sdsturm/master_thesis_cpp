@@ -34,7 +34,7 @@ BOOST_DATA_TEST_CASE(bessel_zero_finder,
 
     real a = dist(gen) / rho;
 
-    real j_found = si::pe::utils::get_first_zero(nu, a, rho);
+    real j_found = si::pe::get_first_zero(nu, a, rho);
     real check_val = j_next / rho;
 
     BOOST_CHECK_CLOSE(j_found, check_val, 1e-4);

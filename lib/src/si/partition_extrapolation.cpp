@@ -10,55 +10,137 @@ namespace mthesis::si::pe {
 
 Params::Params() : max_intervals(15), tol(1e-8) {}
 
-void Params::check_params() const
+void Params::check() const
 {
     assert(max_intervals > 0);
     assert(tol > 0.0);
 }
 
+real get_first_zero(real nu, real a, real rho)
+{
+    assert(rho > 0.0);
+    assert(a >= 0.0);
+    assert(nu >= -1);
+
+    const auto j_table = utils::get_j_table(nu);
+
+    real bessel_arg = a * rho;
+
+    // First search tabulated values.
+    real j_found = std::numeric_limits<real>::quiet_NaN(); // Flag.
+    for (size_t i = 0; i < j_table.size(); i++) {
+        if (j_table[i] > bessel_arg) {
+            j_found = j_table[i];
+            break;
+        }
+    }
+
+    // Use McMahon's expansion if not contained in table.
+    unsigned m = j_table.size() + 1;
+    while (std::isnan(j_found)) {
+        auto j = utils::mc_mahon(nu, m);
+        if (j > bessel_arg) {
+            j_found = j;
+            break;
+        } else {
+            m++;
+        }
+    }
+
+    // Normalize zero.
+    return j_found / rho;
+}
+
 cmplx levin_sidi(std::function<cmplx(real)> f,
-                 real nu,
                  real rho,
                  real a,
                  Params params)
 {
-    double a_pe_start = utils::get_first_zero(nu, a, rho);
+    params.check();
+    // Note: Michalski2016a recommends 16-order Gauss-Legendre quadrature
+    //	     between consecutive Bessel zeros (see pages 301 and 306).
+    constexpr boost::math::quadrature::gauss<real, 15> quad_gl;
 
-    cmplx gap = utils::integrate_gap(f, a, a_pe_start);
+    auto xi = utils::get_xi(a, rho, params.max_intervals);
+    std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
 
-    cmplx tail = utils::levin_sidi_core(f, rho, a_pe_start, params);
+    cmplx s = 0.0;
+    std::vector<cmplx> old(2);
 
-    return gap + tail;
+    int k_max = xi.size() - 2;
+    for (int k = 0; k <= k_max; k++) {
+        cmplx u = quad_gl.integrate(f, xi[k], xi[k + 1]);
+        s += u;
+        // Detect vanishing function case as levin_sidi_extrap cannot handle
+        // the case omega_k = 0 and to avoid failure of the convergence checker.
+        if (std::abs(u) < 1e-20 && std::abs(s) < 1e-12) {
+            return 0.0;
+        }
+        cmplx omega = u;
+        cmplx val = utils::levin_sidi_extrap(k, s, omega, xi, A, B);
+        if (k > 1 && utils::check_converged(val, old, params.tol)) {
+            return val;
+        }
+        old[0] = old[1];
+        old[1] = val;
+    }
+
+    assert(false);	// Not converged, should never be reached.
 }
 
 cmplx mosig_michalski(std::function<cmplx(real)> f,
                       real alpha,
                       real zeta,
-                      real nu,
                       real rho,
                       real a,
                       Params params)
 {
-    double a_pe_start = utils::get_first_zero(nu, a, rho);
+    params.check();
+    constexpr boost::math::quadrature::gauss_kronrod<real, 15> quad;
 
-    cmplx gap = utils::integrate_gap(f, a, a_pe_start);
+    auto xi = utils::get_xi(a, rho, params.max_intervals);
+    std::vector<cmplx> R(xi.size() - 1);
 
-    cmplx tail = utils::mosig_michalski_core(f, rho, a, alpha, zeta, params);
+    auto Omega = [&](int k) {
+        if (0 == k) {
+            return 0.0;
+        } else {
+            return -std::exp(-(xi[k + 1] - xi[k]) * zeta) *
+                    std::pow(xi[k] / xi[k + 1], alpha);
+        }
+    };
 
-    return gap + tail;
+    constexpr real mu = 2.0;
+    cmplx s = 0.0;
+    std::vector<cmplx> old(2);
+
+    using boost::math::quadrature::gauss_kronrod;
+    int k_max = xi.size() - 2;
+    for (int k = 0; k <= k_max; k++) {
+        cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
+        s += u;
+        cmplx val = utils::mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
+        if (k > 1 && utils::check_converged(val, old, params.tol)) {
+            return val;
+        }
+        old[0] = old[1];
+        old[1] = val;
+    }
+
+    assert(false);	// Not converged, should never be reached.
 }
 
 namespace utils {
 
-double mc_mahon(double nu, unsigned m)
+real mc_mahon(real nu, unsigned m)
 {
     using namespace std;
 
     assert(nu >= 0.0);
-    double mu = 4.0 * pow(nu, 2.0);
-    double a = M_PI * (m + 0.5 * nu - 0.25);
+    real mu = 4.0 * pow(nu, 2.0);
+    real a = M_PI * (m + 0.5 * nu - 0.25);
 
-    double j = a -
+    real j = a -
             (mu - 1) / (8 * a) -
             4 * (mu - 1) * (7 * mu - 31) / (3 * pow(8 * a, 3)) -
             32 * (mu - 1) * (83 * pow(mu, 2) - 982 * mu + 3779) / (15 * pow(8 * a, 5)) -
@@ -67,11 +149,11 @@ double mc_mahon(double nu, unsigned m)
     return j;
 }
 
-std::vector<double> get_j_table(double nu)
+std::vector<real> get_j_table(real nu)
 {
 
     if (0.0 == nu) {
-        return std::vector<double>{
+        return std::vector<real>{
             2.404825557696,
             5.520078110286,
             8.653727912911,
@@ -93,7 +175,7 @@ std::vector<double> get_j_table(double nu)
             58.906983926081,
             62.048469190227};
     } else if (1.0 == nu) {
-        return std::vector<double>{
+        return std::vector<real>{
             3.831705970208,
             7.015586669816,
             10.173468135063,
@@ -115,7 +197,7 @@ std::vector<double> get_j_table(double nu)
             60.469457845347,
             63.611356698481};
     } else {
-        std::vector<double> j_table;
+        std::vector<real> j_table;
         constexpr unsigned n_roots = 20;
         boost::math::cyl_bessel_j_zero(
                     nu, 1, n_roots, std::back_inserter(j_table));
@@ -123,57 +205,11 @@ std::vector<double> get_j_table(double nu)
     }
 }
 
-double get_first_zero(double nu, double a, double rho)
+std::vector<real> get_xi(real a, real rho, unsigned max_intervals)
 {
-    assert(rho > 0.0);
-    assert(a >= 0.0);
-    assert(nu >= -1);
+    real q = M_PI / rho;
 
-    const auto j_table = get_j_table(nu);
-
-    double bessel_arg = a * rho;
-
-    // First search tabulated values.
-    double j_found = std::numeric_limits<double>::quiet_NaN(); // Flag.
-    for (size_t i = 0; i < j_table.size(); i++) {
-        if (j_table[i] > bessel_arg) {
-            j_found = j_table[i];
-            break;
-        }
-    }
-
-    // Use McMahon's expansion if not contained in table.
-    unsigned m = j_table.size() + 1;
-    while (std::isnan(j_found)) {
-        auto j = mc_mahon(nu, m);
-        if (j > bessel_arg) {
-            j_found = j;
-            break;
-        } else {
-            m++;
-        }
-    }
-
-    // Normalize zero.
-    return j_found / rho;
-}
-
-cmplx integrate_gap(std::function<cmplx(real)> f,
-                    double a,
-                    double a_pe_start)
-{
-    constexpr boost::math::quadrature::gauss_kronrod<real, 31> quad;
-
-    // Note: not restricting the accuracy may cause failures if function
-    //       is very close to zero.
-    return quad.integrate(f, a, a_pe_start, 5, 1e-12);
-}
-
-std::vector<double> get_xi(double a, double rho, unsigned max_intervals)
-{
-    double q = M_PI / rho;
-
-    std::vector<double> xi(max_intervals + 1);
+    std::vector<real> xi(max_intervals + 1);
 
     xi.front() = a;
     for (size_t i = 1; i < xi.size(); i++) {
@@ -183,15 +219,15 @@ std::vector<double> get_xi(double a, double rho, unsigned max_intervals)
     return xi;
 }
 
-bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol)
+bool check_converged(cmplx val, const std::vector<cmplx> &old, real tol)
 {
-    std::vector<double> diff(old.size());
+    std::vector<real> diff(old.size());
 
     for (size_t i = 0; i < old.size(); i++) {
         diff[i] = std::abs(val - old[i]);
     }
 
-    double max = *std::max_element(diff.begin(), diff.end());
+    real max = *std::max_element(diff.begin(), diff.end());
 
     return max < tol * std::abs(val) ? true : false;
 }
@@ -199,111 +235,34 @@ bool check_converged(cmplx val, const std::vector<cmplx> &old, double tol)
 cmplx levin_sidi_extrap(int k,
                         cmplx s_k,
                         cmplx omega_k,
-                        const std::vector<double> &xi,
+                        const std::vector<real> &xi,
                         std::vector<cmplx> &A,
                         std::vector<cmplx> &B)
 {
     B[k] = 1.0 / omega_k;
     A[k] = s_k * B[k];
     for (int j = 1; j <= k; j++) {
-        double d = 1.0 / xi[k + 1] - 1.0 / xi[k - j + 1];
+        real d = 1.0 / xi[k + 1] - 1.0 / xi[k - j + 1];
         A[k - j] = (A[k - j + 1] - A[k - j]) / d;
         B[k - j] = (B[k - j + 1] - B[k - j]) / d;
     }
     return A[0] / B[0];
 }
 
-cmplx levin_sidi_core(std::function<cmplx(real)> f,
-                      double rho,
-                      double a,
-                      Params params)
-{
-    // Note: Michalski2016a recommends 16-order Gauss-Legendre quadrature
-    //	     between consecutive Bessel zeros (see pages 301 and 306).
-    constexpr boost::math::quadrature::gauss<double, 15> quad_gl;
-
-    auto xi = get_xi(a, rho, params.max_intervals);
-    std::vector<cmplx> A(xi.size() - 1), B(xi.size() - 1);
-
-    cmplx s = 0.0;
-    std::vector<cmplx> old(2);
-
-    int k_max = xi.size() - 2;
-    for (int k = 0; k <= k_max; k++) {
-        cmplx u = quad_gl.integrate(f, xi[k], xi[k + 1]);
-        s += u;
-        // Detect vanishing function case as levin_sidi_extrap cannot handle
-        // the case omega_k = 0 and to avoid failure of the convergence checker.
-        if (std::abs(u) < 1e-20 && std::abs(s) < 1e-12) {
-            return 0.0;
-        }
-        cmplx omega = u;
-        cmplx val = levin_sidi_extrap(k, s, omega, xi, A, B);
-        if (k > 1 && check_converged(val, old, params.tol)) {
-            return val;
-        }
-        old[0] = old[1];
-        old[1] = val;
-    }
-
-    assert(false);	// Not converged, should never be reached.
-}
-
-cmplx mosig_michalski_extrap(double mu,
+cmplx mosig_michalski_extrap(real mu,
                              int k,
                              cmplx s_k,
-                             double Omega_k,
-                             const std::vector<double> &xi,
+                             real Omega_k,
+                             const std::vector<real> &xi,
                              std::vector<cmplx> &R)
 {
     R[k] = s_k;
     for (int j = 1; j <= k; j++) {
-        double d = xi[k - j + 2] - xi[k - j + 1];
-        double eta = Omega_k / (1.0 + mu * (j - 1) * d / xi[k - j + 1]);
+        real d = xi[k - j + 2] - xi[k - j + 1];
+        real eta = Omega_k / (1.0 + mu * (j - 1) * d / xi[k - j + 1]);
         R[k - j] = (R[k - j + 1] - eta * R[k - j]) / (1.0 - eta);
     }
     return R[0];
-}
-
-cmplx mosig_michalski_core(std::function<cmplx(real)> f,
-                           double rho,
-                           double a,
-                           double alpha,
-                           double zeta,
-                           Params params)
-{
-    constexpr boost::math::quadrature::gauss_kronrod<double, 15> quad;
-
-    auto xi = get_xi(a, rho, params.max_intervals);
-    std::vector<cmplx> R(xi.size() - 1);
-
-    auto Omega = [&](int k) {
-        if (0 == k) {
-            return 0.0;
-        } else {
-            return -std::exp(-(xi[k + 1] - xi[k]) * zeta) *
-                    std::pow(xi[k] / xi[k + 1], alpha);
-        }
-    };
-
-    constexpr double mu = 2.0;
-    cmplx s = 0.0;
-    std::vector<cmplx> old(2);
-
-    using boost::math::quadrature::gauss_kronrod;
-    int k_max = xi.size() - 2;
-    for (int k = 0; k <= k_max; k++) {
-        cmplx u = quad.integrate(f, xi[k], xi[k + 1]);
-        s += u;
-        cmplx val = mosig_michalski_extrap(mu, k, s, Omega(k), xi, R);
-        if (k > 1 && check_converged(val, old, params.tol)) {
-            return val;
-        }
-        old[0] = old[1];
-        old[1] = val;
-    }
-
-    assert(false);	// Not converged, should never be reached.
 }
 
 } // namespace utils
