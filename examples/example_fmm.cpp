@@ -20,6 +20,7 @@ int main()
     unsigned n_pts = 1e4; // Close to 32 GB memory limit on Lenovo T460.
 #endif
 
+#if 0
     auto src_pts = fmm::rand_pts_in_group(params, {0, 0, 4}, n_pts);
     fmm::append_pts(src_pts, fmm::rand_pts_in_group(params, {5, 0, 0}, n_pts));
     fmm::append_pts(src_pts, fmm::rand_pts_in_group(params, {-6, 3, -2}, n_pts));
@@ -28,6 +29,10 @@ int main()
     fmm::append_pts(obs_pts, fmm::rand_pts_in_group(params, {3, 20, 15}, n_pts));
     fmm::append_pts(obs_pts, fmm::rand_pts_in_group(params, {30, 10, 5}, n_pts));
     fmm::append_pts(obs_pts, fmm::rand_pts_in_group(params, {-50, -10, -10}, n_pts));
+#else
+    std::vector<VectorR3> src_pts = {{0.45, 0.1, 0.7}};
+    std::vector<VectorR3> obs_pts = {{7.1, 4.2, 10.3}};
+#endif
 
     // Excitation vector.
     std::vector<cmplx> I(src_pts.size(), 1.0);

@@ -14,9 +14,11 @@ cmplx eval_si_along_sip(const SommerfeldIntegral &si,
         return 0.0;
     }
 
-    real a_guess = utils::calc_pe_start_guess(si);
+    real a= utils::calc_pe_start_guess(si);
 
-    real a = pe::get_first_zero(si.nu, a_guess, rho);
+    if (rho > 0) {
+        a = pe::get_first_zero(si.nu, a, rho);
+    }
 
     cmplx head = utils::eval_head_ellipsis(si, rho, z, z_, a);
 

@@ -58,6 +58,14 @@ add_executable(example_nonspectral example_nonspectral.cpp)
 target_link_libraries(example_nonspectral mthesis-lib)
 
 
+add_executable(FEKO_comparison FEKO_comparison.cpp)
+target_link_libraries(FEKO_comparison mthesis-lib)
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(FEKO_comparison OpenMP::OpenMP_CXX)
+endif()
+
+
 
 
 

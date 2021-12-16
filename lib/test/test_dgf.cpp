@@ -61,21 +61,20 @@ BOOST_DATA_TEST_CASE(free_space_reciporcity,
 }
 
 BOOST_DATA_TEST_CASE(free_space_reference,
-                     boost::unit_test::data::xrange(5), n_run) // Multiple runs.
+                     boost::unit_test::data::make({1, 20, 50, 100, 500}) *
+                     boost::unit_test::data::make({-10, 0, 10}),
+                     rho_by_lambda, z_by_lambda)
 {
-    (void)n_run; // Hush unused variable warning;
-
     FrequencyDomain fd(1e9);
     Medium medium = Vacuum(fd);
+//    HalfSpace lm(fd, medium);
     LayeredMedium lm(fd, {-INFINITY, INFINITY}, {medium}, BC::open, BC::open);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<real> dist_pos(-10 * fd.lambda_0,
-                                                  +10 * fd.lambda_0);
-
-    VectorR3 r = {dist_pos(gen), dist_pos(gen), dist_pos(gen)};
-    VectorR3 r_ = {dist_pos(gen), dist_pos(gen), dist_pos(gen)};
+    real phi = M_PI / 4.0;
+    real x = rho_by_lambda * fd.lambda_0 * cos(phi);
+    real y = rho_by_lambda * fd.lambda_0 * sin(phi);
+    VectorR3 r_ = {0, 0, fd.lambda_0};
+    VectorR3 r = {x, y, z_by_lambda * fd.lambda_0};
 
     DyadC3 d1, d2;
     real tol = 5e-4; // In percent.
