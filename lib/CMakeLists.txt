@@ -1,5 +1,9 @@
 project(mthesis-lib)
 
+# Show headers in project tree (works at least for Qt Creator)
+FILE(GLOB_RECURSE LibFiles "include/*.hpp")
+add_custom_target(headers SOURCES ${LibFiles})
+
 ################################################################################
 #                                 COMPILATION
 ################################################################################
