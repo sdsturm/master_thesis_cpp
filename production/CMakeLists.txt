@@ -1,5 +1,5 @@
 add_executable(thesis_somm_id_ref_time thesis_somm_id_ref_time.cpp)
-target_link_libraries(thesis_somm_id_ref_time mthesis-lib Boost::timer)
+target_link_libraries(thesis_somm_id_ref_time mthesis-lib)
 
 
 add_executable(thesis_csb_examples thesis_csb_examples.cpp)

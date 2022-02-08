@@ -1,8 +1,8 @@
 #include <mthesis.hpp>
 
 #include <armadillo>
-#include <boost/timer/timer.hpp>
 
+#include <chrono>
 #include <filesystem>
 #include <cstdio>
 
@@ -31,9 +31,10 @@ int main(int argc, char** argv)
     size_t N = x_vals.size() * z_vals.size();
     std::vector<real> rel_err_db(N);
     std::vector<real> time_s(N);
-    boost::timer::auto_cpu_timer timer;
     size_t n = 0;
     using mthesis::si::axial_transmission::eval_si_along_sip;
+    using t_unit = std::chrono::nanoseconds;
+    constexpr real t_scale = 1e9;
     for (auto &x : x_vals)
     {
         for (auto &z : z_vals)
@@ -43,17 +44,17 @@ int main(int argc, char** argv)
 
             // Multiple runs for timer.
             int N_runs = 50;
-            timer.start();
+            const auto t1 = std::chrono::high_resolution_clock::now();
             for (int i = 0; i < N_runs - 1; i++)
             {
                 eval_si_along_sip(si, r, r_);
             }
-            // One final time for the result.
             auto num = eval_si_along_sip(si, r, r_);
-            timer.stop();
+            const auto t2 = std::chrono::high_resolution_clock::now();
+            const auto t = std::chrono::duration_cast<t_unit>(t2 - t1);
 
             rel_err_db[n] = calc_rel_err_db(num, ref);
-            time_s[n] = std::stod(timer.format(9, "%u"));
+            time_s[n] = t.count() / t_scale;
 
             printf("Processing point %4ld of %4ld, err = %.2f db\n",
                    n + 1,
@@ -90,7 +91,7 @@ int main(int argc, char** argv)
     {
         for (auto &z : z_vals)
         {
-            fprintf(out_target, "%.12f %.12f %.12f %.9f\n",
+            fprintf(out_target, "%.12e %.12e %.12e %.9e\n",
                     x / fd.lambda_0,
                     z / fd.lambda_0,
                     rel_err_db[n],
